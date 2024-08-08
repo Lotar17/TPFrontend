@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
+import { InicioSesionComponent } from '../inicio-sesion/inicio-sesion.component.js';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [],
+  imports: [InicioSesionComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
