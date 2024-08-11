@@ -1,29 +1,30 @@
 import { Component } from '@angular/core';
 import { LoginService } from '../api/login.service.js';
-import {NgForm} from '@angular/forms'
-import { response } from 'express';
-import { error } from 'console';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-inicio-sesion',
   standalone: true,
-  imports: [],
+  imports: [ReactiveFormsModule],
   templateUrl: './inicio-sesion.component.html',
-  styleUrl: './inicio-sesion.component.css'
+  styleUrl: './inicio-sesion.component.css',
 })
 export class InicioSesionComponent {
-  constructor(private loginService: LoginService){}
+  loginForm = new FormGroup({
+    mail: new FormControl(),
+    password: new FormControl(),
+  });
 
-  onSumbit(form: NgForm){
-    if(form.valid){
-      this.loginService.login(form.value).subscribe({
-        next: (response) => {
-          console.log('login Exitoso:',response);},
-          error: (error) => {
-            console.error('error de Login:',error);
-          }
-        }
-      )
-    }
+  constructor(private loginService: LoginService) {}
+
+  async onSubmit() {
+    const credentials = {
+      mail: this.loginForm.value.mail ?? '',
+      password: this.loginForm.value.password ?? '',
+    };
+    const observable = await this.loginService.login(credentials);
+    observable.subscribe((observable) => {
+      console.log(observable);
+    });
   }
 }
