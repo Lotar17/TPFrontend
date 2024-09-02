@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { LoginService } from '../api/login.service.js';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { response} from 'express';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-inicio-sesion',
@@ -15,16 +17,20 @@ export class InicioSesionComponent {
     password: new FormControl(),
   });
 
-  constructor(private loginService: LoginService) {}
+  constructor(private loginService: LoginService,private router:Router) {}
 
   async onSubmit() {
     const credentials = {
       mail: this.loginForm.value.mail ?? '',
       password: this.loginForm.value.password ?? '',
     };
-    const observable = await this.loginService.login(credentials);
-    observable.subscribe((observable) => {
-      console.log(observable);
-    });
+    (await this.loginService.login(credentials)).subscribe((response) => {
+      if(response.result){
+        console.log(response.message)
+        this.router.navigateByUrl('/dashboard')//se redirije a DASHBOARD
+      }else{
+        console.error(response.message);
+      }
+    } )
   }
 }
