@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { NgClass } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin-card',
@@ -20,4 +21,6 @@ export class AdminCardComponent {
 
   @Input()
   icono: string | undefined;
+
+  constructor(private router: Router) {}
 }
