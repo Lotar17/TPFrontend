@@ -1,1 +1,43 @@
-<p>admin-personas works!</p>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+/>
+@for (persona of personas; track persona.mail) {
+<ul role="list" class="divide-y divide-gray-100 p-3">
+  <li class="flex justify-between gap-x-6 py-5">
+    <div class="flex min-w-0 gap-x-4">
+      <span class="material-symbols-outlined pt-5"> person </span>
+      <div class="min-w-0 flex-auto">
+        <p class="text-sm font-semibold leading-6 text-gray-900">
+          {{ persona.nombre }} {{ persona.apellido }}
+        </p>
+        <p class="mt-1 truncate text-xs leading-5 text-gray-500">
+          {{ persona.mail }}
+        </p>
+        <p class="mt-1 truncate text-xs leading-5 text-gray-500">
+          Productos publicados: {{ persona.prods_publicados.length }}
+        </p>
+      </div>
+    </div>
+    <div class="hidden shrink-0 sm:flex sm:flex-row sm:items-center gap-5">
+      <div>
+        <p class="text-sm leading-6 text-gray-900">(persona.rol)</p>
+        <p class="mt-1 text-xs leading-5 text-gray-500">
+          {{ persona.telefono }}
+        </p>
+      </div>
+      <div>
+        <button>
+          <span
+            class="material-symbols-outlined rounded-md text-gray-200 bg-green-700 p-1"
+          >
+            edit
+          </span>
+        </button>
+      </div>
+    </div>
+  </li>
+</ul>
+}@empty {
+<p>No hay personas cargadas en el sistema</p>
+}
