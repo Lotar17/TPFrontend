@@ -2,7 +2,7 @@
   rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
 />
-@for (persona of personas; track persona.mail) {
+@for (persona of personas$ |async; track persona.id) {
 <ul role="list" class="divide-y divide-gray-100 p-3">
   <li class="flex justify-between gap-x-6 py-5">
     <div class="flex min-w-0 gap-x-4">
@@ -26,12 +26,19 @@
           {{ persona.telefono }}
         </p>
       </div>
-      <div>
+      <div class="flex gap-2">
         <button>
           <span
             class="material-symbols-outlined rounded-md text-gray-200 bg-green-700 p-1"
           >
             edit
+          </span>
+        </button>
+        <button>
+          <span
+            class="material-symbols-outlined rounded-md text-gray-200 bg-red-800 p-1"
+          >
+            delete
           </span>
         </button>
       </div>

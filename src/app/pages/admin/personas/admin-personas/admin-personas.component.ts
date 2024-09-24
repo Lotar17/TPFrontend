@@ -3,6 +3,7 @@ import { PersonasService } from '../../../../api/personas.service.js';
 import { Observable } from 'rxjs';
 import { Persona } from '../../../../models/persona.entity.js';
 import { AsyncPipe } from '@angular/common';
+import { ApiResponse } from '../../../../models/ApiResponse.js';
 
 @Component({
   selector: 'app-admin-personas',
@@ -14,16 +15,13 @@ import { AsyncPipe } from '@angular/common';
 export class AdminPersonasComponent {
   personaService = inject(PersonasService);
 
-  personas: Persona[] | undefined = [];
+  personas$ = this.personaService.personas$;
 
   constructor() {
-    this.personaService.getAll().subscribe({
-      next: (json) => {
-        this.personas = json.data;
-      },
-      error: (error) => {
-        console.log(error);
-      },
-    });
+    this.personaService.getAll();
+  }
+
+  delete(persona: Persona) {
+    this.personaService.deleteOne(persona).subscribe();
   }
 }
