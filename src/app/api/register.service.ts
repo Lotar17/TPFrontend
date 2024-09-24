@@ -9,11 +9,11 @@ export class RegisterService {
     constructor(private http: HttpClient) {}
 
     async register(credentials: {
-        name :string,
-        surname: string,
+        nombre:string,
+        apellido: string,
         mail: string,
         password: string,
-        phone: string,
+        telefono: string,
     }): Promise<Observable<any>> {
     return this.http.post(this.apiUrl, credentials);
 }

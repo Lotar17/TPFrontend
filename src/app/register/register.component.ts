@@ -24,10 +24,10 @@ registerForm = new FormGroup({
 constructor(private registerService : RegisterService, private router:Router){}
 async onSubmit(){
   const credentials = {
-    name:this.registerForm.value.name ?? '',
-    phone:this.registerForm.value.phone ?? '',
+    nombre:this.registerForm.value.name ?? '',
+    telefono:this.registerForm.value.phone ?? '',
     password:this.registerForm.value.password ?? '',
-    surname:this.registerForm.value.surname ?? '',
+    apellido:this.registerForm.value.surname ?? '',
     mail:this.registerForm.value.mail ?? '',
   };
   try{
