@@ -6,17 +6,23 @@ import { DashboardComponent } from '../../dashboard/dashboard.component.js';
 import { AdminComponent } from './admin.component.js';
 import { AdminBodyComponent } from './admin-body/admin-body.component.js';
 import { AdminPersonasComponent } from './personas/admin-personas/admin-personas.component.js';
+import { RegisterComponent } from '../../register/register.component.js';
 
 export const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
   },
+
+  {path: 'register',component:RegisterComponent},
+
   { path: 'dashboard', component: DashboardComponent },
+
   {
     path: '',
     component: HomeComponent,
   },
+  
   {
     path: 'admin',
     children: [
