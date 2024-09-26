@@ -1,26 +1,23 @@
-<app-header class="flex-none h-2/10"></app-header>
+<app-header></app-header>
 
 <app-search-bar (searchEvent)="updateSearchTerm($event)"></app-search-bar>
 
 <div class="dashboard-container">
-    <h1>Nuestros Productos</h1>
-    <div class="product-list">
-      <div *ngFor="let product of products" class="product-card">
-        <img [src]="product.imageUrl" alt="{{ product.nombre }}" class="product-image" />
-        <div class="product-details">
-          <h2>{{ product.nombre}}</h2>
-          <p>{{ product.descripcion }}</p>
-          <p class="product-price">$ {{ product.precio | number: '1.2-2' }}</p>
-          
-        </div>
+  <h1>Nuestros Productos</h1>
+  <div class="product-list">
+    <!-- Aquí se filtran y muestran los productos -->
+    <div *ngFor="let product of filteredProducts()" class="product-card">
+      <img [src]="product.imageUrl" alt="{{ product.nombre }}" class="product-image" />
+      <div class="product-details">
+        <h2>{{ product.nombre }}</h2>
+        <p>{{ product.descripcion }}</p>
+        <p class="product-price">$ {{ product.precio | number: '1.2-2' }}</p>
       </div>
     </div>
   </div>
-  
+</div>
 
-
-
-
+<app-footer></app-footer>
 
 
 

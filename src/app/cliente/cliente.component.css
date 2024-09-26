@@ -1,0 +1,63 @@
+/* Estilos para el perfil del cliente */
+
+.profile-card {
+    max-width: 400px; /* Ancho máximo */
+    margin: 20px auto; /* Centrado */
+    background-color: #ffffff; /* Fondo blanco */
+    border-radius: 15px; /* Bordes redondeados */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Sombra suave */
+    padding: 20px; /* Espaciado interno */
+    text-align: center; /* Centrar texto */
+    transition: transform 0.3s; /* Transición suave para efectos */
+  }
+  
+  .profile-card:hover {
+    transform: scale(1.05); /* Aumentar ligeramente al pasar el mouse */
+  }
+  
+  .profile-img-container {
+    margin-bottom: 15px; /* Espaciado inferior */
+    border: 3px solid #4a90e2; /* Borde azul */
+    border-radius: 50%; /* Bordes redondeados */
+    padding: 5px; /* Espaciado interno del borde */
+  }
+  
+  .profile-img {
+    height: 100px; /* Altura de la imagen */
+    width: 100px; /* Ancho de la imagen */
+    border-radius: 50%; /* Imagen redonda */
+    object-fit: cover; /* Mantiene la proporción */
+  }
+  
+  .profile-details h1 {
+    font-size: 24px; /* Tamaño de fuente para el nombre */
+    font-weight: 700; /* Negrita */
+    color: #333; /* Color del texto */
+  }
+  
+  .profile-details p {
+    color: #555; /* Color gris para los detalles */
+    margin: 5px 0; /* Margen vertical */
+  }
+  
+  .profile-details .email {
+    color: #4a90e2; /* Color azul para el correo */
+    font-weight: 600; /* Negrita */
+  }
+  
+  .profile-details .phone {
+    color: #e94e77; /* Color rosa para el teléfono */
+    font-weight: 600; /* Negrita */
+  }
+  
+  .profile-details .address {
+    color: #5f5f5f; /* Color gris para la dirección */
+  }
+  
+  .profile-details .joined-date {
+    font-size: 14px; /* Tamaño de fuente para la fecha */
+    color: #999; /* Color gris más claro */
+    margin-top: 10px; /* Margen superior */
+    display: block; /* Para que esté en su propia línea */
+  }
+  

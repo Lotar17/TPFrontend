@@ -1,0 +1,15 @@
+
+<app-search-bar></app-search-bar>
+<div class="profile-card">
+    <div class="profile-img-container">
+      <img class="profile-img" [src]="client.profilePicture" alt="{{ client.name }}">
+    </div>
+    <div class="profile-details">
+      <h1>{{ client.name }}</h1>
+      <p>{{ client.email }}</p>
+      <p>{{ client.phone }}</p>
+      <p>{{ client.address }}</p>
+      <span>Miembro desde: {{ client.joinedDate }}</span>
+    </div>
+  </div>
+  
