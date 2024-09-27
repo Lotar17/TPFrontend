@@ -1,8 +1,10 @@
 export type Persona = {
-  id: string;
+  id?: string;
   nombre: string;
   apellido: string;
   telefono: string;
   mail: string;
-  prods_publicados: [];
+  password?: string;
+  rol?: string;
+  prods_publicados?: [];
 };

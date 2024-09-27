@@ -31,4 +31,30 @@ export class PersonasService<T> {
       })
     );
   }
+
+  add(
+    nombre: string,
+    apellido: string,
+    email: string,
+    telefono: string,
+    contrasena: string,
+    rol: string
+  ): Observable<ApiResponse<Persona>> {
+    const persona: Persona = {
+      nombre: nombre,
+      apellido: apellido,
+      mail: email,
+      telefono: telefono,
+      password: contrasena,
+      rol: rol,
+    };
+    const url = 'http://localhost:3000/api/personas/';
+    return this.http.post<ApiResponse<Persona>>(url, persona).pipe(
+      tap(() => {
+        this.personasSubject.getValue().push(persona);
+        const personasActualizadas = this.personasSubject.getValue();
+        this.personasSubject.next(personasActualizadas);
+      })
+    );
+  }
 }
