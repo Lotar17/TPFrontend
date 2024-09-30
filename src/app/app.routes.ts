@@ -3,7 +3,7 @@ import { LoginComponent } from './login/login.component.js';
 import { HomeBodyComponent } from './home-body/home-body.component.js';
 import { HomeComponent } from './home/home.component.js';
 import { DashboardComponent } from './dashboard/dashboard.component.js';
-import { ClienteComponent } from './cliente/cliente.component.js';
+import { ProductListComponent } from './product-list/product-list.component.js';
 
 export const routes: Routes = [
     {
@@ -16,7 +16,7 @@ export const routes: Routes = [
         path:"", component:HomeComponent,
     },
     {
-        path:"cliente",
-        component:ClienteComponent
+        path:"product-list",
+        component:ProductListComponent
     }
 ];
