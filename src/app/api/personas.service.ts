@@ -4,6 +4,10 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { ApiResponse } from '../models/ApiResponse.js';
 import { Persona } from '../models/persona.entity.js';
 
+// SE GENERALIZO ESTE SERVICIO CON CRUD.SERVICE
+
+// LA ELIMINACION DE ESTE SERVICIO ESTA SIENDO EVALUADA
+
 @Injectable({
   providedIn: 'root',
 })

@@ -8,6 +8,7 @@ import { ApiResponse } from '../../../../models/ApiResponse.js';
 import { DUIDialog, DUIButton } from 'david-ui-angular';
 import { PersonaAddComponent } from '../persona-add/persona-add.component.js';
 import { outputFromObservable } from '@angular/core/rxjs-interop';
+import { CRUDService } from '../../../../api/crud.service.js';
 
 @Component({
   selector: 'app-admin-personas',
@@ -23,9 +24,9 @@ import { outputFromObservable } from '@angular/core/rxjs-interop';
   styleUrl: './admin-personas.component.css',
 })
 export class AdminPersonasComponent {
-  personaService = inject(PersonasService);
+  crudService = inject(CRUDService<Persona>);
 
-  personas$ = this.personaService.personas$;
+  personas$ = this.crudService.$;
   personasActualizadas = outputFromObservable(this.personas$);
 
   openDialog = false;
@@ -68,34 +69,29 @@ export class AdminPersonasComponent {
   }
 
   constructor() {
-    this.personaService.getAll();
+    this.crudService.getAll('personas');
   }
 
   delete(persona: Persona) {
-    this.personaService.deleteOne(persona).subscribe();
+    this.crudService.deleteOne('personas', persona).subscribe();
     this.openDialog = !this.openDialog;
   }
 
   submitForm() {
+    const persona: Persona = {
+      id: this.idEdited ?? '',
+      nombre: this.addForm.value.nombre ?? '',
+      apellido: this.addForm.value.apellido ?? '',
+      mail: this.addForm.value.email ?? '',
+      telefono: this.addForm.value.telefono ?? '',
+      password: this.addForm.value.contrasena ?? '',
+      rol: this.addForm.value.rol ?? '',
+    };
     if (this.isUpdating === false) {
-      console.log('NONONONONONONONONONONONONNONONONONONO');
-      this.personaService.add(
-        this.addForm.value.nombre ?? '',
-        this.addForm.value.apellido ?? '',
-        this.addForm.value.email ?? '',
-        this.addForm.value.telefono ?? '',
-        this.addForm.value.contrasena ?? '',
-        this.addForm.value.rol ?? ''
-      );
+      this.crudService.add('personas', persona);
     } else {
-      this.personaService.update(
-        this.idEdited ?? '',
-        this.addForm.value.nombre ?? '',
-        this.addForm.value.apellido ?? '',
-        this.addForm.value.email ?? '',
-        this.addForm.value.telefono ?? '',
-        this.addForm.value.rol ?? ''
-      );
+      delete persona.password;
+      this.crudService.update('personas', persona);
     }
     this.openAddDialog = !this.openAddDialog;
   }
