@@ -1,15 +1,15 @@
 import { Component,inject } from '@angular/core';
 import { ProductStateService } from '../data-access/product-state.service';
-import { ProductsService } from '../data-access/products.service';
-
+import { ProductCardComponent } from '../product-card/product-card.component';
+import { SearchBarComponent } from '../search-bar/search-bar.component';
 
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [],
+  imports: [ProductCardComponent, SearchBarComponent],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.css',
-  providers: [ProductStateService,ProductsService]
+  providers: [ProductStateService]
   
 })
 export class ProductListComponent {

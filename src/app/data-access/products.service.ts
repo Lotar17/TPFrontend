@@ -4,7 +4,7 @@ import { BaseHttpService } from "../../base-data-access/base-http.service";
 import { Observable } from "rxjs";
 import { Product } from "../../interfaces/product.interface";
 
-@Injectable()
+@Injectable({providedIn:'root'})
 
 export class ProductsService extends BaseHttpService{
 
