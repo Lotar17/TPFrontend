@@ -39,7 +39,7 @@ export class PersonasService<T> {
     telefono: string,
     contrasena: string,
     rol: string
-  ): Observable<ApiResponse<Persona>> {
+  ) {
     const persona: Persona = {
       nombre: nombre,
       apellido: apellido,
@@ -49,12 +49,47 @@ export class PersonasService<T> {
       rol: rol,
     };
     const url = 'http://localhost:3000/api/personas/';
-    return this.http.post<ApiResponse<Persona>>(url, persona).pipe(
-      tap(() => {
+    return this.http
+      .post<ApiResponse<Persona>>(url, persona)
+      .subscribe((response) => {
+        persona.id = response.data?.id;
         this.personasSubject.getValue().push(persona);
         const personasActualizadas = this.personasSubject.getValue();
         this.personasSubject.next(personasActualizadas);
-      })
-    );
+      });
+  }
+
+  update(
+    id: string,
+    nombre: string,
+    apellido: string,
+    email: string,
+    telefono: string,
+    rol: string,
+    contrasena?: string
+  ) {
+    const persona: Persona = {
+      nombre: nombre,
+      apellido: apellido,
+      mail: email,
+      telefono: telefono,
+      rol: rol,
+    };
+    if (contrasena) persona.password = contrasena;
+    const url = `http://localhost:3000/api/personas/${id}`;
+    console.log(`YA TIENE LA URL:${url}, nombre: ${nombre}`);
+    return this.http
+      .put<ApiResponse<Persona>>(url, persona)
+      .subscribe((response) => {
+        const personasActuales = this.personasSubject.getValue();
+        const personasActualizadas = personasActuales.map((personaEditada) =>
+          personaEditada.id === response.data?.id
+            ? response.data!
+            : personaEditada
+        );
+        this.personasSubject.next(personasActualizadas);
+
+        console.log('HIZO EL PUT y actualizó la colección');
+      });
   }
 }

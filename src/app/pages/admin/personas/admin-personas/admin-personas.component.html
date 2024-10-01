@@ -17,7 +17,7 @@
           {{ persona.mail }}
         </p>
         <p class="mt-1 truncate text-xs leading-5 text-gray-500">
-          Productos publicados: {{ persona.prods_publicados!.length }}
+          Productos publicados: {{ persona.prods_publicados?.length }}
         </p>
       </div>
     </div>
@@ -29,7 +29,7 @@
         </p>
       </div>
       <div class="flex gap-2">
-        <button>
+        <button (click)="OpenAddDialog(persona)">
           <span
             class="material-symbols-outlined rounded-md text-gray-200 bg-green-700 p-1"
           >
@@ -87,7 +87,9 @@
   [closeOnBackground]="false"
   (onClose)="this.openAddDialog = !this.openAddDialog"
 >
-  <dui-dialog-header> Añadir persona </dui-dialog-header>
+  <dui-dialog-header
+    >@if (isUpdating) {Editar Persona}@else {Añadir persona}
+  </dui-dialog-header>
   <dui-dialog-body [divider]="false">
     <form [formGroup]="addForm" id="addForm" (submit)="submitForm()">
       <div class="space-y-12">
@@ -186,7 +188,7 @@
                 />
               </div>
             </div>
-
+            @if (!isUpdating) {
             <div class="sm:col-span-4">
               <label
                 for="contrasena"
@@ -205,6 +207,7 @@
                 />
               </div>
             </div>
+            }
           </div>
         </div>
       </div>
@@ -219,7 +222,7 @@
           >CANCELAR</dui-button
         >
         <dui-button size="md" color="green" type="submit" form="addForm"
-          >AGREGAR</dui-button
+          >@if (isUpdating) {EDITAR}@else {AGREGAR}</dui-button
         >
       </div>
     </form>
