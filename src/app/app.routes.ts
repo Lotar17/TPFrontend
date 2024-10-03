@@ -5,6 +5,7 @@ import { HomeComponent } from './home/home.component.js';
 import { DashboardComponent } from './dashboard/dashboard.component.js';
 import { ProductosComponent } from './producto/producto.component.js';
 import { ProductoDetalleComponent } from './producto-detalle/producto-detalle.component.js';
+import { ListaComponent } from './lista/lista.component.js';
 
 
 export const routes: Routes = [
@@ -25,6 +26,10 @@ export const routes: Routes = [
  {
     path:"productos/:id",
     component:ProductoDetalleComponent
-}
+},
 
+{
+    path:"lista",
+    component:ListaComponent
+}
 ];
