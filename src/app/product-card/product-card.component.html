@@ -1,20 +1,24 @@
-
-
-<div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+<div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-black-800 dark:border-gray-300">
     <picture>
-        <img class="rounded-t-lg h-30 w-full object-center" [src]="product.image" alt="" />
+        <img class="rounded-t-lg h-60 w-full object-center" [src]="producto.stock" alt="{{producto.nombre}}" />
     </picture>
     <div class="p-5">
-        <a >
+        <a>
             <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white line-clamp-1">
-                {{product.title}}
-
-                
+                {{producto.nombre}}
             </h5>
         </a>
         <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 line-clamp-3">
-            {{product.description}}
+            descripcion:{{producto.descripcion}}
         </p>
-      
+        <p class="font-semibold text-lg text-gray-800 dark:text-gray-300">
+            Precio: {{producto.precio}}
+        </p>
+        <p>Stock:{{producto.stock}}</p>
+        <nav>
+            <a class="button" [routerLink]="['/productos', producto.id]">Ver más</a> |
+          </nav>
+         
+         
     </div>
 </div>

@@ -3,7 +3,9 @@ import { LoginComponent } from './login/login.component.js';
 import { HomeBodyComponent } from './home-body/home-body.component.js';
 import { HomeComponent } from './home/home.component.js';
 import { DashboardComponent } from './dashboard/dashboard.component.js';
-import { ProductListComponent } from './product-list/product-list.component.js';
+import { ProductosComponent } from './producto/producto.component.js';
+import { ProductoDetalleComponent } from './producto-detalle/producto-detalle.component.js';
+
 
 export const routes: Routes = [
     {
@@ -16,7 +18,13 @@ export const routes: Routes = [
         path:"", component:HomeComponent,
     },
     {
-        path:"product-list",
-        component:ProductListComponent
-    }
+        path:"productos", component:ProductosComponent,
+    },
+    
+
+ {
+    path:"productos/:id",
+    component:ProductoDetalleComponent
+}
+
 ];
