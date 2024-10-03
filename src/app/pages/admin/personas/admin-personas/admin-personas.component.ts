@@ -25,16 +25,13 @@ import { CRUDService } from '../../../../api/crud.service.js';
 })
 export class AdminPersonasComponent {
   crudService = inject(CRUDService<Persona>);
-
   personas$ = this.crudService.$;
   personasActualizadas = outputFromObservable(this.personas$);
-
   openDialog = false;
-
   openAddDialog = false;
-
   isUpdating = false;
   idEdited: string | undefined = undefined;
+  personaToDelete: Persona | undefined = undefined;
 
   addForm = new FormGroup({
     nombre: new FormControl('', { nonNullable: true }),
@@ -45,7 +42,9 @@ export class AdminPersonasComponent {
     rol: new FormControl('Usuario', { nonNullable: true }),
   });
 
-  personaToDelete: Persona | undefined = undefined;
+  constructor() {
+    this.crudService.getAll('personas');
+  }
 
   OpenDialog(persona: Persona) {
     this.openDialog = !this.openDialog;
@@ -66,10 +65,6 @@ export class AdminPersonasComponent {
       this.addForm.controls.telefono.setValue(persona.telefono);
     }
     this.openAddDialog = true;
-  }
-
-  constructor() {
-    this.crudService.getAll('personas');
   }
 
   delete(persona: Persona) {

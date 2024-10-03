@@ -7,6 +7,7 @@ import { AdminComponent } from './admin.component.js';
 import { AdminBodyComponent } from './admin-body/admin-body.component.js';
 import { AdminPersonasComponent } from './personas/admin-personas/admin-personas.component.js';
 import { RegisterComponent } from '../../register/register.component.js';
+import { AdminProductosComponent } from './productos/admin-productos/admin-productos.component.js';
 
 export const routes: Routes = [
   {
@@ -14,7 +15,7 @@ export const routes: Routes = [
     component: LoginComponent,
   },
 
-  {path: 'register',component:RegisterComponent},
+  { path: 'register', component: RegisterComponent },
 
   { path: 'dashboard', component: DashboardComponent },
 
@@ -22,7 +23,7 @@ export const routes: Routes = [
     path: '',
     component: HomeComponent,
   },
-  
+
   {
     path: 'admin',
     children: [
@@ -33,6 +34,10 @@ export const routes: Routes = [
       {
         path: 'personas',
         component: AdminPersonasComponent,
+      },
+      {
+        path: 'productos',
+        component: AdminProductosComponent,
       },
     ],
     component: AdminComponent,
