@@ -1,0 +1,39 @@
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+/>
+
+<main class="flex flex-wrap">
+  <app-admin-card
+    categoria="Personas"
+    color="bg-slate-500"
+    icono="groups"
+    [routerLink]="['/admin/personas']"
+  ></app-admin-card>
+  <app-admin-card
+    categoria="Productos"
+    color="bg-lime-700"
+    icono="inventory_2"
+    [routerLink]="['/login']"
+  ></app-admin-card>
+  <app-admin-card
+    categoria="Categorias"
+    color="bg-yellow-500"
+    icono="category"
+  ></app-admin-card>
+  <app-admin-card
+    categoria="Localidades"
+    color="bg-orange-400"
+    icono="location_city"
+  ></app-admin-card>
+  <app-admin-card
+    categoria="Formas de pago"
+    color="bg-purple-400"
+    icono="credit_card"
+  ></app-admin-card>
+  <app-admin-card
+    categoria="Compras"
+    color="bg-zinc-800"
+    icono="shopping_cart"
+  ></app-admin-card>
+</main>
