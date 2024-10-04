@@ -3,11 +3,14 @@ import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../footer/footer.component';
 import { CommonModule } from '@angular/common';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
+import { CargoProductosComponent } from '../cargo-productos/cargo-productos.component.js';
+import { RouterLink } from '@angular/router';
+
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [HeaderComponent, FooterComponent, CommonModule, SearchBarComponent],
+  imports: [HeaderComponent, FooterComponent, CommonModule, SearchBarComponent,CargoProductosComponent,RouterLink],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })

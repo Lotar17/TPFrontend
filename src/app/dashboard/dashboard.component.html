@@ -3,6 +3,7 @@
 <app-search-bar (searchEvent)="updateSearchTerm($event)"></app-search-bar>
 
 <div class="dashboard-container">
+  <a class="hover:bg-sky-200 transition duration-300 rounded-xl p-2"routerLink="/publicaprod">Publicar Producto</a>
   <h1>Nuestros Productos</h1>
   <div class="product-list">
     <!-- Aquí se filtran y muestran los productos -->
@@ -16,10 +17,5 @@
     </div>
   </div>
 </div>
-
-<app-footer></app-footer>
-
-
-
 
 <app-footer class="flex-none h-1/10"></app-footer>

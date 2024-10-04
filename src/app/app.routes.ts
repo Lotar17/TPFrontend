@@ -10,6 +10,7 @@ import { AdminBodyComponent } from './pages/admin/admin-body/admin-body.componen
 import { AdminPersonasComponent } from './pages/admin/personas/admin-personas/admin-personas.component.js';
 import { AdminComponent } from './pages/admin/admin.component.js';
 import { RegisterComponent } from './register/register.component.js';
+import { CargoProductosComponent } from './cargo-productos/cargo-productos.component.js';
 
 
 export const routes: Routes = [
@@ -26,6 +27,9 @@ export const routes: Routes = [
     },
     {
         path:"productos", component:ProductosComponent,
+    },
+    {
+        path:"publicaprod",component:CargoProductosComponent
     },
 
 
