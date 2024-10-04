@@ -3,6 +3,7 @@ import { LoginService } from '../api/login.service.js';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { response } from 'express';
 import { Router } from '@angular/router';
+import { AuthService } from '../api/Auth.service.js';
 
 @Component({
   selector: 'app-inicio-sesion',
@@ -19,7 +20,7 @@ export class InicioSesionComponent {
     password: new FormControl(),
   });
 
-  constructor(private loginService: LoginService, private router: Router) {}
+  constructor(private loginService: LoginService,private authService:AuthService, private router: Router) {}
 
   async onSubmit() {
     const credentials = {
@@ -30,6 +31,7 @@ export class InicioSesionComponent {
       (await this.loginService.login(credentials)).subscribe((response) => {
         if (response.result) {
           console.log(response.message);
+          this.authService.setUserId(response.usuarioId);
           this.router.navigateByUrl('/dashboard'); //se redirije a DASHBOARD
         } else {
           this.loginSuccesful = false;
