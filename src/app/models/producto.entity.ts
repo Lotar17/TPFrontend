@@ -1,9 +1,11 @@
-import { Persona } from './persona.entity.js';
 
 export type Producto = {
-  id?: string;
-  descripcion: string;
-  stock: number;
-  categoria: string;
-  persona?: Persona;
-};
+    id?: string;
+    descripcion: string;
+    persona: string; // ID de la persona que carga el producto
+    stock?: number;
+    precio:number;
+    categoriaNombre: string; // Nombre de la categoría en lugar del ID
+    compras?: [];
+    hist_precios?: [];
+}

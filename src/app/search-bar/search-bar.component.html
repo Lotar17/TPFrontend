@@ -1,0 +1,11 @@
+<div class="search-bar">
+  <input 
+    type="text" 
+    [(ngModel)]="searchTerm" 
+    placeholder="Buscar productos..."
+    class="search-input"
+  />
+  <button (click)="onSearch()" class="search-button">
+    Buscar
+  </button>
+</div>
