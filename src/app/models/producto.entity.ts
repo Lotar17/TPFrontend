@@ -1,3 +1,4 @@
+
 export type Producto = {
     id?: string;
     descripcion: string;
@@ -7,4 +8,4 @@ export type Producto = {
     categoriaNombre: string; // Nombre de la categoría en lugar del ID
     compras?: [];
     hist_precios?: [];
-};
+}

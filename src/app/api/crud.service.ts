@@ -23,6 +23,16 @@ export class CRUDService<T extends BaseModel> {
       });
   }
 
+  getOne(tabla: string, id: string): T | undefined {
+    let item: T | undefined = undefined;
+    this.http
+      .get<ApiResponse<T>>(`${this.url}/${tabla}/${id}`)
+      .subscribe((response) => {
+        item = response.data;
+      });
+    return item;
+  }
+
   deleteOne(tabla: string, t: T): Observable<ApiResponse<T>> {
     return this.http
       .delete<ApiResponse<T>>(`${this.url}/${tabla}/${t.id}`)
