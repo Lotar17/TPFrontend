@@ -9,6 +9,7 @@ import { FormGroup, FormControl } from '@angular/forms';
 import { Persona } from '../../../../models/persona.entity.js';
 import { Categoria } from '../../../../models/categoria.entity.js';
 import { CategoriaService } from '../../../../api/categoria.service.js';
+import { IsStringPipe } from '../../../../is-string.pipe.js';
 
 @Component({
   selector: 'app-admin-productos',
@@ -19,6 +20,7 @@ import { CategoriaService } from '../../../../api/categoria.service.js';
     DUIButton,
     PersonaAddComponent,
     ReactiveFormsModule,
+    IsStringPipe,
   ],
   templateUrl: './admin-productos.component.html',
   styleUrl: './admin-productos.component.css',
@@ -62,8 +64,11 @@ export class AdminProductosComponent {
       this.idEdited = producto.id;
       this.addForm.controls.descripcion.setValue(producto.descripcion);
       this.addForm.controls.stock.setValue(producto.stock ?? 0);
-      this.addForm.controls.categoriaId.setValue(producto.categoriaNombre);
-      this.addForm.controls.personaId.setValue(producto.persona);
+      this.addForm.controls.personaId.setValue(producto.persona?.id ?? '');
+      this.addForm.controls.categoriaId.setValue(producto.categoria?.id ?? '');
+      this.addForm.controls.precio.setValue(
+        producto.hist_precios?.at(producto.hist_precios!.length - 1)?.valor!
+      );
     }
     this.openAddDialog = true;
   }
@@ -74,19 +79,16 @@ export class AdminProductosComponent {
   }
 
   submitForm() {
-    const persona: Persona = {
-      id: this.addForm.value.personaId ?? '',
-      nombre: '',
-      apellido: '',
-      mail: '',
-      telefono: '',
+    const categoria: Categoria = {
+      id: this.addForm.value.categoriaId ?? '',
+      descripcion: '',
     };
     const producto: Producto = {
       id: this.idEdited ?? '',
       descripcion: this.addForm.value.descripcion ?? '',
       stock: this.addForm.value.stock ?? 0,
-      categoriaNombre: this.addForm.value.categoriaId ?? '',
-      persona: this.addForm.value.personaId ?? '',
+      categoriaId: this.addForm.value.categoriaId ?? '',
+      personaId: this.addForm.value.personaId ?? '',
       precio: this.addForm.value.precio ?? 0,
     };
     if (this.isUpdating === false) {

@@ -9,37 +9,36 @@ import { AuthService } from '../api/Auth.service.js';
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './cargo-productos.component.html',
-  styleUrl: './cargo-productos.component.css'
+  styleUrl: './cargo-productos.component.css',
 })
 export class CargoProductosComponent {
-publicaForm= new FormGroup({
-  descripcion: new FormControl(),
-  precio: new FormControl(),
-  stock: new FormControl(),
-  categoria: new FormControl()
-})
-constructor(
-  private crudService: CRUDService<Producto>,
-  private authService: AuthService // Inyectar AuthService
-) {}
-async onSubmit(){
-  const userId = this.authService.getUserId(); // Esto ahora devuelve string (o vacío)
+  publicaForm = new FormGroup({
+    descripcion: new FormControl(),
+    precio: new FormControl(),
+    stock: new FormControl(),
+    categoria: new FormControl(),
+  });
+  constructor(
+    private crudService: CRUDService<Producto>,
+    private authService: AuthService // Inyectar AuthService
+  ) {}
+  async onSubmit() {
+    const userId = this.authService.getUserId(); // Esto ahora devuelve string (o vacío)
 
-  // Comprobar si el ID es válido
-  if (!userId) {
-    console.error('El usuario no está logueado.');
-    // Manejar la situación de que el usuario no está logueado
-    return;
+    // Comprobar si el ID es válido
+    if (!userId) {
+      console.error('El usuario no está logueado.');
+      // Manejar la situación de que el usuario no está logueado
+      return;
+    }
+
+    const producto: Producto = {
+      descripcion: this.publicaForm.value.descripcion,
+      stock: this.publicaForm.value.stock,
+      precio: this.publicaForm.value.precio,
+      categoria: this.publicaForm.value.categoria, // Nombre de la categoría
+      personaId: userId, // ID de la persona logueada
+    };
+    await this.crudService.add('productos', producto);
   }
-
-  const producto: Producto = {
-    descripcion: this.publicaForm.value.descripcion,
-    stock: this.publicaForm.value.stock,
-    precio: this.publicaForm.value.precio,
-    categoriaNombre: this.publicaForm.value.categoria, // Nombre de la categoría
-    persona: userId , // ID de la persona logueada
-  };
-  await this.crudService.add("productos",producto)
-}
-
 }

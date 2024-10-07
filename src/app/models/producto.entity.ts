@@ -1,10 +1,16 @@
+import { Categoria } from './categoria.entity.js';
+import { Persona } from './persona.entity.js';
+import { PrecioHistorico } from './precioHistorico.entity.js';
+
 export type Producto = {
   id?: string;
   descripcion: string;
-  persona: string; // ID de la persona que carga el producto
+  persona?: Persona;
+  personaId?: string;
   stock?: number;
   precio: number;
-  categoriaNombre: string; // Nombre de la categoría en lugar del ID
+  categoria?: Categoria;
+  categoriaId?: string;
   compras?: [];
-  hist_precios?: [];
+  hist_precios?: PrecioHistorico[];
 };
