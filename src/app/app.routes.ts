@@ -12,6 +12,7 @@ import { AdminComponent } from './pages/admin/admin.component.js';
 import { AdminProductosComponent } from './pages/admin/productos/admin-productos/admin-productos.component.js';
 import { RegisterComponent } from './register/register.component.js';
 import { CargoProductosComponent } from './cargo-productos/cargo-productos.component.js';
+import { AdminCategoriasComponent } from './pages/admin/categorias/admin-categorias/admin-categorias.component.js';
 
 export const routes: Routes = [
   {
@@ -58,6 +59,7 @@ export const routes: Routes = [
         path: 'productos',
         component: AdminProductosComponent,
       },
+      { path: 'categorias', component: AdminCategoriasComponent },
     ],
     component: AdminComponent,
   },
