@@ -9,7 +9,6 @@ import { FormGroup, FormControl } from '@angular/forms';
 import { Persona } from '../../../../models/persona.entity.js';
 import { Categoria } from '../../../../models/categoria.entity.js';
 import { CategoriaService } from '../../../../api/categoria.service.js';
-import { IsStringPipe } from '../../../../is-string.pipe.js';
 
 @Component({
   selector: 'app-admin-productos',
@@ -20,7 +19,6 @@ import { IsStringPipe } from '../../../../is-string.pipe.js';
     DUIButton,
     PersonaAddComponent,
     ReactiveFormsModule,
-    IsStringPipe,
   ],
   templateUrl: './admin-productos.component.html',
   styleUrl: './admin-productos.component.css',
