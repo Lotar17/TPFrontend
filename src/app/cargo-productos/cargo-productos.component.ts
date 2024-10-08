@@ -24,7 +24,7 @@ export class CargoProductosComponent {
   ) {}
   async onSubmit() {
     const userId = this.authService.getUserId(); // Esto ahora devuelve string (o vacío)
-
+    
     // Comprobar si el ID es válido
     if (!userId) {
       console.error('El usuario no está logueado.');
