@@ -13,6 +13,7 @@ import { AdminProductosComponent } from './pages/admin/productos/admin-productos
 import { RegisterComponent } from './register/register.component.js';
 import { CargoProductosComponent } from './cargo-productos/cargo-productos.component.js';
 import { AdminCategoriasComponent } from './pages/admin/categorias/admin-categorias/admin-categorias.component.js';
+import { AdminFormasDePagoComponent } from './pages/admin/formas-de-pago/admin-formas-de-pago/admin-formas-de-pago.component.js';
 
 export const routes: Routes = [
   {
@@ -60,6 +61,7 @@ export const routes: Routes = [
         component: AdminProductosComponent,
       },
       { path: 'categorias', component: AdminCategoriasComponent },
+      { path: 'formas-de-pago', component: AdminFormasDePagoComponent },
     ],
     component: AdminComponent,
   },
