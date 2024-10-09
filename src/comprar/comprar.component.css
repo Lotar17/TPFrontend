@@ -1,0 +1,57 @@
+.container {
+    max-width: 500px; /* Ancho máximo del formulario */
+    margin: 0 auto;   /* Centramos horizontalmente */
+    padding: 20px;    /* Espaciado interno */
+    border: 1px solid #ccc; /* Borde del contenedor */
+    border-radius: 10px; /* Bordes redondeados */
+    background-color: #f9f9f9; /* Color de fondo */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra del contenedor */
+  }
+  
+  .title {
+    text-align: center; /* Centramos el título */
+    color: #4CAF50; /* Color verde para el título */
+    margin-bottom: 20px; /* Espacio debajo del título */
+  }
+  
+  .purchase-form {
+    display: flex; /* Usamos flexbox para alineación */
+    flex-direction: column; /* Colocamos los elementos en columna */
+  }
+  
+  .form-group {
+    margin-bottom: 15px; /* Espacio entre los grupos de formularios */
+  }
+  
+  label {
+    font-weight: bold; /* Negrita en las etiquetas */
+    color: #333; /* Color de texto de las etiquetas */
+  }
+  
+  input {
+    padding: 10px; /* Espaciado interno de los inputs */
+    border: 1px solid #ccc; /* Borde de los inputs */
+    border-radius: 5px; /* Bordes redondeados en inputs */
+    width: 100%; /* Ancho completo */
+    box-sizing: border-box; /* Incluimos padding y borde en el tamaño total */
+  }
+  
+  input:focus {
+    border-color: #4CAF50; /* Color del borde al enfocar */
+    outline: none; /* Quitamos el outline por defecto */
+  }
+  
+  .btn-submit {
+    background-color: #4CAF50; /* Color de fondo del botón */
+    color: white; /* Color del texto del botón */
+    border: none; /* Sin borde */
+    border-radius: 5px; /* Bordes redondeados */
+    padding: 10px; /* Espaciado interno del botón */
+    font-size: 16px; /* Tamaño de fuente */
+    cursor: pointer; /* Cambiar cursor al pasar por encima */
+  }
+  
+  .btn-submit:hover {
+    background-color: #45a049; /* Color más oscuro al pasar el cursor */
+  }
+  

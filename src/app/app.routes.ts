@@ -11,6 +11,7 @@ import { AdminPersonasComponent } from './pages/admin/personas/admin-personas/ad
 import { AdminComponent } from './pages/admin/admin.component.js';
 import { RegisterComponent } from './register/register.component.js';
 import { CargoProductosComponent } from './cargo-productos/cargo-productos.component.js';
+import { ComprarComponent } from '../comprar/comprar.component.js';
 
 
 export const routes: Routes = [
@@ -34,8 +35,13 @@ export const routes: Routes = [
 
 
 {
-    path:"productos/:id",
-    component:ProductoDetalleComponent
+    path:"productos/:id",component:ProductoDetalleComponent
+        
+},
+
+{
+    path:"productos/:id/comprar", component:ComprarComponent
+        
 },
 
 {
@@ -56,4 +62,6 @@ export const routes: Routes = [
     ],
     component: AdminComponent,
 },
+
+
 ];
