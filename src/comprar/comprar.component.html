@@ -1,29 +1,35 @@
-<div class="container">
-  <h2 class="title">Finalizar Compra</h2>
-  <form [formGroup]="compraForm" (ngSubmit)="finalizarCompra()" class="purchase-form">
+<div class="compra-container">
+  <h2>Realizar Compra</h2>
+
+  <form [formGroup]="publicaForm" (ngSubmit)="onSubmit()">
     <div class="form-group">
-      <label for="direccion">Dirección de Entrega:</label>
-      <input type="text" id="direccion" formControlName="direccion_entrega" required />
+      <label for="nombre_persona">Nombre de la Persona</label>
+      <input id="nombre_persona" formControlName="nombre_persona" type="text" class="form-control" />
     </div>
 
     <div class="form-group">
-      <label for="clienteId">ID del Cliente:</label>
-      <input type="text" id="clienteId" formControlName="persona" required />
+      <label for="nombre_empleado">Nombre del Empleado</label>
+      <input id="nombre_empleado" formControlName="nombre_empleado" type="text" class="form-control" />
     </div>
 
     <div class="form-group">
-      <label for="cantidad">Cantidad:</label>
-      <input type="number" id="cantidad" formControlName="cantidad_producto" required />
+      <label for="direccion_entrega">Dirección de Entrega</label>
+      <input id="direccion_entrega" formControlName="direccion_entrega" type="text" class="form-control" />
     </div>
 
     <div class="form-group">
-      <label for="empleadoId">ID del Empleado:</label>
-      <input type="text" id="empleadoId" formControlName="empleado" required />
+      <label for="cantidad_producto">Cantidad de Producto</label>
+      <input id="cantidad_producto" formControlName="cantidad_producto" type="number" class="form-control" />
     </div>
 
     <div class="form-group">
-      <label for="descuento">Descuento:</label>
-      <input type="number" id="descuento" formControlName="descuento" />
+      <label for="fecha_hora_compra">Fecha y Hora de Compra</label>
+      <input id="fecha_hora_compra" formControlName="fecha_hora_compra" type="datetime-local" class="form-control" />
+    </div>
+
+    <div class="form-group">
+      <label for="descuento">Descuento</label>
+      <input id="descuento" formControlName="descuento" type="number" step="0.01" class="form-control" />
     </div>
 
     <button type="submit" class="btn-submit">Finalizar Compra</button>

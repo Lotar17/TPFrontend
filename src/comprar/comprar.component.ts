@@ -2,53 +2,61 @@ import { Component } from '@angular/core';
 import { Compra } from '../models/compra.entity.js';
 import { FormGroup, FormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { ComprasService } from '../app/api/compra.service';
+import { EmpleadoService } from '../app/api/emp.service.js';
+import { PersonaService } from '../app/api/per.service.js';
+import { CRUDService } from '../app/api/crud.service.js';
 import { ReactiveFormsModule } from '@angular/forms';
-
+import { firstValueFrom } from 'rxjs'; // Para convertir el Observable en Promise
 
 @Component({
   selector: 'app-comprar',
   standalone: true,
-  imports:[ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './comprar.component.html',
   styleUrls: ['./comprar.component.css'],
 })
 export class ComprarComponent {
-  compraForm: FormGroup;
-  productoId: string = '';
+  publicaForm = new FormGroup({
+    direccion_entrega: new FormControl(),
+    cantidad_producto: new FormControl(),
+    fecha_hora_compra: new FormControl(),
+    descuento: new FormControl(),
+    nombre_persona: new FormControl(), // Campo para ingresar el nombre de la persona
+    nombre_empleado: new FormControl(), // Campo para ingresar el nombre del empleado
+  });
 
-  constructor(private comprasService: ComprasService, private route: ActivatedRoute) {
-    this.compraForm = new FormGroup({
-      direccion_entrega: new FormControl('', { nonNullable: true }),
-      persona: new FormControl('', { nonNullable: true }),      // ID del cliente
-      empleado: new FormControl('', { nonNullable: true }),     // ID del empleado
-      cantidad_producto: new FormControl(0, { nonNullable: true }),
-      fecha_hora_compra: new FormControl(new Date().toISOString(), { nonNullable: true }),
-      descuento: new FormControl(0, { nonNullable: true }),
-    });
-    
+  productoId: string; // ID del producto desde la URL
 
-    this.productoId = this.route.snapshot.paramMap.get('productoId') || '';
+  constructor(
+    private route: ActivatedRoute, // Para capturar el ID del producto
+    private crudService: CRUDService<Compra>,
+    private empleadoService: EmpleadoService,
+    private personaService: PersonaService
+  ) {
+    // Obtener el ID del producto desde la ruta activa
+    this.productoId = this.route.snapshot.paramMap.get('id') || '';// el problema esta aca
   }
-  finalizarCompra() {
-    const compra: Compra = {
-      direccion_entrega: this.compraForm.value.direccion_entrega, // Usar el nombre correcto
-      producto: this.productoId,                                   // Usar el ID del producto
-      persona: this.compraForm.value.persona,                     // ID del cliente
-      cantidad_producto: this.compraForm.value.cantidad_producto, // Cantidad del producto
-      fecha_hora_compra: this.compraForm.value.fecha_hora_compra, // Fecha de la compra
-      descuento: this.compraForm.value.descuento,                 // Descuento aplicado
-      empleado: this.compraForm.value.empleado,                   // ID del empleado
-    };
-    
 
-    this.comprasService.add(compra).subscribe({
-      next: () => {
-        console.log('Compra guardada exitosamente');
-      },
-      error: (err) => {
-        console.error('Error al guardar la compra', err);
-      },
-    });
+  async onSubmit() {
+    try {
+      // Obtener el ID del empleado y persona por nombre utilizando firstValueFrom para convertir los Observables en Promises
+      const empleadoId = await firstValueFrom(this.empleadoService.getEmpleadoIdById(this.publicaForm.value.nombre_empleado!));
+      const personaId = await firstValueFrom(this.personaService.getPersonaIdById(this.publicaForm.value.nombre_persona!));
+
+      const compra: Compra = {
+        direccion_entrega: this.publicaForm.value.direccion_entrega!,
+        cantidad_producto: this.publicaForm.value.cantidad_producto!,
+        fecha_hora_compra: this.publicaForm.value.fecha_hora_compra!,
+        descuento: this.publicaForm.value.descuento!,
+        empleado: empleadoId, // ID del empleado obtenido por nombre
+        persona: personaId, // ID de la persona obtenido por nombre
+        producto: this.productoId // ID del producto desde la URL
+      };
+
+      await this.crudService.add('compras', compra); // Guardar la compra en la base de datos
+      console.log('Compra realizada con éxito');
+    } catch (error) {
+      console.error('Error al realizar la compra:', error);
+    }
   }
 }
