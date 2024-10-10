@@ -34,7 +34,7 @@ export class ComprarComponent {
     private personaService: PersonaService
   ) {
     // Obtener el ID del producto desde la ruta activa
-    this.productoId = this.route.snapshot.paramMap.get('id') || '';// el problema esta aca
+    this.productoId = this.route.snapshot.paramMap.get('id') || '';// el problema esta acanpm
   }
 
   async onSubmit() {
