@@ -8,4 +8,15 @@
   <button (click)="onSearch()" class="search-button">
     Buscar
   </button>
+  
 </div>
+<div *ngIf="productos && productos.length > 0; else noResults">
+  <ul>
+    <li *ngFor="let producto of productos">
+      {{ producto.descripcion }}
+    </li>
+  </ul>
+</div>
+<ng-template #noResults>
+  <p></p>
+</ng-template>

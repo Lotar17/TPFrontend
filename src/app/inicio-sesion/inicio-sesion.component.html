@@ -13,7 +13,9 @@
         />
       </div>
       <div>
-        <label for="Password" class="block text-gray-800 font-bold">Password:</label>
+        <label for="Password" class="block text-gray-800 font-bold"
+          >Password:</label
+        >
         <input
           type="password"
           formControlName="password"
@@ -22,10 +24,14 @@
           placeholder="Password"
           class="w-full border border-gray-300 py-2 pl-3 rounded mt-2 outline-none focus:ring-indigo-600 :ring-indigo-600"
         />
+        @if (loginSuccesful === false) {
+        <p>El usuario o la contraseña son incorrectos</p>
+        }
         <a
           href="#"
           class="text-sm font-thin text-gray-800 hover:underline mt-2 inline-block hover:text-indigo-600"
-        >Forget Password</a>
+          >Forget Password</a
+        >
       </div>
       <button
         type="submit"
@@ -36,4 +42,3 @@
     </form>
   </div>
 </div>
-

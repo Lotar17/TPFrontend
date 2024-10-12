@@ -3,16 +3,20 @@ import { Input } from '@angular/core';
 import { Producto } from '../../models/producto.entity';
 import { ProductosService } from '../api/producto.service';
 import { OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ApiResponse } from '../../models/ApiResponse';
 import { CommonModule } from '@angular/common';
+import { AddCompraComponent } from '../add-compra/add-compra.component';
+import { RouterLink } from '@angular/router';
+
+
 
 
 @Component({
   selector: 'app-producto-detalle',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, AddCompraComponent,RouterLink,RouterOutlet],
   templateUrl: './producto-detalle.component.html',
   styleUrls: ['./producto-detalle.component.css']
 })
@@ -46,4 +50,7 @@ export class ProductoDetalleComponent implements OnInit {
       }
     );
   }
+
+
+ 
 }
