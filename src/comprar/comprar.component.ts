@@ -22,7 +22,6 @@ export class ComprarComponent {
     direccion_entrega: new FormControl(),
     cantidad_producto: new FormControl(),
     fecha_hora_compra: new FormControl(),
-    descuento: new FormControl(),
     nombre_persona: new FormControl(), // Campo para ingresar el nombre de la persona
     nombre_empleado: new FormControl(), // Campo para ingresar el nombre del empleado
   });
@@ -39,7 +38,7 @@ export class ComprarComponent {
     private historicoprecioService: HistoricoPrecioService,
   ) {
     // Obtener el ID del producto desde la ruta activa
-    this.productoId = this.route.snapshot.paramMap.get('id') || '';// el problema esta acanpm
+    this.productoId = this.route.snapshot.paramMap.get('id') || '';
   }
 
 
@@ -89,7 +88,6 @@ export class ComprarComponent {
         direccion_entrega: this.publicaForm.value.direccion_entrega!,
         cantidad_producto: this.publicaForm.value.cantidad_producto!,
         fecha_hora_compra: this.publicaForm.value.fecha_hora_compra!,
-        descuento: this.publicaForm.value.descuento!,
         empleado: empleadoId, // ID del empleado obtenido por nombre
         persona: personaId, // ID de la persona obtenido por nombre
         producto: this.productoId // ID del producto desde la URL
