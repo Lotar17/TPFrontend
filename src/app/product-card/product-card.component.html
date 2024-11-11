@@ -4,17 +4,15 @@
     </picture>
     <div class="p-5">
         <a>
-            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white line-clamp-1">
-                {{producto.nombre}}
-            </h5>
+            
         </a>
         <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 line-clamp-3">
             descripcion:{{producto.descripcion}}
         </p>
         <p class="font-semibold text-lg text-gray-800 dark:text-gray-300">
-            Precio: {{producto.precio}}
+            Precio: {{precio}}
         </p>
-        <p>Stock:{{producto.stock}}</p>
+        
         <nav>
             <a class="button" [routerLink]="['/productos', producto.id]">Ver más</a> |
           </nav>

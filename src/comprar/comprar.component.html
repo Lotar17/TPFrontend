@@ -35,7 +35,7 @@
     <button type="submit" class="btn-submit">Finalizar Compra</button>
 
     <div *ngIf="precioActual !== undefined; else noPrecio">
-      Precio actual: {{ precioActual | currency }}
+      Precio actual: {{ precioTotal | currency }}
     </div>
     <ng-template #noPrecio>
       <p>No se encontró el precio actual para este producto.</p>

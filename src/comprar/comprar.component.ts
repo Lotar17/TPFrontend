@@ -27,8 +27,9 @@ export class ComprarComponent {
   });
   errorMessage: string = '';
   productoId: string; // ID del producto desde la URL
-  precioActual: number | undefined;
-
+  precioActual!:number; //number | undefined;
+  descuento!: number;
+  precioTotal! :number
 
   constructor(
     private route: ActivatedRoute, // Para capturar el ID del producto
@@ -53,6 +54,15 @@ export class ComprarComponent {
     return true;
   }
   
+  calcularTotal(precio: number, form: FormGroup): number {
+
+    if (form && form.value.cantidad_producto >= 15) {
+
+      return precio - precio * 0.2;
+    }
+    
+    return precio;
+  }
 
 
   async onSubmit() {
@@ -74,6 +84,7 @@ export class ComprarComponent {
         (valor) => {
           if (valor !== undefined) {
             this.precioActual = valor*this.publicaForm.value.cantidad_producto;
+            this.precioTotal = this.calcularTotal(this.precioActual, this.publicaForm);
           } else {
             console.log('No se encontró el precio histórico');
           }
@@ -83,6 +94,7 @@ export class ComprarComponent {
         }
       );
       
+    
       
       const compra: Compra = {
         direccion_entrega: this.publicaForm.value.direccion_entrega!,
