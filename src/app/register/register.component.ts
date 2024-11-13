@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { DashboardComponent } from '../dashboard/dashboard.component.js';
 import { Router, RouterOutlet } from '@angular/router';
 import { FormGroup,FormControl, ReactiveFormsModule } from '@angular/forms';
 import { RegisterService } from '../api/register.service.js';
