@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Input } from '@angular/core';
 import { Producto } from '../../models/producto.entity';
 import { RouterLink } from '@angular/router';
+import { HistoricoPrecioService } from '../api/calculaprecio.service';
 @Component({
   selector: 'app-product-card',
   standalone: true,
@@ -12,7 +13,30 @@ import { RouterLink } from '@angular/router';
 export class ProductCardComponent {
 
 
-  @Input() producto!: Producto; //
+  @Input() producto!: Producto;
+  precio!: number; 
 
+  constructor(private historicoprecioService: HistoricoPrecioService) {}
 
+  ngOnInit(): void {
+    if (this.producto.id) {
+      this.obtenerPrecio(this.producto.id); 
+    }
+  }
+
+  obtenerPrecio(id: string): void {
+    this.historicoprecioService.getOne(id).subscribe(
+      (valor) => {
+        if (valor !== undefined) {
+          if(valor !== 0){this.precio = valor;}
+          else{this.precio === 0} // Asigna el precio obtenido
+        } else {
+          console.log('No se encontró el precio histórico');
+        }
+      },
+      (error) => {
+        console.error('Error al obtener el precio:', error);
+      }
+    );
+  }
 }

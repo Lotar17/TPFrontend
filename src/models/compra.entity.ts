@@ -6,7 +6,7 @@ export interface Compra {
     empleado?:string           // ID del cliente (por ahora ingresado manualmente)
     cantidad_producto?: number;   // Cantidad del producto que se está comprando
     fecha_hora_compra?: string;   // Fecha de la compra
-    descuento?: number;   // este atributo va a ser calculado
+  
        // Descuento aplicado
   }
   
