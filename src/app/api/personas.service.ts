@@ -96,4 +96,7 @@ export class PersonasService<T> {
         console.log('HIZO EL PUT y actualizó la colección');
       });
   }
+
+  
+
 }

@@ -1,11 +1,26 @@
-<div class="search-bar">
+<div class="search-bar flex items-center space-x-4">
   <input 
     type="text" 
     [(ngModel)]="searchTerm" 
     placeholder="Buscar productos..."
-    class="search-input"
+    class="search-input p-2 border border-gray-300 rounded"
   />
-  <button (click)="onSearch()" class="search-button">
+  <button (click)="onSearch()" class="search-button bg-blue-500 text-white p-2 rounded">
     Buscar
   </button>
+  
+  <!-- Botón para restaurar todos los productos -->
+  <button (click)="onRestaurar()" class="restore-button bg-blue-500 text-white p-2 rounded">
+    Restaurar
+  </button>
 </div>
+
+<div *ngIf="productos && productos.length > 0">
+  <ul>
+    <li *ngFor="let producto of productos">
+      {{ producto.descripcion }}
+    </li>
+  </ul>
+</div>
+
+

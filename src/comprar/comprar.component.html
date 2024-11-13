@@ -1,0 +1,45 @@
+<div class="compra-container">
+  <h2>Realizar Compra</h2>
+
+  <form [formGroup]="publicaForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="nombre_persona">Nombre de la Persona</label>
+      <input id="nombre_persona" formControlName="nombre_persona" type="text" class="form-control" />
+    </div>
+
+    <div class="form-group">
+      <label for="nombre_empleado">Email del empleado</label>
+      <input id="nombre_empleado" formControlName="nombre_empleado" type="text" class="form-control" />
+    </div>
+
+    <div class="form-group">
+      <label for="direccion_entrega">Dirección de Entrega</label>
+      <input id="direccion_entrega" formControlName="direccion_entrega" type="text" class="form-control" />
+    </div>
+
+    
+    <div class="form-group">
+      <label for="cantidad_producto">Cantidad de Producto</label>
+      <input id="cantidad_producto" formControlName="cantidad_producto" type="number" class="form-control" />
+      <!-- Mensaje de error -->
+      <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+    </div>
+
+    <div class="form-group">
+      <label for="fecha_hora_compra">Fecha y Hora de Compra</label>
+      <input id="fecha_hora_compra" formControlName="fecha_hora_compra" type="datetime-local" class="form-control" />
+    </div>
+
+  
+
+    <button type="submit" class="btn-submit">Finalizar Compra</button>
+
+    <div *ngIf="precioActual !== undefined; else noPrecio">
+      Precio actual: {{ precioTotal | currency }}
+    </div>
+    <ng-template #noPrecio>
+      <p>No se encontró el precio actual para este producto.</p>
+    </ng-template>
+    
+  </form>
+</div>
