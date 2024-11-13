@@ -1,0 +1,121 @@
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+/>
+<app-persona-add (click)="OpenAddDialog()"></app-persona-add>
+<ul role="list" class="divide-y divide-gray-100 p-3">
+  @for (categoria of categorias$ |async; track categoria.id) {
+
+  <li class="flex justify-between gap-x-6 py-5">
+    <div class="flex min-w-0 gap-x-4">
+      <span class="material-symbols-outlined pt-4"> category </span>
+      <div class="min-w-0 flex-auto">
+        <p class="pt-3 text-sm font-semibold leading-6 text-gray-900">
+          {{ categoria.descripcion }}
+        </p>
+      </div>
+    </div>
+    <div class="hidden shrink-0 sm:flex sm:flex-row sm:items-center gap-5">
+      <div class="flex gap-2">
+        <button (click)="OpenAddDialog(categoria)">
+          <span
+            class="material-symbols-outlined rounded-md text-gray-200 bg-green-700 p-1"
+          >
+            edit
+          </span>
+        </button>
+        <button (click)="OpenDialog(categoria)">
+          <span
+            class="material-symbols-outlined rounded-md text-gray-200 bg-red-800 p-1"
+          >
+            delete
+          </span>
+        </button>
+      </div>
+    </div>
+  </li>
+
+  }@empty {
+  <p class="p-2 text-center align-middle">
+    No hay categorias cargadas en el sistema
+  </p>
+  }
+</ul>
+
+<dui-dialog
+  [open]="openDialog"
+  [closeOnBackground]="false"
+  (onClose)="this.openDialog = !this.openDialog"
+>
+  <dui-dialog-header>
+    Está a punto de borrar a una categoria de la base de datos
+  </dui-dialog-header>
+  <dui-dialog-body>
+    ¿Está seguro que desea borrar a {{ categoriaToDelete?.descripcion }}
+  </dui-dialog-body>
+  <dui-dialog-footer>
+    <dui-button
+      class="mr-2"
+      size="md"
+      variant="text"
+      color="gray"
+      [rounded]="false"
+      (click)="this.openDialog = !this.openDialog"
+      >CANCELAR</dui-button
+    >
+    <dui-button size="md" color="red" (click)="delete(categoriaToDelete!)"
+      >BORRAR</dui-button
+    >
+  </dui-dialog-footer>
+</dui-dialog>
+
+<dui-dialog
+  [open]="openAddDialog"
+  [closeOnBackground]="false"
+  (onClose)="this.openAddDialog = !this.openAddDialog"
+>
+  <dui-dialog-header
+    >@if (isUpdating) {Editar Categoria}@else {Añadir categoria}
+  </dui-dialog-header>
+  <dui-dialog-body [divider]="false">
+    <form [formGroup]="addForm" id="addForm" (submit)="submitForm()">
+      <div class="space-y-12">
+        <div class="pb-3 border-b border-gray-900/10">
+          <div class="mt-3 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+            <div class="sm:col-span-3">
+              <label
+                for="nombre"
+                class="block text-sm font-medium leading-6 text-gray-900"
+                >Descripcion</label
+              >
+              <div class="mt-2">
+                <input
+                  type="text"
+                  name="descripcion"
+                  id="descripcion"
+                  autocomplete="given-name"
+                  formControlName="descripcion"
+                  class="block required:border-red-500 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flex pt-6 pb-1 gap-2 justify-end">
+        <dui-button
+          class="mr-2"
+          size="md"
+          variant="text"
+          color="red"
+          [rounded]="false"
+          (click)="this.openAddDialog = !this.openAddDialog"
+          >CANCELAR</dui-button
+        >
+        <dui-button size="md" color="green" type="submit" form="addForm"
+          >@if (isUpdating) {EDITAR}@else {AGREGAR}</dui-button
+        >
+      </div>
+    </form>
+  </dui-dialog-body>
+</dui-dialog>

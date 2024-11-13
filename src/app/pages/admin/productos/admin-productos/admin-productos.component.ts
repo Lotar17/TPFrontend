@@ -7,6 +7,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { PersonaAddComponent } from '../../personas/persona-add/persona-add.component.js';
 import { FormGroup, FormControl } from '@angular/forms';
 import { Persona } from '../../../../models/persona.entity.js';
+import { Categoria } from '../../../../models/categoria.entity.js';
+import { CategoriaService } from '../../../../api/categoria.service.js';
 
 @Component({
   selector: 'app-admin-productos',
@@ -23,14 +25,19 @@ import { Persona } from '../../../../models/persona.entity.js';
 })
 export class AdminProductosComponent {
   productos$ = this.crudService.$;
+  categorias$ = this.categoriaService.$;
   openDialog = false;
   openAddDialog = false;
   isUpdating = false;
   idEdited: string | undefined = undefined;
   productoToDelete: Producto | undefined;
 
-  constructor(private crudService: CRUDService<Producto>) {
-    crudService.getAll('productos');
+  constructor(
+    private crudService: CRUDService<Producto>,
+    private categoriaService: CategoriaService
+  ) {
+    this.crudService.getAll('productos');
+    this.categoriaService.getAll('categorias');
   }
 
   addForm = new FormGroup({
@@ -38,6 +45,7 @@ export class AdminProductosComponent {
     stock: new FormControl(0, { nonNullable: true }),
     categoriaId: new FormControl('', { nonNullable: true }),
     personaId: new FormControl('', { nonNullable: true }),
+    precio: new FormControl(0, { nonNullable: true }),
   });
 
   OpenDialog(producto: Producto) {
@@ -53,9 +61,12 @@ export class AdminProductosComponent {
       this.isUpdating = true;
       this.idEdited = producto.id;
       this.addForm.controls.descripcion.setValue(producto.descripcion);
-      this.addForm.controls.stock.setValue(producto.stock);
-      this.addForm.controls.categoriaId.setValue(producto.categoria);
-      this.addForm.controls.personaId.setValue(producto.persona?.id!);
+      this.addForm.controls.stock.setValue(producto.stock ?? 0);
+      this.addForm.controls.personaId.setValue(producto.persona?.id ?? '');
+      this.addForm.controls.categoriaId.setValue(producto.categoria?.id ?? '');
+      this.addForm.controls.precio.setValue(
+        producto.hist_precios?.at(producto.hist_precios!.length - 1)?.valor!
+      );
     }
     this.openAddDialog = true;
   }
@@ -66,19 +77,17 @@ export class AdminProductosComponent {
   }
 
   submitForm() {
-    const persona: Persona = {
-      id: this.addForm.value.personaId ?? '',
-      nombre: '',
-      apellido: '',
-      mail: '',
-      telefono: '',
+    const categoria: Categoria = {
+      id: this.addForm.value.categoriaId ?? '',
+      descripcion: '',
     };
     const producto: Producto = {
       id: this.idEdited ?? '',
       descripcion: this.addForm.value.descripcion ?? '',
       stock: this.addForm.value.stock ?? 0,
-      categoria: this.addForm.value.categoriaId ?? '',
-      persona: persona,
+      categoriaId: this.addForm.value.categoriaId ?? '',
+      personaId: this.addForm.value.personaId ?? '',
+      precio: this.addForm.value.precio ?? 0,
     };
     if (this.isUpdating === false) {
       this.crudService.add('productos', producto);

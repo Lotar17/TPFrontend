@@ -8,8 +8,11 @@ import { ListaComponent } from './lista/lista.component.js';
 import { AdminBodyComponent } from './pages/admin/admin-body/admin-body.component.js';
 import { AdminPersonasComponent } from './pages/admin/personas/admin-personas/admin-personas.component.js';
 import { AdminComponent } from './pages/admin/admin.component.js';
+import { AdminProductosComponent } from './pages/admin/productos/admin-productos/admin-productos.component.js';
 import { RegisterComponent } from './register/register.component.js';
 import { CargoProductosComponent } from './cargo-productos/cargo-productos.component.js';
+import { AdminCategoriasComponent } from './pages/admin/categorias/admin-categorias/admin-categorias.component.js';
+import { AdminFormasDePagoComponent } from './pages/admin/formas-de-pago/admin-formas-de-pago/admin-formas-de-pago.component.js';
 import { ComprarComponent } from '../comprar/comprar.component.js';
 
 
@@ -29,6 +32,19 @@ export const routes: Routes = [
         path:"publicaprod",component:CargoProductosComponent
     },
 
+  { path: 'dashboard', component: DashboardComponent },
+  {
+    path: '',
+    component: HomeComponent,
+  },
+  {
+    path: 'productos',
+    component: ProductosComponent,
+  },
+  {
+    path: 'publicaprod',
+    component: CargoProductosComponent,
+  },
 
 {
     path:"productos/:id",component:ProductoDetalleComponent
@@ -40,21 +56,27 @@ export const routes: Routes = [
         
 },
 
-{
-    path:"lista",
-    component:ListaComponent
-},
-{
+  {
+    path: 'lista',
+    component: ListaComponent,
+  },
+  {
     path: 'admin',
     children: [
-        {
-            path: '',
-            component: AdminBodyComponent,
-        },
-        {
-            path: 'personas',
-            component: AdminPersonasComponent,
-        },
+      {
+        path: '',
+        component: AdminBodyComponent,
+      },
+      {
+        path: 'personas',
+        component: AdminPersonasComponent,
+      },
+      {
+        path: 'productos',
+        component: AdminProductosComponent,
+      },
+      { path: 'categorias', component: AdminCategoriasComponent },
+      { path: 'formas-de-pago', component: AdminFormasDePagoComponent },
     ],
     component: AdminComponent,
 },

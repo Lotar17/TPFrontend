@@ -14,7 +14,7 @@
           {{ producto.descripcion }}
         </p>
         <p class="mt-1 truncate text-xs leading-5 text-gray-500">
-          {{ producto.categoria }}
+          {{ producto.categoria?.descripcion }}
         </p>
         <p class="mt-1 truncate text-xs leading-5 text-gray-500">
           Stock: {{ producto.stock }}
@@ -26,7 +26,14 @@
         <p class="text-sm leading-6 text-gray-900">
           {{ producto.persona?.mail }}
         </p>
-        <p class="mt-1 text-xs leading-5 text-gray-500">Compras:</p>
+        <p class="text-sm leading-6 text-gray-900">
+          ${{
+            producto.hist_precios?.at(producto.hist_precios!.length - 1)?.valor
+          }}
+        </p>
+        <p class="mt-1 text-xs leading-5 text-gray-500">
+          Compras: {{ producto.compras ? producto.compras.length : 0 }}
+        </p>
       </div>
       <div class="flex gap-2">
         <button (click)="OpenAddDialog(producto)">
@@ -107,12 +114,13 @@
                   id="descripcion"
                   autocomplete="given-name"
                   formControlName="descripcion"
+                  placeholder="Pantalon Abrigado de Jean"
                   class="block required:border-red-500 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
 
-            <div class="sm:col-span-3">
+            <div class="sm:col-span-1">
               <label
                 for="stock"
                 class="block text-sm font-medium leading-6 text-gray-900"
@@ -133,26 +141,28 @@
 
             <div class="sm:col-span-3">
               <label
-                for="categoria"
+                for="categoriaId"
                 class="block text-sm font-medium leading-6 text-gray-900"
                 >Categoria</label
               >
               <div class="mt-2">
                 <select
-                  id="categoria"
-                  name="categoria"
-                  autocomplete="categoria"
+                  id="categoriaId"
+                  name="categoriaId"
+                  autocomplete="categoriaId"
                   formControlName="categoriaId"
                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                 >
-                  <option>Usuario</option>
-                  <option>Administrador</option>
-                  <option>Empleado</option>
+                  @for (categoria of categorias$ | async; track categoria.id) {
+                  <option value="{{ categoria.id }}">
+                    {{ categoria.descripcion }}
+                  </option>
+                  }
                 </select>
               </div>
             </div>
 
-            <div class="col-span-full">
+            <div class="sm:col-span-3">
               <label
                 for="personaid"
                 class="block text-sm font-medium leading-6 text-gray-900"
@@ -164,8 +174,32 @@
                   name="personaid"
                   id="personaid"
                   autocomplete="personaid"
-                  formControlName="personaid"
+                  formControlName="personaId"
+                  required
                   class="block required:border-red-500 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+
+            <div class="sm:col-span-2">
+              <label
+                for="precio"
+                class="block text-sm font-medium leading-6 text-gray-900"
+                >Precio</label
+              >
+              <div class="relative mt-2 rounded-md shadow-sm">
+                <div
+                  class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+                >
+                  <span class="text-gray-500 sm:text-sm">$</span>
+                </div>
+                <input
+                  type="number"
+                  name="precio"
+                  id="precio"
+                  class="block required:border-red-500 w-full rounded-md border-0 py-1.5 pl-7 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  placeholder="0.00"
+                  formControlName="precio"
                 />
               </div>
             </div>
