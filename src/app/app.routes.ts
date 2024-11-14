@@ -32,7 +32,7 @@ export const routes: Routes = [
         path:"publicaprod",component:CargoProductosComponent
     },
 
-  { path: 'dashboard', component: DashboardComponent },
+
   {
     path: '',
     component: HomeComponent,

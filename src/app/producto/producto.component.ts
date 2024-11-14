@@ -4,11 +4,13 @@ import { CRUDService } from '../api/crud.service';
 import { Producto } from '../../models/producto.entity';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
 import { ProductCardComponent } from '../product-card/product-card.component';
+import { CargoProductosComponent } from '../cargo-productos/cargo-productos.component.js';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-productos',
   standalone: true,
-  imports: [CommonModule, SearchBarComponent, ProductCardComponent],
+  imports: [CommonModule, SearchBarComponent, ProductCardComponent,CargoProductosComponent,RouterLink],
   templateUrl: './producto.component.html',
   styleUrls: ['./producto.component.css']
 })
