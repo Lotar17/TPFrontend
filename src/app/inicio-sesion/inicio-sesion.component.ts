@@ -32,7 +32,10 @@ export class InicioSesionComponent {
         if (response.result) {
           console.log(response.message);
           this.authService.setUserId(response.usuarioId);
-          this.router.navigateByUrl('/productos'); //se redirije a DASHBOARD
+          if(response.userRol === "Administrador"){
+            this.router.navigateByUrl('/admin');
+          }else{
+          this.router.navigateByUrl('/productos');} //se redirije a DASHBOARD
         } else {
           this.loginSuccesful = false;
           // console.error(response.message);
