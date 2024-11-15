@@ -4,7 +4,7 @@ import { HomeBodyComponent } from './home-body/home-body.component.js';
 import { HomeComponent } from './home/home.component.js';
 import { ProductosComponent } from './producto/producto.component.js';
 import { ProductoDetalleComponent } from './producto-detalle/producto-detalle.component.js';
-import { ListaComponent } from './lista/lista.component.js';
+
 import { AdminBodyComponent } from './pages/admin/admin-body/admin-body.component.js';
 import { AdminPersonasComponent } from './pages/admin/personas/admin-personas/admin-personas.component.js';
 import { AdminComponent } from './pages/admin/admin.component.js';
@@ -56,10 +56,7 @@ export const routes: Routes = [
         
 },
 
-  {
-    path: 'lista',
-    component: ListaComponent,
-  },
+  
   {
     path: 'admin',
     children: [

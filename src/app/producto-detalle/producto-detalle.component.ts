@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { AddCompraComponent } from '../add-compra/add-compra.component';
 import { RouterLink } from '@angular/router';
 import { HistoricoPrecioService } from '../api/calculaprecio.service';
+import { CRUDService } from '../api/crud.service';
 
 
 
@@ -23,13 +24,15 @@ import { HistoricoPrecioService } from '../api/calculaprecio.service';
 export class ProductoDetalleComponent implements OnInit {
   producto!: Producto; // Variable para almacenar el producto
   error!: string; 
-  precio!: number// Variable para almacenar mensajes de error
+  precio!: number;// Variable para almacenar mensajes de error
+  nacho!: string
 
 
   constructor(
     private route: ActivatedRoute, // Para obtener el id de la URL
     private productosService: ProductosService,
-    private historicoprecioService: HistoricoPrecioService // Servicio para obtener los productos
+    private historicoprecioService: HistoricoPrecioService,
+    private crudService: CRUDService<Producto>, // Servicio para obtener los productos
   ) {}
 
 
@@ -37,21 +40,24 @@ export class ProductoDetalleComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id'); // Obtiene el id de la URL
     if (id) {
       this.getOne(id);
-      this.calcularPrecio(id) // Convierte el id a número y llama al método para obtener el producto
+      this.calcularPrecio(id) 
+
+      
     }
   }
 // aca calcular el precio para el producto
 
-  getOne(id: string): void { // Cambia el tipo de id a string
+  getOne(id: string): void { 
     this.productosService.getOne(id).subscribe(
       (producto: Producto) => { // Espera un Producto
         this.producto = producto; // Asigna el producto recuperado
       },
-      (error: HttpErrorResponse) => {
+      (error) => {
         this.error = 'Error al cargar el producto'; 
         console.error('Error fetching product:', error);
       }
     );
+    console.log(this.nacho)
   }
   calcularPrecio(id: string): void {
     this.historicoprecioService.getOne(id).subscribe(
@@ -71,6 +77,7 @@ export class ProductoDetalleComponent implements OnInit {
         console.error('Error al obtener el precio:', error);
       }
     );
+    
   }
   
 

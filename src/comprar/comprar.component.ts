@@ -40,6 +40,7 @@ export class ComprarComponent {
   ) {
     // Obtener el ID del producto desde la ruta activa
     this.productoId = this.route.snapshot.paramMap.get('id') || '';
+    
   }
 
 
@@ -76,7 +77,7 @@ export class ComprarComponent {
     
     try {
 
-      const empleadoId = await firstValueFrom(this.empleadoService.getEmpleadoIdById(this.publicaForm.value.nombre_empleado!));
+      const empleadoId = await firstValueFrom(this.empleadoService.getEmpleadoIdByMail(this.publicaForm.value.nombre_empleado!));
       const personaId = await firstValueFrom(this.personaService.getPersonaIdById(this.publicaForm.value.nombre_persona!));
     
 
