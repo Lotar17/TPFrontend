@@ -9,6 +9,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs'; // Para convertir el Observable en Promise
 import { CommonModule } from '@angular/common';
 import { HistoricoPrecioService } from '../app/api/calculaprecio.service.js';
+import { Producto } from '../app/models/producto.entity.js';
+import { ProductosService } from '../app/api/producto.service.js';
 
 @Component({
   selector: 'app-comprar',
@@ -29,7 +31,10 @@ export class ComprarComponent {
   productoId: string; // ID del producto desde la URL
   precioActual!:number; //number | undefined;
   descuento!: number;
-  precioTotal! :number
+  precioTotal! :number;
+  errorStock: string = ''
+  product !: Producto;
+  stockMessage!: string
 
   constructor(
     private route: ActivatedRoute, // Para capturar el ID del producto
@@ -37,6 +42,7 @@ export class ComprarComponent {
     private empleadoService: EmpleadoService,
     private personaService: PersonaService,
     private historicoprecioService: HistoricoPrecioService,
+    private productoService : ProductosService
   ) {
     // Obtener el ID del producto desde la ruta activa
     this.productoId = this.route.snapshot.paramMap.get('id') || '';
@@ -66,35 +72,59 @@ export class ComprarComponent {
   }
 
 
+  validarStock(form: FormGroup, stockDisponible: number): boolean {
+    if (form.value.cantidad_producto! > stockDisponible) {
+      this.stockMessage = 'No se tiene el stock necesario';
+      return false;
+    }
+  
+  
+    this.stockMessage = '';
+    return true;
+  }
+
   async onSubmit() {
     if (!this.validarCantidadProducto(this.publicaForm)) {
       // Detener si la cantidad no es válida
       return;
     }
 
-
-    
-    
+   
     try {
+      
+      try {
+        const prod = await firstValueFrom(this.productoService.getOne(this.productoId));
+  
+        if (!prod || prod.stock === undefined) {
+          console.error('Producto no encontrado o sin stock');
+          this.errorMessage = 'Producto no disponible';
+          return;
+        }
+  
+        
+        if (!this.validarStock(this.publicaForm, prod.stock)) {
+          return;
+        }
+      } catch (error) {
+        console.error('Error al obtener el producto:', error);
+        this.errorMessage = 'Error al obtener el producto';
+        return;
+      }
 
       const empleadoId = await firstValueFrom(this.empleadoService.getEmpleadoIdByMail(this.publicaForm.value.nombre_empleado!));
       const personaId = await firstValueFrom(this.personaService.getPersonaIdById(this.publicaForm.value.nombre_persona!));
-    
+    try{
 
-      this.historicoprecioService.getOne(this.productoId).subscribe(
-        (valor) => {
-          if (valor !== undefined) {
-            this.precioActual = valor*this.publicaForm.value.cantidad_producto;
-            this.precioTotal = this.calcularTotal(this.precioActual, this.publicaForm);
-          } else {
-            console.log('No se encontró el precio histórico');
-          }
-        },
-        (error) => {
-          console.error('Error al obtener el precio:', error);
-        }
-      );
-      
+      const precioHistorico = await firstValueFrom(this.historicoprecioService.getOne(this.productoId));
+
+      if (precioHistorico !== undefined) {
+        this.precioActual = precioHistorico * this.publicaForm.value.cantidad_producto;
+        this.precioTotal = this.calcularTotal(this.precioActual, this.publicaForm);
+      } else {
+        console.log('No se encontró el precio histórico');
+      }} catch(error){
+        console.error('error a obtener el precio actual',error)
+      }
     
       
       const compra: Compra = {

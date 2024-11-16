@@ -3,10 +3,11 @@ import { Input } from '@angular/core';
 import { Producto } from '../../models/producto.entity';
 import { RouterLink } from '@angular/router';
 import { HistoricoPrecioService } from '../api/calculaprecio.service';
+import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink,CommonModule],
   templateUrl: './product-card.component.html',
   styleUrl: './product-card.component.css'
 })
@@ -26,7 +27,7 @@ export class ProductCardComponent {
 
   obtenerPrecio(id: string): void {
     this.historicoprecioService.getOne(id).subscribe(
-      (valor) => {
+      (valor:any) => {
         if (valor !== undefined) {
           if(valor !== 0){this.precio = valor;}
           else{this.precio === 0} // Asigna el precio obtenido

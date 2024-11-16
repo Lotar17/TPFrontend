@@ -61,7 +61,7 @@ export class ProductoDetalleComponent implements OnInit {
   }
   calcularPrecio(id: string): void {
     this.historicoprecioService.getOne(id).subscribe(
-      (valor) => {
+      (valor:any) => {
         if (valor !== undefined) {
           if(valor !== 0){
             this.precio=valor

@@ -40,6 +40,8 @@
     <ng-template #noPrecio>
       <p>No se encontró el precio actual para este producto.</p>
     </ng-template>
+
+    <div *ngIf="stockMessage" class="error-message">{{stockMessage}}</div>
     
   </form>
 </div>
