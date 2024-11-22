@@ -14,6 +14,7 @@ export class RegisterService {
         mail: string,
         password: string,
         telefono: string,
+        rol:string,
     }): Promise<Observable<any>> {
     return this.http.post(this.apiUrl, credentials);
 }
