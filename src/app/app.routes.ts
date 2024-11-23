@@ -14,7 +14,7 @@ import { CargoProductosComponent } from './cargo-productos/cargo-productos.compo
 import { AdminCategoriasComponent } from './pages/admin/categorias/admin-categorias/admin-categorias.component.js';
 import { AdminFormasDePagoComponent } from './pages/admin/formas-de-pago/admin-formas-de-pago/admin-formas-de-pago.component.js';
 import { ComprarComponent } from '../comprar/comprar.component.js';
-import { adminPowerGuard } from './guards/admin-power.guard.js';
+
 import { checkRolGuard } from './guards/check-rol.guard.js';
 
 export const routes: Routes = [
