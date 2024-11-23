@@ -15,6 +15,7 @@ import { AdminCategoriasComponent } from './pages/admin/categorias/admin-categor
 import { AdminFormasDePagoComponent } from './pages/admin/formas-de-pago/admin-formas-de-pago/admin-formas-de-pago.component.js';
 import { ComprarComponent } from '../comprar/comprar.component.js';
 import { adminPowerGuard } from './guards/admin-power.guard.js';
+import { checkRolGuard } from './guards/check-rol.guard.js';
 
 export const routes: Routes = [
   {
@@ -65,7 +66,7 @@ export const routes: Routes = [
   },
   {
     path: 'admin',
-    canActivate: [adminPowerGuard],
+    canActivateChild: [checkRolGuard],
     children: [
       {
         path: '',
