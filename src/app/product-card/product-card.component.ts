@@ -30,7 +30,7 @@ export class ProductCardComponent {
       (valor:any) => {
         if (valor !== undefined) {
           if(valor !== 0){this.precio = valor;}
-          else{this.precio === 0} // Asigna el precio obtenido
+          else{this.precio === 0} 
         } else {
           console.log('No se encontró el precio histórico');
         }

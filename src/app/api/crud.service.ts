@@ -67,7 +67,7 @@ export class CRUDService<T extends BaseModel> {
   }
   
 
-  update(tabla: string, t: T) {
+ update(tabla: string, t: T) {
     return this.http
       .put<ApiResponse<T>>(`${this.url}/${tabla}/${t.id}`, t)
       .subscribe((response) => {
@@ -77,5 +77,5 @@ export class CRUDService<T extends BaseModel> {
         );
         this.subject.next(listaActualizada);
       });
-  }
+  } 
 }

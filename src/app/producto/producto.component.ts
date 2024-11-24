@@ -14,14 +14,14 @@ import { RouterLink } from '@angular/router';
   templateUrl: './producto.component.html',
   styleUrls: ['./producto.component.css']
 })
-export class ProductosComponent implements OnInit {
+export class ProductosComponent {
   productos: Producto[] = [];
   searchTerm: string = '';
 
   constructor(private crudService: CRUDService<Producto>) {}
 
   ngOnInit(): void {
-    // Cargar todos los productos al principio
+    
     this.loadProductos('');
   }
 

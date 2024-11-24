@@ -22,22 +22,22 @@ import { CRUDService } from '../api/crud.service';
   styleUrls: ['./producto-detalle.component.css']
 })
 export class ProductoDetalleComponent implements OnInit {
-  producto!: Producto; // Variable para almacenar el producto
+  producto!: Producto;
   error!: string; 
-  precio!: number;// Variable para almacenar mensajes de error
+  precio!: number;
   nacho!: string
 
 
   constructor(
-    private route: ActivatedRoute, // Para obtener el id de la URL
+    private route: ActivatedRoute, 
     private productosService: ProductosService,
     private historicoprecioService: HistoricoPrecioService,
-    private crudService: CRUDService<Producto>, // Servicio para obtener los productos
+    private crudService: CRUDService<Producto>, 
   ) {}
 
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id'); // Obtiene el id de la URL
+    const id = this.route.snapshot.paramMap.get('id'); 
     if (id) {
       this.getOne(id);
       this.calcularPrecio(id) 

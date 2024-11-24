@@ -9,8 +9,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs'; // Para convertir el Observable en Promise
 import { CommonModule } from '@angular/common';
 import { HistoricoPrecioService } from '../app/api/calculaprecio.service.js';
-import { Producto } from '../app/models/producto.entity.js';
+import { Producto } from '../models/producto.entity.js';
 import { ProductosService } from '../app/api/producto.service.js';
+import { AuthService } from '../app/api/Auth.service.js';
 
 @Component({
   selector: 'app-comprar',
@@ -33,8 +34,11 @@ export class ComprarComponent {
   descuento!: number;
   precioTotal! :number;
   errorStock: string = ''
-  product !: Producto;
-  stockMessage!: string
+  prod !: Producto;
+  stockMessage!: string;
+  personaId!: string;
+  compra!:Compra;
+  precioHistorico!: number|undefined
 
   constructor(
     private route: ActivatedRoute, // Para capturar el ID del producto
@@ -42,10 +46,12 @@ export class ComprarComponent {
     private empleadoService: EmpleadoService,
     private personaService: PersonaService,
     private historicoprecioService: HistoricoPrecioService,
-    private productoService : ProductosService
+    private productoService : ProductosService,
+    private authService: AuthService
   ) {
     // Obtener el ID del producto desde la ruta activa
     this.productoId = this.route.snapshot.paramMap.get('id') || '';
+    this.personaId= this.authService.getUserId()
     
   }
 
@@ -93,16 +99,16 @@ export class ComprarComponent {
     try {
       
       try {
-        const prod = await firstValueFrom(this.productoService.getOne(this.productoId));
+       this.prod= await firstValueFrom(this.productoService.getOne(this.productoId));
   
-        if (!prod || prod.stock === undefined) {
+        if (!this.prod || this.prod.stock === undefined) {
           console.error('Producto no encontrado o sin stock');
           this.errorMessage = 'Producto no disponible';
           return;
         }
   
         
-        if (!this.validarStock(this.publicaForm, prod.stock)) {
+        if (!this.validarStock(this.publicaForm, this.prod.stock)) {
           return;
         }
       } catch (error) {
@@ -112,13 +118,13 @@ export class ComprarComponent {
       }
 
       const empleadoId = await firstValueFrom(this.empleadoService.getEmpleadoIdByMail(this.publicaForm.value.nombre_empleado!));
-      const personaId = await firstValueFrom(this.personaService.getPersonaIdById(this.publicaForm.value.nombre_persona!));
+     
     try{
 
-      const precioHistorico = await firstValueFrom(this.historicoprecioService.getOne(this.productoId));
+      this.precioHistorico= await firstValueFrom(this.historicoprecioService.getOne(this.productoId));
 
-      if (precioHistorico !== undefined) {
-        this.precioActual = precioHistorico * this.publicaForm.value.cantidad_producto;
+      if (this.precioHistorico !== undefined) {
+        this.precioActual = this.precioHistorico * this.publicaForm.value.cantidad_producto;
         this.precioTotal = this.calcularTotal(this.precioActual, this.publicaForm);
       } else {
         console.log('No se encontró el precio histórico');
@@ -127,19 +133,34 @@ export class ComprarComponent {
       }
     
       
-      const compra: Compra = {
+       this.compra = {
         direccion_entrega: this.publicaForm.value.direccion_entrega!,
         cantidad_producto: this.publicaForm.value.cantidad_producto!,
         fecha_hora_compra: this.publicaForm.value.fecha_hora_compra!,
-        empleado: empleadoId, // ID del empleado obtenido por nombre
-        persona: personaId, // ID de la persona obtenido por nombre
-        producto: this.productoId // ID del producto desde la URL
+        empleado: empleadoId, 
+        persona: this.personaId, 
+        producto: this.productoId 
       };
 
-      await this.crudService.add('compras', compra); // Guardar la compra en la base de datos
+      await this.crudService.add('compras', this.compra); 
       console.log('Compra realizada con éxito');
-    } catch (error) {
-      console.error('Error al realizar la compra:', error);
-    }
+      
+      const nuevoStock = this.prod.stock - this.publicaForm.value.cantidad_producto!;
+console.log(nuevoStock)
+console.log(this.prod)
+      const productoActualizado: Producto = {
+        ...this.prod,
+        stock: nuevoStock, 
+        precio: this.precioHistorico
+      };
+      
+     
+      await this.crudService.update('productos', productoActualizado);
+
+  } catch (error) {
+    console.error('Error al realizar la compra o actualizar el stock:', error);
+  }
+
+   
   }
 }
