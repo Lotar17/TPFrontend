@@ -15,22 +15,27 @@ import { AdminCategoriasComponent } from './pages/admin/categorias/admin-categor
 import { AdminFormasDePagoComponent } from './pages/admin/formas-de-pago/admin-formas-de-pago/admin-formas-de-pago.component.js';
 import { ComprarComponent } from '../comprar/comprar.component.js';
 
+import { checkRolGuard } from './guards/check-rol.guard.js';
 
 export const routes: Routes = [
-    {
-        path:"login",component:LoginComponent
-    },
-    {path: 'register',component:RegisterComponent},
+  {
+    path: 'login',
+    component: LoginComponent,
+  },
+  { path: 'register', component: RegisterComponent },
 
-    {
-        path:"", component:HomeComponent,
-    },
-    {
-        path:"productos", component:ProductosComponent,
-    },
-    {
-        path:"publicaprod",component:CargoProductosComponent
-    },
+  {
+    path: '',
+    component: HomeComponent,
+  },
+  {
+    path: 'productos',
+    component: ProductosComponent,
+  },
+  {
+    path: 'publicaprod',
+    component: CargoProductosComponent,
+  },
 
 
   {
@@ -46,19 +51,20 @@ export const routes: Routes = [
     component: CargoProductosComponent,
   },
 
-{
-    path:"productos/:id",component:ProductoDetalleComponent
-        
-},
+  {
+    path: 'productos/:id',
+    component: ProductoDetalleComponent,
+  },
 
-{
-    path:"productos/:id/comprar", component:ComprarComponent
-        
-},
+  {
+    path: 'productos/:id/comprar',
+    component: ComprarComponent,
+  },
 
   
   {
     path: 'admin',
+    canActivateChild: [checkRolGuard],
     children: [
       {
         path: '',
@@ -76,7 +82,5 @@ export const routes: Routes = [
       { path: 'formas-de-pago', component: AdminFormasDePagoComponent },
     ],
     component: AdminComponent,
-},
-
-
+  },
 ];

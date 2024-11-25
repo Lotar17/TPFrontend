@@ -12,6 +12,8 @@ export class LoginService {
     mail: string;
     password: string;
   }): Promise<Observable<any>> {
-    return await this.http.post(this.apiUrl, credentials);
+    return await this.http.post(this.apiUrl, credentials, {
+      withCredentials: true,
+    });
   }
 }
