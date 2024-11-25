@@ -35,7 +35,7 @@ export class InicioSesionComponent {
           if(response.userRol === "Administrador"){
             this.router.navigateByUrl('/admin');
           }else{
-          this.router.navigateByUrl('/productos');} //se redirije a DASHBOARD
+          this.router.navigateByUrl('/productos');} 
         } else {
           this.loginSuccesful = false;
           // console.error(response.message);

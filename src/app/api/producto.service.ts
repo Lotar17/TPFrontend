@@ -16,19 +16,18 @@ export class ProductosService {
   constructor(private http: HttpClient) {}
 
 
-  // Obtener todos los productos
+
   getAll(): void {
     const url = 'http://localhost:3000/api/productos';
     this.http.get<ApiResponse<Producto[]>>(url).subscribe((response) => {
       if (response.data) this.productosSubject.next(response.data);
     });
   }
-// Obtener producto por id
-// En producto.service.ts
-getOne(id: string): Observable<Producto> { // Cambia el tipo de id a string
+
+getOne(id: string): Observable<Producto> { 
   const url = `http://localhost:3000/api/productos/${id}`;
   return this.http.get<ApiResponse<Producto>>(url).pipe(
-    map((response: ApiResponse<Producto>) => response.data) // Asegúrate de que 'data' contenga el producto
+    map((response: ApiResponse<Producto>) => response.data) 
   );
 }
 
