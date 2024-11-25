@@ -28,7 +28,10 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.css"],
+            "styles": [
+              "src/styles.css",
+              "./node_modules/david-ui-angular/styles/_styles.scss"
+            ],
             "scripts": [],
             "server": "src/main.server.ts",
             "prerender": true,

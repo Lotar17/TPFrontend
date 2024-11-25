@@ -1,0 +1,80 @@
+<div class="flex items-center justify-center h-screen bg-gray-100">
+    <div class="max-w-xl py-6 px-8 h-auto mt-20 bg-white rounded shadow-xl">
+        <form [formGroup]="registerForm" (submit)="onSubmit()">
+        
+        <!-- Name -->
+            <div class="mb-6">
+                <label for="name" class="block text-gray-800 font-bold">Name:</label>
+                <input
+                    type="text"
+                    formControlName="name"
+                    id="name"
+                    placeholder="John"
+                    class="w-full border border-gray-300 py-2 pl-3 rounded mt-2 outline-none focus:ring-indigo-600"/>
+            </div>
+        
+        <!-- Surename -->
+            <div class="mb-6">
+                <label for="surname" class="block text-gray-800 font-bold">Surename:</label>
+                <input
+                    type="text"
+                    formControlName="surname"
+                    id="surname"
+                    placeholder="Doe"
+                    class="w-full border border-gray-300 py-2 pl-3 rounded mt-2 outline-none focus:ring-indigo-600"
+                />
+            </div>
+
+            <div class="mb-6">
+                <label for="rol" class="block text-gray-800 font-bold">Rol:</label>
+                <input
+                    type="text"
+                    formControlName="rol"
+                    id="rol"
+                    placeholder="user"
+                    class="w-full border border-gray-300 py-2 pl-3 rounded mt-2 outline-none focus:ring-indigo-600"
+                />
+            </div>
+
+        <!-- Email -->
+            <div class="mb-6">
+                <label for="mail" class="block text-gray-800 font-bold">mail:</label>
+                <input
+                    type="mail"
+                    formControlName="mail"
+                    id="mail"
+                    placeholder="johndoe@email.com"
+                    class="w-full border border-gray-300 py-2 pl-3 rounded mt-2 outline-none focus:ring-indigo-600"
+                />
+            </div>
+    
+            <!-- Phone -->
+            <div class="mb-6">
+                <label for="phone" class="block text-gray-800 font-bold">Phone:</label>
+                <input
+                    type="text"
+                    formControlName="phone"
+                    id="phone"
+                    placeholder="123-456-7890"
+                    class="w-full border border-gray-300 py-2 pl-3 rounded mt-2 outline-none focus:ring-indigo-600"
+                />
+            </div>
+    
+            <!-- Password -->
+            <div class="mb-6">
+                <label for="password" class="block text-gray-800 font-bold">Password:</label>
+                <input
+                    type="password"
+                    formControlName="password"
+                    id="password"
+                    placeholder="Password"
+                    class="w-full border border-gray-300 py-2 pl-3 rounded mt-2 outline-none focus:ring-indigo-600"
+                />
+            </div>
+            <!-- Submit Button -->
+            <button type="submit"class="cursor-pointer py-2 px-4 block mt-6 bg-indigo-500 text-white font-bold w-full text-center rounded">
+            Register
+            </button>
+        </form>
+    </div>
+</div>

@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { LoginService } from '../api/login.service.js';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { response} from 'express';
+import { response } from 'express';
 import { Router } from '@angular/router';
+import { AuthService } from '../api/Auth.service.js';
 
 @Component({
   selector: 'app-inicio-sesion',
@@ -12,25 +13,36 @@ import { Router } from '@angular/router';
   styleUrl: './inicio-sesion.component.css',
 })
 export class InicioSesionComponent {
+  loginSuccesful: boolean | undefined;
+
   loginForm = new FormGroup({
     mail: new FormControl(),
     password: new FormControl(),
   });
 
-  constructor(private loginService: LoginService,private router:Router) {}
+  constructor(private loginService: LoginService,private authService:AuthService, private router: Router) {}
 
   async onSubmit() {
     const credentials = {
       mail: this.loginForm.value.mail ?? '',
       password: this.loginForm.value.password ?? '',
     };
-    (await this.loginService.login(credentials)).subscribe((response) => {
-      if(response.result){
-        console.log(response.message)
-        this.router.navigateByUrl('/dashboard')//se redirije a DASHBOARD
-      }else{
-        console.error(response.message);
-      }
-    } )
+    try {
+      (await this.loginService.login(credentials)).subscribe((response) => {
+        if (response.result) {
+          console.log(response.message);
+          this.authService.setUserId(response.usuarioId);
+          if(response.userRol === "Administrador"){
+            this.router.navigateByUrl('/admin');
+          }else{
+          this.router.navigateByUrl('/productos');} //se redirije a DASHBOARD
+        } else {
+          this.loginSuccesful = false;
+          // console.error(response.message);
+        }
+      });
+    } catch (error) {
+      this.loginSuccesful = false;
+    }
   }
 }

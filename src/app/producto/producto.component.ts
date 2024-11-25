@@ -1,32 +1,44 @@
-import { Component } from '@angular/core';
-import { ProductosService } from '../api/producto.service';
-import { Producto } from '../../models/producto.entity';
-import { RouterLink } from '@angular/router';
-import { OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ProductCardComponent } from '../product-card/product-card.component';
+import { CRUDService } from '../api/crud.service';
+import { Producto } from '../../models/producto.entity';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
-
+import { ProductCardComponent } from '../product-card/product-card.component';
+import { CargoProductosComponent } from '../cargo-productos/cargo-productos.component.js';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-productos',
   standalone: true,
-  imports: [RouterLink, CommonModule, ProductCardComponent, SearchBarComponent],
+  imports: [CommonModule, SearchBarComponent, ProductCardComponent,CargoProductosComponent,RouterLink],
   templateUrl: './producto.component.html',
-  styleUrls: ['./producto.component.css'] // Corrección aquí
+  styleUrls: ['./producto.component.css']
 })
+export class ProductosComponent {
+  productos: Producto[] = [];
+  searchTerm: string = '';
 
-export class ProductosComponent implements OnInit {
-  productos: Producto[] = []; // Lista de productos
-
-
-  constructor(private productosService: ProductosService) {}
-
+  constructor(private crudService: CRUDService<Producto>) {}
 
   ngOnInit(): void {
-    this.productosService.getAll(); // Llama al servicio para obtener todos los productos
-    this.productosService.productos$.subscribe((data) => {
-      this.productos = data; // Actualiza la lista de productos
+    
+    this.loadProductos('');
+  }
+
+  loadProductos(searchTerm: string): void {
+    this.crudService.getByDescripcion('productos', searchTerm).subscribe((response: any) => {
+      if (response && Array.isArray(response.data)) {
+        this.productos = response.data;
+      } else {
+        this.productos = [];
+      }
     });
   }
+
+  updateSearchTerm(searchTerm: string) {
+    this.searchTerm = searchTerm;
+    this.loadProductos(searchTerm);
+  }
 }
+
+

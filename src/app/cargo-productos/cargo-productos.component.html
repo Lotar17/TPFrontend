@@ -1,0 +1,71 @@
+<div class="flex items-center justify-center h-screen bg-gray-100">
+  <div class="max-w-xl py-6 px-8 h-auto mt-20 bg-white rounded shadow-xl">
+    <form [formGroup]="publicaForm" (submit)="onSubmit()">
+      <!-- Descripción -->
+      <div class="mb-6">
+        <label for="descripcion" class="block text-gray-800 font-bold"
+          >Descripción:</label
+        >
+        <input
+          type="text"
+          formControlName="descripcion"
+          id="descripcion"
+          placeholder="Descripción del producto"
+          class="w-full border border-gray-300 py-2 pl-3 rounded mt-2 outline-none focus:ring-indigo-600"
+        />
+      </div>
+      <!-- Categoria -->
+      <div class="mb-6">
+        <label for="Categoria" class="block text-gray-800 font-bold"
+          >Categoria</label
+        >
+        <select
+          id="categoria"
+          name="categoria"
+          autocomplete="categoria"
+          formControlName="categoria"
+          class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+        >
+          @for (categoria of categorias$ | async; track categoria.id) {
+          <option value="{{ categoria.id }}">
+            {{ categoria.descripcion }}
+          </option>
+          }
+        </select>
+      </div>
+      <!-- Precio -->
+      <div class="mb-6">
+        <label for="precio" class="block text-gray-800 font-bold"
+          >Precio:</label
+        >
+        <input
+          type="number"
+          formControlName="precio"
+          id="precio"
+          placeholder="Precio del producto"
+          class="w-full border border-gray-300 py-2 pl-3 rounded mt-2 outline-none focus:ring-indigo-600"
+        />
+      </div>
+
+      <!-- Stock -->
+      <div class="mb-6">
+        <label for="stock" class="block text-gray-800 font-bold">Stock:</label>
+        <input
+          type="number"
+          formControlName="stock"
+          id="stock"
+          placeholder="Cantidad en stock"
+          class="w-full border border-gray-300 py-2 pl-3 rounded mt-2 outline-none focus:ring-indigo-600"
+        />
+      </div>
+
+      <!-- Botón de enviar -->
+      <button
+        type="submit"
+        class="cursor-pointer py-2 px-4 block mt-6 bg-indigo-500 text-white font-bold w-full text-center rounded"
+      >
+        Publicar Producto
+      </button>
+    </form>
+  </div>
+</div>
