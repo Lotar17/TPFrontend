@@ -12,7 +12,7 @@ export class EmpleadoService {
   constructor(private http: HttpClient) {}
 
   // Método para obtener un ID de empleado por ID
-  getEmpleadoIdById(email: string): Observable<string> {
+  getEmpleadoIdByMail(email: string): Observable<string> {
     return this.http.get<{ message: string; data: { id: string } }>(`${this.apiUrl}/${email}`).pipe(
       map(response => response.data.id) // Extrae el ID del empleado de la respuesta
     );

@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { AddCompraComponent } from '../add-compra/add-compra.component';
 import { RouterLink } from '@angular/router';
 import { HistoricoPrecioService } from '../api/calculaprecio.service';
+import { CRUDService } from '../api/crud.service';
 
 
 
@@ -21,41 +22,46 @@ import { HistoricoPrecioService } from '../api/calculaprecio.service';
   styleUrls: ['./producto-detalle.component.css']
 })
 export class ProductoDetalleComponent implements OnInit {
-  producto!: Producto; // Variable para almacenar el producto
+  producto!: Producto;
   error!: string; 
-  precio!: number// Variable para almacenar mensajes de error
+  precio!: number;
+  nacho!: string
 
 
   constructor(
-    private route: ActivatedRoute, // Para obtener el id de la URL
+    private route: ActivatedRoute, 
     private productosService: ProductosService,
-    private historicoprecioService: HistoricoPrecioService // Servicio para obtener los productos
+    private historicoprecioService: HistoricoPrecioService,
+    private crudService: CRUDService<Producto>, 
   ) {}
 
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id'); // Obtiene el id de la URL
+    const id = this.route.snapshot.paramMap.get('id'); 
     if (id) {
       this.getOne(id);
-      this.calcularPrecio(id) // Convierte el id a número y llama al método para obtener el producto
+      this.calcularPrecio(id) 
+
+      
     }
   }
 // aca calcular el precio para el producto
 
-  getOne(id: string): void { // Cambia el tipo de id a string
+  getOne(id: string): void { 
     this.productosService.getOne(id).subscribe(
       (producto: Producto) => { // Espera un Producto
         this.producto = producto; // Asigna el producto recuperado
       },
-      (error: HttpErrorResponse) => {
+      (error) => {
         this.error = 'Error al cargar el producto'; 
         console.error('Error fetching product:', error);
       }
     );
+    console.log(this.nacho)
   }
   calcularPrecio(id: string): void {
     this.historicoprecioService.getOne(id).subscribe(
-      (valor) => {
+      (valor:any) => {
         if (valor !== undefined) {
           if(valor !== 0){
             this.precio=valor
@@ -71,6 +77,7 @@ export class ProductoDetalleComponent implements OnInit {
         console.error('Error al obtener el precio:', error);
       }
     );
+    
   }
   
 

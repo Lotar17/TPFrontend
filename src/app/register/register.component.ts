@@ -18,6 +18,7 @@ registerForm = new FormGroup({
   mail: new FormControl(),
   password: new FormControl(),
   phone: new FormControl(),
+  rol: new FormControl(),
 });
 
 constructor(private registerService : RegisterService, private router:Router){}
@@ -28,6 +29,7 @@ async onSubmit(){
     password:this.registerForm.value.password ?? '',
     apellido:this.registerForm.value.surname ?? '',
     mail:this.registerForm.value.mail ?? '',
+    rol:this.registerForm.value.rol ?? ''
   };
   try{
     (await this.registerService.register(credentials)).subscribe((response)=>{

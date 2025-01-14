@@ -52,17 +52,22 @@ export class CRUDService<T extends BaseModel> {
   }
 
   add(tabla: string, t: T) {
-    return this.http
-      .post<ApiResponse<T>>(`${this.url}/${tabla}/`, t)
-      .subscribe((response) => {
+    return this.http.post<ApiResponse<T>>(`${this.url}/${tabla}/`, t).subscribe({
+      next: (response) => {
         t.id = response.data?.id;
         this.subject.getValue().push(t);
         const listaActualizada = this.subject.getValue();
         this.subject.next(listaActualizada);
-      });
+        console.log(`Producto creado con éxito`);
+      },
+      error: (err) => {
+        console.error('Error al crear el producto:', err.message);
+      },
+    });
   }
+  
 
-  update(tabla: string, t: T) {
+ update(tabla: string, t: T) {
     return this.http
       .put<ApiResponse<T>>(`${this.url}/${tabla}/${t.id}`, t)
       .subscribe((response) => {
@@ -72,5 +77,5 @@ export class CRUDService<T extends BaseModel> {
         );
         this.subject.next(listaActualizada);
       });
-  }
+  } 
 }
