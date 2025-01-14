@@ -2,25 +2,35 @@
   <div class="flex justify-between m-5">
     <img />
     <ul class="flex gap-3">
-      <li>
-        <a
-          class="hover:bg-sky-200 transition duration-300 rounded-xl p-2"
-          routerLink="/login"
-        >
-          Iniciar Sesion
-        </a>
-      </li>
-      <li>
-        <a
-          class="hover:bg-sky-200 transition duration-300 rounded-xl p-2"
-          routerLink="register"
-        >
-          Registrarse
-        </a>
-      </li>
-      <li>
-        <a routerLink="/admin">ADMIN</a>
-      </li>
+      <ng-container
+        *ngIf="sesionPersona$ | async as sesionPersona; else noSesion"
+      >
+        <li *ngIf="sesionPersona.rol === 'Administrador'">
+          <a routerLink="/admin">Panel de administrador</a>
+        </li>
+      </ng-container>
+      <ng-template #noSesion>
+        <li>
+          <a
+            class="hover:bg-sky-200 transition duration-300 rounded-xl p-2"
+            routerLink="/login"
+          >
+            Iniciar Sesion
+          </a>
+        </li>
+        <li>
+          <a
+            class="hover:bg-sky-200 transition duration-300 rounded-xl p-2"
+            routerLink="register"
+          >
+            Registrarse
+          </a>
+        </li>
+
+        <li>
+          <a routerLink="/productos">Tienda</a>
+        </li>
+      </ng-template>
     </ul>
   </div>
   <hr class="colo" />
