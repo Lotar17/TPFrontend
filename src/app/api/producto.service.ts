@@ -16,85 +16,22 @@ export class ProductosService {
   constructor(private http: HttpClient) {}
 
 
-  // Obtener todos los productos
+
   getAll(): void {
     const url = 'http://localhost:3000/api/productos';
     this.http.get<ApiResponse<Producto[]>>(url).subscribe((response) => {
       if (response.data) this.productosSubject.next(response.data);
     });
   }
-// Obtener producto por id
-// En producto.service.ts
-getOne(id: string): Observable<Producto> { // Cambia el tipo de id a string
+
+getOne(id: string): Observable<Producto> { 
   const url = `http://localhost:3000/api/productos/${id}`;
   return this.http.get<ApiResponse<Producto>>(url).pipe(
-    map((response: ApiResponse<Producto>) => response.data) // Asegúrate de que 'data' contenga el producto
+    map((response: ApiResponse<Producto>) => response.data) 
   );
 }
 
 
 
 
-  // Eliminar un producto
-  deleteOne(producto: Producto): Observable<ApiResponse<Producto>> {
-    const url = `http://localhost:3000/api/productos/${producto.id}`;
-    return this.http.delete<ApiResponse<Producto>>(url).pipe(
-      tap(() => {
-        const productosActualizados = this.productosSubject
-          .getValue()
-          .filter((productoBorrado) => productoBorrado.id !== producto.id);
-        this.productosSubject.next(productosActualizados);
-      })
-    );
-  }
-
-
-  // Añadir un nuevo producto
-  add(
-    nombre: string,
-    descripcion: string,
-    precio: number,
-    stock: number
-  ): void {
-    const producto: Producto = {
-      nombre: nombre,
-      descripcion: descripcion,
-      precio: precio,
-      stock: stock,
-    };
-    const url = 'http://localhost:3000/api/productos/';
-    this.http.post<ApiResponse<Producto>>(url, producto).subscribe((response) => {
-      producto.id = response.data?.id;
-      this.productosSubject.getValue().push(producto);
-      this.productosSubject.next(this.productosSubject.getValue());
-    });
-  }
-
-
-  // Actualizar un producto
-  update(
-    id: string,
-    nombre: string,
-    descripcion: string,
-    precio: number,
-    stock: number
-  ): void {
-    const producto: Producto = {
-      nombre: nombre,
-      descripcion: descripcion,
-      precio: precio,
-      stock: stock,
-     
-    };
-    const url = `http://localhost:3000/api/productos/${id}`;
-    this.http.put<ApiResponse<Producto>>(url, producto).subscribe((response) => {
-      const productosActuales = this.productosSubject.getValue();
-      const productosActualizados = productosActuales.map((productoEditado) =>
-        productoEditado.id === response.data?.id
-          ? response.data!
-          : productoEditado
-      );
-      this.productosSubject.next(productosActualizados);
-    });
-  }
 }
