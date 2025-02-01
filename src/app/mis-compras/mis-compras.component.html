@@ -1,0 +1,28 @@
+<table style="width: 100%; border-collapse: collapse;">
+  <thead>
+    <tr>
+      <th style="text-align: left;">Producto</th>
+      <th style="text-align: left;">Cantidad</th>
+      <th style="text-align: left;">Fecha</th>
+      <th style="text-align: left;">Dirección</th>
+      <th style="text-align: left;">Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let compra of MisCompras">
+      <td class="producto">
+        {{ getProductoDescripcion(compra.producto) }}
+      </td>
+      <td class="cantidad">{{ compra.cantidad_producto }}</td>
+      <td class="fecha">{{ compra.fecha_hora_compra }}</td>
+      <td class="direccion">{{ compra.direccion_entrega }}</td>
+     <td class = "total">{{compra.total_compra}}</td>
+     <td><button (click)="validarDevolucion(compra.fecha_hora_compra, compra.id)">Devolver</button></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="flex flex-col items-center my-6">
+  <a class="hover:bg-sky-200 transition duration-300 rounded-xl p-2"routerLink="/productos" >
+Volver atras
+  </a>

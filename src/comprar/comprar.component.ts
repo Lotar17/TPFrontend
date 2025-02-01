@@ -131,7 +131,7 @@ export class ComprarComponent {
       }} catch(error){
         console.error('error a obtener el precio actual',error)
       }
-    
+      console.log('Precio Total:', this.precioTotal); 
       
        this.compra = {
         direccion_entrega: this.publicaForm.value.direccion_entrega!,
@@ -139,7 +139,8 @@ export class ComprarComponent {
         fecha_hora_compra: this.publicaForm.value.fecha_hora_compra!,
         empleado: empleadoId, 
         persona: this.personaId, 
-        producto: this.productoId 
+        producto: this.productoId ,
+        total_compra:this.precioTotal
       };
 
       await this.crudService.add('compras', this.compra); 

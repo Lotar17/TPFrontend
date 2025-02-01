@@ -1,3 +1,4 @@
+import { PrecioHistorico } from "../app/models/precioHistorico.entity";
 export interface Producto {
     id?: string;
     nombre: string;

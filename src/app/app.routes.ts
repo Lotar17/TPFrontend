@@ -16,6 +16,8 @@ import { AdminFormasDePagoComponent } from './pages/admin/formas-de-pago/admin-f
 import { ComprarComponent } from '../comprar/comprar.component.js';
 
 import { checkRolGuard } from './guards/check-rol.guard.js';
+import { MisComprasComponent } from './mis-compras/mis-compras.component.js';
+import { DevolucionComponent } from './devolucion/devolucion.component.js';
 
 export const routes: Routes = [
   {
@@ -47,6 +49,10 @@ export const routes: Routes = [
     component: ProductosComponent,
   },
   {
+    path: 'compras',
+    component: MisComprasComponent,
+  },
+  {
     path: 'publicaprod',
     component: CargoProductosComponent,
   },
@@ -55,7 +61,10 @@ export const routes: Routes = [
     path: 'productos/:id',
     component: ProductoDetalleComponent,
   },
-
+  {
+    path: 'devolucion/:id',
+    component: DevolucionComponent,
+  },
   {
     path: 'productos/:id/comprar',
     component: ComprarComponent,

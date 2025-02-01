@@ -5,6 +5,12 @@
     Cargar Producto
   </a>
 
+  <div class="flex flex-col items-center my-6">
+    <a class="hover:bg-sky-200 transition duration-300 rounded-xl p-2"routerLink="/compras" >
+      ver mis compras
+    </a>
+  
+
   <div class="productos-list grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
     <app-product-card
       *ngFor="let producto of productos"

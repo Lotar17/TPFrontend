@@ -8,7 +8,8 @@ import { Compra } from '../../models/compra.entity';
   providedIn: 'root',
 })
 export class ComprasService {
-  private url: string = 'http://localhost:3000/api/compras'; // Cambia esto a tu endpoint base
+  private url: string = 'http://localhost:3000/api/compras'; 
+  private url2: string= 'http://localhost:3000/api/compras/persona'
 
   constructor(private http: HttpClient) {}
 
@@ -36,4 +37,8 @@ export class ComprasService {
   delete(id: string): Observable<ApiResponse<Compra>> {
     return this.http.delete<ApiResponse<Compra>>(`${this.url}/${id}`);
   }
+  getcomprasByUser(idUser: string): Observable<ApiResponse<Compra>> {
+    return this.http.get<ApiResponse<Compra>>(`${this.url2}/${idUser}`);
+  }
+
 }
