@@ -4,6 +4,9 @@ import { Producto } from '../../models/producto.entity';
 import { RouterLink } from '@angular/router';
 import { HistoricoPrecioService } from '../api/calculaprecio.service';
 import { CommonModule } from '@angular/common';
+import { Response } from 'express';
+import { CarritoService } from '../api/cart.service';
+import { AuthService } from '../api/Auth.service';
 @Component({
   selector: 'app-product-card',
   standalone: true,
@@ -17,7 +20,10 @@ export class ProductCardComponent {
   @Input() producto!: Producto;
   precio!: number; 
 
-  constructor(private historicoprecioService: HistoricoPrecioService) {}
+  constructor(private historicoprecioService: HistoricoPrecioService,
+    private carritoService:CarritoService,
+    private authService:AuthService
+  ) {}
 
   ngOnInit(): void {
     if (this.producto.id) {
@@ -40,4 +46,24 @@ export class ProductCardComponent {
       }
     );
   }
+
+  agregarAlCarrito(id_Producto: string| undefined) {
+    
+    const idPersona = this.authService.getUserId();
+    const idProducto= id_Producto || ""
+
+
+    this.carritoService.addItemToCarrito(idProducto, idPersona).subscribe({
+      next: (response: any) => {  
+        if (response) {
+          console.log(response.message);
+        }
+      },
+      error: (error) => {  
+        console.error('Error:', error);
+      }
+    });
+    
+  }
+
 }

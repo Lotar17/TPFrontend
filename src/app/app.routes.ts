@@ -13,9 +13,13 @@ import { RegisterComponent } from './register/register.component.js';
 import { CargoProductosComponent } from './cargo-productos/cargo-productos.component.js';
 import { AdminCategoriasComponent } from './pages/admin/categorias/admin-categorias/admin-categorias.component.js';
 import { AdminFormasDePagoComponent } from './pages/admin/formas-de-pago/admin-formas-de-pago/admin-formas-de-pago.component.js';
-import { ComprarComponent } from '../comprar/comprar.component.js';
-
+import { MisComprasComponent } from './miscompras/miscompras.component.js';
 import { checkRolGuard } from './guards/check-rol.guard.js';
+
+import { CartComponent } from './cart/cart.component.js';
+import { BuysComponent } from './buys/buys.component.js';
+import { DevolucionComponent } from './devolucion/devolucion.component.js';
+
 
 export const routes: Routes = [
   {
@@ -36,7 +40,10 @@ export const routes: Routes = [
     path: 'publicaprod',
     component: CargoProductosComponent,
   },
-
+  {
+    path: 'devolucion/:id',
+    component: DevolucionComponent,
+  },
 
   {
     path: '',
@@ -46,9 +53,14 @@ export const routes: Routes = [
     path: 'productos',
     component: ProductosComponent,
   },
+  
   {
     path: 'publicaprod',
     component: CargoProductosComponent,
+  },
+  {
+    path: 'compras',
+    component: MisComprasComponent,
   },
 
   {
@@ -56,11 +68,15 @@ export const routes: Routes = [
     component: ProductoDetalleComponent,
   },
 
+ 
   {
-    path: 'productos/:id/comprar',
-    component: ComprarComponent,
+    path: 'carrito/:id',
+    component: CartComponent,
   },
-
+  {
+    path: 'buys',
+    component: BuysComponent,
+  },
   
   {
     path: 'admin',
