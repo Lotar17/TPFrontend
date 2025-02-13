@@ -16,7 +16,8 @@
         <nav>
             <a class="button" [routerLink]="['/productos', producto.id]">Ver más</a> |
           </nav>
-         
+          <button (click)="agregarAlCarrito(producto.id)">Agregar al carrito</button>
+
           
     </div>
 </div>

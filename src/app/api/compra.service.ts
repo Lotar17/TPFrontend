@@ -3,21 +3,27 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../models/ApiResponse';
 import { Compra } from '../../models/compra.entity';
+import { item } from '../models/item.entity';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ComprasService {
   private url: string = 'http://localhost:3000/api/compras'; 
-  private url2: string= 'http://localhost:3000/api/compras/persona'
+  private url2: string= 'http://localhost:3000/api/compras/persona';
+  private item_compra: item[] = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,
+    
+  ) {}
 
-  // Método para agregar una nueva compra
-  add(compra: Compra): Observable<ApiResponse<Compra>> {
-    return this.http.post<ApiResponse<Compra>>(this.url, compra);
+  
+  addCompra(compra: Compra): Observable<any> {
+    return this.http.post(`${this.url}`,compra);
+
+
+    
   }
-
   // Método para obtener todas las compras
   getAll(): Observable<ApiResponse<Compra[]>> {
     return this.http.get<ApiResponse<Compra[]>>(this.url);
@@ -41,4 +47,11 @@ export class ComprasService {
     return this.http.get<ApiResponse<Compra>>(`${this.url2}/${idUser}`);
   }
 
+  setItem(items:item[]){
+this.item_compra=items
+
+  }
+  getItems(): item[] {
+    return this.item_compra;
+  }
 }

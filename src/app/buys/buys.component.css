@@ -1,0 +1,86 @@
+/* Contenedor principal */
+.cart-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fefefe;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Encabezados */
+  .cart-container h2 {
+    font-size: 1.5em;
+    color: #333;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+  }
+  
+  /* Estilos para cada item del carrito */
+  .item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 4px;
+  }
+  
+  /* Detalles del item */
+  .item-details {
+    flex: 1;
+  }
+  
+  /* Descripción del producto */
+  .product-description {
+    font-size: 1.2em;
+    font-weight: 500;
+    color: #555;
+    margin: 0;
+  }
+  
+  /* Cantidad del producto */
+  .product-quantity {
+    font-size: 0.9em;
+    color: #777;
+    margin-top: 5px;
+  }
+  
+  /* Estilos para el formulario de compra */
+  form {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+  }
+  
+  /* Estilos para inputs, selects y botones dentro del formulario */
+  form input,
+  form select,
+  form button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  /* Botón de compra */
+  form button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  form button:hover {
+    background-color: #0056b3;
+  }
+  

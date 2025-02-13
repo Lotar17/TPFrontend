@@ -1,0 +1,21 @@
+
+<div class="cart-container">
+    <h2>Tu Carrito</h2>
+    <div *ngFor="let item of items" class="item">
+      <div class="item-details">
+        <p class="product-quantity">Nombre: {{ item.producto }}</p>
+        <p class="product-quantity">Cantidad: {{ item.cantidad_producto }}</p>
+      </div>
+    </div>
+  
+    <h2>Realizar Compra</h2>
+  
+    <form [formGroup]="publicaForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+            <label for="direccion_entrega">Dirección de Entrega</label>
+            <input id="direccion_entrega" formControlName="direccion_entrega" type="text" class="form-control" />
+          </div>
+      <button type="submit">Comprar</button>
+    </form>
+  </div>
+  

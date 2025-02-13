@@ -7,18 +7,22 @@ import { Producto } from '../../models/producto.entity';
 import { ProductosService } from '../api/producto.service';
 import { RouterLink } from '@angular/router';
 import { Router } from '@angular/router';
+import { ProductoConCantidad } from '../../models/producto.entity';
+import { item_Compra } from '../../models/compra.entity';
+
 
 @Component({
   selector: 'app-mis-compras',
   standalone: true,
-  imports: [CommonModule,RouterLink],
-  templateUrl: './mis-compras.component.html',
-  styleUrl: './mis-compras.component.css'
+  imports: [CommonModule],
+  templateUrl: './miscompras.component.html',
+  styleUrl: './miscompras.component.css'
 })
 export class MisComprasComponent {
   MisCompras: Compra[] = [];
   personaId!: string;
-  mis_productos:Producto[]= [];
+  mis_productos:ProductoConCantidad[]= [];
+
 
 
   constructor(
@@ -34,44 +38,34 @@ export class MisComprasComponent {
 
   loadMisCompras(): void {
     this.personaId = this.authService.getUserId();
-
+  
     this.compraService.getcomprasByUser(this.personaId).subscribe((response: any) => {
       if (response && Array.isArray(response.data)) {
         this.MisCompras = response.data;
-
+  
         this.MisCompras.forEach((compra) => {
-          if (typeof compra.producto === 'string') {
-            this.productoService.getOne(compra.producto).subscribe({
-              next: (producto: Producto) => {
-                this.mis_productos.push(producto);
-              },
-              error: (err) => console.error('Error obteniendo producto:', err)
+          if (compra.items && Array.isArray(compra.items)) {
+            compra.items.forEach((item) => {
+              // Si item.producto es un string (ID del producto), buscar el producto completo
+              if (typeof item.producto === 'string') {
+                this.productoService.getOne(item.producto).subscribe({
+                  next: (producto: Producto) => {
+                    item.producto = producto; // Actualizamos el item.producto con el objeto completo
+                  },
+                  error: (err) => console.error('Error obteniendo producto:', err)
+                });
+              }
             });
           }
         });
-        
-      } else {
-        this.MisCompras = [];
-        this.mis_productos=[];
       }
     });
-
-   
-    
   }
   
-  getProductoDescripcion(producto: string | Producto | undefined): string {
-    if (typeof producto === 'string') {
-      
-      const prod = this.mis_productos.find(p => p.id === producto);
-      return prod ? prod.descripcion : 'Producto no encontrado';
-    } else if (producto && producto.descripcion) {
-      
-      return producto.descripcion;
-    } else {
-      return 'Producto no encontrado';
-    }
-  }
+  
+  
+  
+ 
   validarDevolucion(fechaCompra?:string, id_compra?:string) {
     
     const fechaActual = new Date();
@@ -93,8 +87,15 @@ export class MisComprasComponent {
       alert('No se puede devolver, la compra es de otro mes');
     }
   }
+
+  getProductoDescripcion(item: any): string {
+    if (item.producto && item.producto.descripcion) {
+      return item.producto.descripcion;
+    }
+    return ''; // Retorna un valor predeterminado si no tiene descripción
+  }
+
 }
   
-
 
 

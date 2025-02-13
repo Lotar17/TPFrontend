@@ -3,12 +3,19 @@ import { Persona } from "../app/models/persona.entity";
 export interface Compra {
     id?: string;                
     direccion_entrega?: string;  
-    producto?: string|Producto;           
+     items:item_Compra []        
     persona?: string;   
-    empleado?:string           
-    cantidad_producto?: number;   
+   
+    
     fecha_hora_compra?: string;   
     total_compra?:number
+       // Descuento aplicado
+  }
+  export interface item_Compra {
+   id?:string
+   producto?: string|Producto;                
+
+    cantidad_producto?:number
        // Descuento aplicado
   }
   

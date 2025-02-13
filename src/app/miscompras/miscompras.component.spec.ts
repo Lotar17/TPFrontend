@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MisComprasComponent } from './mis-compras.component';
+import { MiscomprasComponent } from './miscompras.component';
 
-describe('MisComprasComponent', () => {
-  let component: MisComprasComponent;
-  let fixture: ComponentFixture<MisComprasComponent>;
+describe('MiscomprasComponent', () => {
+  let component: MiscomprasComponent;
+  let fixture: ComponentFixture<MiscomprasComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MisComprasComponent]
+      imports: [MiscomprasComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(MisComprasComponent);
+    fixture = TestBed.createComponent(MiscomprasComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
