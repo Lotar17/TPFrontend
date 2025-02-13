@@ -11,7 +11,8 @@ import { AddCompraComponent } from '../add-compra/add-compra.component';
 import { RouterLink } from '@angular/router';
 import { HistoricoPrecioService } from '../api/calculaprecio.service';
 import { CRUDService } from '../api/crud.service';
-
+import { AuthService } from '../api/Auth.service';
+import { CarritoService } from '../api/cart.service';
 
 
 @Component({
@@ -33,6 +34,8 @@ export class ProductoDetalleComponent implements OnInit {
     private productosService: ProductosService,
     private historicoprecioService: HistoricoPrecioService,
     private crudService: CRUDService<Producto>, 
+    private authService: AuthService,
+    private carritoService:CarritoService
   ) {}
 
 
@@ -79,6 +82,25 @@ export class ProductoDetalleComponent implements OnInit {
     );
     
   }
+  agregarAlCarrito(id_Producto: string| undefined) {
+    
+    const idPersona = this.authService.getUserId();
+    const idProducto= id_Producto || ""
+
+
+    this.carritoService.addItemToCarrito(idProducto, idPersona).subscribe({
+      next: (response: any) => {  
+        if (response) {
+          console.log(response.message);
+        }
+      },
+      error: (error) => {  
+        console.error('Error:', error);
+      }
+    });
+    
+  }
+
   
 
   

@@ -6,7 +6,8 @@ import { SearchBarComponent } from '../search-bar/search-bar.component';
 import { ProductCardComponent } from '../product-card/product-card.component';
 import { CargoProductosComponent } from '../cargo-productos/cargo-productos.component.js';
 import { RouterLink } from '@angular/router';
-
+import { Router } from '@angular/router';
+import { AuthService } from '../api/Auth.service';
 @Component({
   selector: 'app-productos',
   standalone: true,
@@ -18,7 +19,10 @@ export class ProductosComponent {
   productos: Producto[] = [];
   searchTerm: string = '';
 
-  constructor(private crudService: CRUDService<Producto>) {}
+  constructor(private crudService: CRUDService<Producto>,
+     private router:Router,
+     private authService:AuthService
+  ) {}
 
   ngOnInit(): void {
     
@@ -38,6 +42,15 @@ export class ProductosComponent {
   updateSearchTerm(searchTerm: string) {
     this.searchTerm = searchTerm;
     this.loadProductos(searchTerm);
+  }
+  verCarrito() {
+    const idPersona = this.authService.getUserId();
+    if (!idPersona) {
+      console.error('Usuario no autenticado');
+      return;
+    }
+
+    this.router.navigate(['/carrito', idPersona]); 
   }
 }
 

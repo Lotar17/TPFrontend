@@ -1,1 +1,27 @@
-<p>cart works!</p>
+<div *ngIf="items.length > 0; else emptyCarrito">
+  <h2>Tu Carrito</h2>
+  <div *ngFor="let item of items" class="item">
+    <div class="item-details">
+      <p class="product-description">{{ item.productoDescripcion }}</p>
+      <p class="product-quantity">Cantidad: {{ item.cantidad_producto }}</p>
+      
+      
+    </div>
+    <div class="item-actions">
+      <button (click)="incrementarCantidad(item.producto_id,item)">+</button>
+      <button (click)="decrementarCantidad(item.producto_id, item)">-</button>
+      <button (click)="eliminarItem(item._id)">
+        🗑️
+      </button>
+   
+    </div>
+    
+  </div>
+  <button (click)="realizarCompra(items)">
+    Realizar Compra
+  </button>
+</div>
+
+<ng-template #emptyCarrito>
+  <p>No tienes productos en tu carrito.</p>
+</ng-template>
