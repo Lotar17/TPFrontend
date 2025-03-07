@@ -3,6 +3,8 @@ import { Router, RouterLink } from '@angular/router';
 import { AutenticacionService } from '../api/autenticacion.service.js';
 import { SesionPersona } from '../models/sesionPersona.entity.js';
 import { AsyncPipe, NgIf } from '@angular/common';
+import { Observable } from 'rxjs';
+import { ApiResponse } from '../models/ApiResponse.js';
 
 @Component({
   selector: 'app-header',
@@ -12,15 +14,14 @@ import { AsyncPipe, NgIf } from '@angular/common';
   styleUrl: './header.component.css',
 })
 export class HeaderComponent implements OnInit {
-  sesionPersona$ = this.autenticacionService.$;
+  sesionPersona$!: Observable<ApiResponse<SesionPersona | undefined>>;
   constructor(
     private route: Router,
     private autenticacionService: AutenticacionService
   ) {}
 
   ngOnInit() {
-    this.autenticacionService.getUserInformation();
-    console.log(`Persona ${JSON.stringify(this.sesionPersona$)}`);
+    this.sesionPersona$ = this.autenticacionService.getUserInformation();
   }
   irLogin(path: string): void {
     this.route.navigateByUrl(path);

@@ -20,7 +20,6 @@ import { CartComponent } from './cart/cart.component.js';
 import { BuysComponent } from './buys/buys.component.js';
 import { DevolucionComponent } from './devolucion/devolucion.component.js';
 
-
 export const routes: Routes = [
   {
     path: 'login',
@@ -46,14 +45,10 @@ export const routes: Routes = [
   },
 
   {
-    path: '',
-    component: HomeComponent,
-  },
-  {
     path: 'productos',
     component: ProductosComponent,
   },
-  
+
   {
     path: 'publicaprod',
     component: CargoProductosComponent,
@@ -68,7 +63,6 @@ export const routes: Routes = [
     component: ProductoDetalleComponent,
   },
 
- 
   {
     path: 'carrito/:id',
     component: CartComponent,
@@ -77,7 +71,7 @@ export const routes: Routes = [
     path: 'buys',
     component: BuysComponent,
   },
-  
+
   {
     path: 'admin',
     canActivateChild: [checkRolGuard],

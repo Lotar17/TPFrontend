@@ -2,35 +2,64 @@
   <div class="flex justify-between m-5">
     <img />
     <ul class="flex gap-3">
-      <ng-container
-        *ngIf="sesionPersona$ | async as sesionPersona; else noSesion"
-      >
-        <li *ngIf="sesionPersona.rol === 'Administrador'">
-          <a routerLink="/admin">Panel de administrador</a>
-        </li>
-      </ng-container>
-      <ng-template #noSesion>
-        <li>
-          <a
-            class="hover:bg-sky-200 transition duration-300 rounded-xl p-2"
-            routerLink="/login"
-          >
-            Iniciar Sesion
-          </a>
-        </li>
-        <li>
-          <a
-            class="hover:bg-sky-200 transition duration-300 rounded-xl p-2"
-            routerLink="register"
-          >
-            Registrarse
-          </a>
-        </li>
+      @if (sesionPersona$ | async; as sesionPersona) { @if
+      (sesionPersona.data?.rol === 'Administrador') {
+      <li>
+        <a
+          class="hover:bg-sky-200 transition duration-300 rounded-xl p-2"
+          routerLink="/admin"
+          >Panel de administrador</a
+        >
+      </li>
+      <li>
+        <a routerLink="/">Inicio</a>
+      </li>
+      } @else {
+      <li>
+        Holaaaa {{ sesionPersona.data?.nombre }} {{ sesionPersona.message }}
+      </li>
+      <li>
+        <a
+          class="hover:bg-sky-200 transition duration-300 rounded-xl p-2"
+          routerLink="/login"
+        >
+          Iniciar Sesion
+        </a>
+      </li>
+      <li>
+        <a
+          class="hover:bg-sky-200 transition duration-300 rounded-xl p-2"
+          routerLink="register"
+        >
+          Registrarse
+        </a>
+      </li>
 
-        <li>
-          <a routerLink="/productos">Tienda</a>
-        </li>
-      </ng-template>
+      <li>
+        <a routerLink="/productos">Tienda</a>
+      </li>
+      } } @else {
+      <li>
+        <a
+          class="hover:bg-sky-200 transition duration-300 rounded-xl p-2"
+          routerLink="/login"
+        >
+          Iniciar Sesion
+        </a>
+      </li>
+      <li>
+        <a
+          class="hover:bg-sky-200 transition duration-300 rounded-xl p-2"
+          routerLink="register"
+        >
+          Registrarse
+        </a>
+      </li>
+
+      <li>
+        <a routerLink="/productos">Tienda</a>
+      </li>
+      }
     </ul>
   </div>
   <hr class="colo" />

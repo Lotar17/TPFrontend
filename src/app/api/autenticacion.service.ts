@@ -15,18 +15,6 @@ export class AutenticacionService {
 
   constructor(private http: HttpClient) {}
 
-  getUserInformation() {
-    let datosUsuario: SesionPersona | undefined = undefined;
-    this.http
-      .get<ApiResponse<SesionPersona>>(
-        'http://localhost:3000/login/getUserInformation',
-        { withCredentials: true }
-      )
-      .subscribe((response) => {
-        if (response.data !== undefined) this.subject.next(response.data);
-      });
-  }
-
   async getRolByCookie(): Promise<string | undefined> {
     try {
       const response = await firstValueFrom(
@@ -39,5 +27,14 @@ export class AutenticacionService {
     } catch {
       return undefined;
     }
+  }
+
+  getUserInformation(): Observable<ApiResponse<SesionPersona | undefined>> {
+    return this.http.get<ApiResponse<SesionPersona | undefined>>(
+      'http://localhost:3000/login/getUserInformation',
+      {
+        withCredentials: true,
+      }
+    );
   }
 }
