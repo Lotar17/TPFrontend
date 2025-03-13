@@ -8,6 +8,9 @@
   "newProjectRoot": "projects",
   "projects": {
     "tp-frontend": {
+      "i18n": {
+        "sourceLocale": "es-ar"
+      },
       "projectType": "application",
       "schematics": {},
       "root": "",
