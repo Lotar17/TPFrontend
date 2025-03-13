@@ -12,12 +12,18 @@
         >
       </li>
       <li>
-        <a routerLink="/">Inicio</a>
+        <a
+          class="hover:bg-sky-200 transition duration-300 rounded-xl p-2"
+          routerLink="/productos"
+          >Tienda</a
+        >
+      </li>
+      <li>
+        <a class="hover:bg-sky-200 transition duration-300 rounded-xl p-2">{{
+          sesionPersona.data?.nombre
+        }}</a>
       </li>
       } @else {
-      <li>
-        Holaaaa {{ sesionPersona.data?.nombre }} {{ sesionPersona.message }}
-      </li>
       <li>
         <a
           class="hover:bg-sky-200 transition duration-300 rounded-xl p-2"
@@ -36,7 +42,11 @@
       </li>
 
       <li>
-        <a routerLink="/productos">Tienda</a>
+        <a
+          class="hover:bg-sky-200 transition duration-300 rounded-xl p-2"
+          routerLink="/productos"
+          >Tienda</a
+        >
       </li>
       } } @else {
       <li>
@@ -57,7 +67,11 @@
       </li>
 
       <li>
-        <a routerLink="/productos">Tienda</a>
+        <a
+          class="hover:bg-sky-200 transition duration-300 rounded-xl p-2"
+          routerLink="/productos"
+          >Tienda</a
+        >
       </li>
       }
     </ul>
