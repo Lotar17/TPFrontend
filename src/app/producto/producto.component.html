@@ -3,11 +3,6 @@
 >
   <app-header class="relative z-10 mb-10"></app-header>
   <div class="relative z-10">
-    <app-search-bar
-      (searchEvent)="updateSearchTerm($event)"
-      class="mb-6"
-    ></app-search-bar>
-
     <div class="flex">
       <div
         class="w-64 bg-gray-800 text-white p-6 flex flex-col space-y-4 shadow-lg"
@@ -40,7 +35,11 @@
         </ul>
       </div>
 
-      <div class="flex-1 pl-8">
+      <div class="flex-1 pl-8 mt-4">
+        <app-search-bar
+          (searchEvent)="updateSearchTerm($event)"
+          class="mb-6"
+        ></app-search-bar>
         <div class="productos-list flex flex-wrap gap-4 mt-8">
           <app-product-card
             *ngFor="let producto of productos"
