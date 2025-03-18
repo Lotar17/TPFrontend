@@ -1,4 +1,41 @@
+<div
+  class="absolute inset-0 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_4rem]"
+>
+  <app-header class="relative z-10 mb-10"></app-header>
+  <div class="relative z-10">
+    <div class="flex">
+      <div
+        class="w-64 bg-gray-800 text-white p-6 flex flex-col space-y-4 shadow-lg"
+      >
+        <ul class="flex flex-col space-y-3">
+          <li>
+            <a
+              class="block bg-sky-600 hover:bg-sky-700 transition duration-300 rounded-xl px-4 py-2 text-base font-medium"
+              routerLink="/publicaprod"
+            >
+              Cargar Producto
+            </a>
+          </li>
+          <li>
+            <a
+              class="block bg-sky-600 hover:bg-sky-700 transition duration-300 rounded-xl px-4 py-2 text-base font-medium"
+              routerLink="/compras"
+            >
+              Ver mis compras
+            </a>
+          </li>
+          <li>
+            <a
+              class="block bg-sky-600 hover:bg-sky-700 transition duration-300 rounded-xl px-4 py-2 text-base font-medium"
+              (click)="verCarrito()"
+            >
+              Ver Carrito
+            </a>
+          </li>
+        </ul>
+      </div>
 
+<<<<<<< HEAD
 <app-search-bar (searchEvent)="updateSearchTerm($event)" class="mb-6"></app-search-bar>
 
 <div class="flex">
@@ -48,8 +85,21 @@
         [producto]="producto"
         class="border rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105">
       </app-product-card>
+=======
+      <div class="flex-1 pl-8 mt-4">
+        <app-search-bar
+          (searchEvent)="updateSearchTerm($event)"
+          class="mb-6"
+        ></app-search-bar>
+        <div class="productos-list flex flex-wrap gap-4 mt-8">
+          <app-product-card
+            *ngFor="let producto of productos"
+            [producto]="producto"
+            class="border rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105"
+          ></app-product-card>
+        </div>
+      </div>
+>>>>>>> origin/lotar
     </div>
   </div>
 </div>
-
-

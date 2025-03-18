@@ -8,35 +8,45 @@ import { CargoProductosComponent } from '../cargo-productos/cargo-productos.comp
 import { RouterLink } from '@angular/router';
 import { Router } from '@angular/router';
 import { AuthService } from '../api/Auth.service';
+import { HeaderComponent } from '../header/header.component.js';
 @Component({
   selector: 'app-productos',
   standalone: true,
-  imports: [CommonModule, SearchBarComponent, ProductCardComponent,CargoProductosComponent,RouterLink],
+  imports: [
+    CommonModule,
+    SearchBarComponent,
+    ProductCardComponent,
+    CargoProductosComponent,
+    HeaderComponent,
+    RouterLink,
+  ],
   templateUrl: './producto.component.html',
-  styleUrls: ['./producto.component.css']
+  styleUrls: ['./producto.component.css'],
 })
 export class ProductosComponent {
   productos: Producto[] = [];
   searchTerm: string = '';
 
-  constructor(private crudService: CRUDService<Producto>,
-     private router:Router,
-     private authService:AuthService
+  constructor(
+    private crudService: CRUDService<Producto>,
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
-    
     this.loadProductos('');
   }
 
   loadProductos(searchTerm: string): void {
-    this.crudService.getByDescripcion('productos', searchTerm).subscribe((response: any) => {
-      if (response && Array.isArray(response.data)) {
-        this.productos = response.data;
-      } else {
-        this.productos = [];
-      }
-    });
+    this.crudService
+      .getByDescripcion('productos', searchTerm)
+      .subscribe((response: any) => {
+        if (response && Array.isArray(response.data)) {
+          this.productos = response.data;
+        } else {
+          this.productos = [];
+        }
+      });
   }
 
   updateSearchTerm(searchTerm: string) {
@@ -50,8 +60,6 @@ export class ProductosComponent {
       return;
     }
 
-    this.router.navigate(['/carrito', idPersona]); 
+    this.router.navigate(['/carrito', idPersona]);
   }
 }
-
-

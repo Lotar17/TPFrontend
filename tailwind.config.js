@@ -8,6 +8,9 @@ module.exports = {
     extend: {
       colors: {
         "blanco-no-puro": "#F5F5F5",
+        "gaucho-buy-inicio": "#4472AF",
+        "gaucho-buy-fin": "#265DA5",
+        "gaucho-buy-texto": "#D4E3F0",
       },
     },
   },

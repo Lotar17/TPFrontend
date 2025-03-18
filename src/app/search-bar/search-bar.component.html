@@ -1,16 +1,29 @@
-<div class="search-bar flex items-center space-x-4">
-  <input 
-    type="text" 
-    [(ngModel)]="searchTerm" 
-    placeholder="Buscar productos..."
-    class="search-input p-2 border border-gray-300 rounded"
-  />
-  <button (click)="onSearch()" class="search-button bg-blue-500 text-white p-2 rounded">
-    Buscar
-  </button>
-  
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&icon_names=search"
+/>
+<div class="search-bar flex flex-row gap-12">
+  <div class="flex">
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      placeholder="Buscar productos..."
+      class="p-2 w-80 border-l border-t border-b border-gray-300 rounded-l-xl"
+    />
+
+    <button
+      (click)="onSearch()"
+      class="bg-white p-2 text-gray-700 border-r border-t border-b border-gray-300 rounded-r-xl"
+    >
+      <span class="material-symbols-outlined"> search </span>
+    </button>
+  </div>
+
   <!-- Botón para restaurar todos los productos -->
-  <button (click)="onRestaurar()" class="restore-button bg-blue-500 text-white p-2 rounded">
+  <button
+    (click)="onRestaurar()"
+    class="bg-blue-500 text-base text-white p-2 rounded"
+  >
     Restaurar
   </button>
 </div>
@@ -22,5 +35,3 @@
     </li>
   </ul>
 </div>
-
-

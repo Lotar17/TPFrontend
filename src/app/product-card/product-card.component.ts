@@ -7,36 +7,40 @@ import { CommonModule } from '@angular/common';
 import { Response } from 'express';
 import { CarritoService } from '../api/cart.service';
 import { AuthService } from '../api/Auth.service';
+import { CurrencyPipe } from '@angular/common';
+import localeEs from '@angular/common/locales/es-AR';
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [RouterLink,CommonModule],
+  imports: [RouterLink, CommonModule, CurrencyPipe],
   templateUrl: './product-card.component.html',
-  styleUrl: './product-card.component.css'
+  styleUrl: './product-card.component.css',
 })
 export class ProductCardComponent {
-
-
   @Input() producto!: Producto;
-  precio!: number; 
+  precio!: number;
 
-  constructor(private historicoprecioService: HistoricoPrecioService,
-    private carritoService:CarritoService,
-    private authService:AuthService
+  constructor(
+    private historicoprecioService: HistoricoPrecioService,
+    private carritoService: CarritoService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     if (this.producto.id) {
-      this.obtenerPrecio(this.producto.id); 
+      this.obtenerPrecio(this.producto.id);
     }
   }
 
   obtenerPrecio(id: string): void {
     this.historicoprecioService.getOne(id).subscribe(
-      (valor:any) => {
+      (valor: any) => {
         if (valor !== undefined) {
-          if(valor !== 0){this.precio = valor;}
-          else{this.precio === 0} 
+          if (valor !== 0) {
+            this.precio = valor;
+          } else {
+            this.precio === 0;
+          }
         } else {
           console.log('No se encontró el precio histórico');
         }
@@ -47,6 +51,7 @@ export class ProductCardComponent {
     );
   }
 
+<<<<<<< HEAD
   agregarAlCarrito(id_Producto: string| undefined) {
     
    
@@ -63,3 +68,21 @@ export class ProductCardComponent {
   }
 
 
+=======
+  agregarAlCarrito(id_Producto: string | undefined) {
+    const idPersona = this.authService.getUserId();
+    const idProducto = id_Producto || '';
+
+    this.carritoService.addItemToCarrito(idProducto, idPersona).subscribe({
+      next: (response: any) => {
+        if (response) {
+          console.log(response.message);
+        }
+      },
+      error: (error) => {
+        console.error('Error:', error);
+      },
+    });
+  }
+}
+>>>>>>> origin/lotar

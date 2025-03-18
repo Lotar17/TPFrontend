@@ -2,12 +2,17 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ApiResponse } from '../models/ApiResponse.js';
 import { firstValueFrom } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { SesionPersona } from '../models/sesionPersona.entity.js';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AutenticacionService {
+  private subject = new BehaviorSubject<SesionPersona | null>(null);
+  $ = this.subject.asObservable();
   url = 'http://localhost:3000/login/checkPermissions';
+
   constructor(private http: HttpClient) {}
 
   async getRolByCookie(): Promise<string | undefined> {
@@ -22,5 +27,14 @@ export class AutenticacionService {
     } catch {
       return undefined;
     }
+  }
+
+  getUserInformation(): Observable<ApiResponse<SesionPersona | undefined>> {
+    return this.http.get<ApiResponse<SesionPersona | undefined>>(
+      'http://localhost:3000/login/getUserInformation',
+      {
+        withCredentials: true,
+      }
+    );
   }
 }
