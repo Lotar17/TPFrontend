@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
-import { item_Compra } from '../../models/compra.entity';
+import { Item } from '../models/item.entity';
 import { ComprasService } from '../api/compra.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormGroup, FormControl } from '@angular/forms';
 import { AuthService } from '../api/Auth.service';
-import { Compra } from '../../models/compra.entity';
-import { item } from '../models/item.entity';
+import { Compra } from '../models/compra.entity';
+import { error } from 'node:console';
 @Component({
   selector: 'app-buys',
   standalone: true,
@@ -16,7 +16,7 @@ import { item } from '../models/item.entity';
 })
 export class BuysComponent {
   idPersona!: string;
-  items: item_Compra[] = [];
+  items: Item[] = [];
   direccion_entrega!: string;
   fecha_hora_compra!: string;
   compra!:Compra;
@@ -40,26 +40,37 @@ export class BuysComponent {
     this.idPersona = this.authService.getUserId();
     this.direccion_entrega = this.publicaForm.value.direccion_entrega || '';
     this.fecha_hora_compra = new Date().toISOString(); 
+
+
+    
   
      this.compra = {
-      persona: this.idPersona, 
+      personaId: this.idPersona, 
       direccion_entrega: this.direccion_entrega,
       fecha_hora_compra: this.fecha_hora_compra,
-      items: this.items.map(item => ({
-        producto: item.producto && typeof item.producto === "object" ? (item.producto as any).id : item.producto, 
-        cantidad_producto: item.cantidad_producto
-      }))
+      items: this.items
     };
   
     this.compraService.addCompra(this.compra).subscribe({
-      next: (response:any) => {
-           console.log("Respuesta del servidor:", response.data); 
-           
-       },
+      next: (response: any) => {
+        console.log("Respuesta del servidor:", response.data); 
+        
+       
+        if (response.data.id) {
+          this.compraService.updateStock(response.data.id).subscribe({
+            next: (response: any) => {
+              console.log("Producto actualizado con éxito", response.data);
+            },
+            error: (error) => {
+              console.error("Error al actualizar el producto", error);
+            }
+          });
+        } else {
+          console.error("Error: El ID de la compra no fue generado");
+        }
+      },
       error: (error) => {
-           console.error('Error al registrar compra:', error);
-       }
-   });
-    
-  }
-}  
+        console.error('Error al registrar compra:', error);
+      }
+    });
+  }}    

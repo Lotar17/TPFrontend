@@ -1,3 +1,5 @@
 export const environment = {
-    API_URL:'https://fakestoreapi.com/products'
-};
+    production: false,
+    DEBUG_MIME: false // Cambia a true si necesitas activarlo
+  };
+  

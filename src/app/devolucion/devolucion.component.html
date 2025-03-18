@@ -1,25 +1,24 @@
 <div class="max-w-7xl mx-auto px-6 py-8">
-    <h1 class="text-3xl font-semibold text-gray-900 mb-8 text-center">Mis Compras</h1>
-    
-    <div  class="bg-white shadow-lg rounded-lg p-6 mb-6">
-      <h3 class="text-xl font-bold text-gray-800">- Total: ${{ compra.total_compra }}</h3>
-     
-    
-      <div class="mt-4">
-        <div *ngFor="let item of compra.items" class="border-b border-gray-200 py-4">
-          <div *ngIf="item.producto" class="flex items-center justify-between">
-            <div class="text-lg text-gray-700">
-              <strong>Producto:</strong> {{ getProductoDescripcion(item) }}
-
-            </div>
-            <div class="text-lg text-gray-500">
-              <strong>Cantidad:</strong> {{ item.cantidad_producto }}
-            </div>
+  <h1 class="text-3xl font-semibold text-gray-900 mb-8 text-center">Devoluciones</h1>
+  
+  <div  class="bg-white shadow-lg rounded-lg p-6 mb-6">
+    <h3 class="text-xl font-bold text-gray-800">- Total: ${{ compra.total_compra }}</h3>
+   
+  
+    <div class="mt-4">
+      <div *ngFor="let item of compra.items" class="border-b border-gray-200 py-4">
+        <div *ngIf="item.producto" class="flex items-center justify-between">
+          <div class="text-lg text-gray-700">
+            <strong>Producto:</strong> {{ item.producto.descripcion }}
             
           </div>
+          <div class="text-lg text-gray-500">
+            <strong>Cantidad:</strong> {{ item.cantidad_producto }}
+          </div>
+          <td><button (click)="realizarDevolucion(item)">Realizar Devolucion</button></td>
         </div>
-        <td><button (click)="realizarDevolucion()">Realizar Devolucion</button></td>
       </div>
+      
     </div>
   </div>
-  
+</div>

@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../models/ApiResponse';
-import { Compra } from '../../models/compra.entity';
-import { item } from '../models/item.entity';
+import { Compra } from '../models/compra.entity';
+import { Item } from '../models/item.entity';
 
 @Injectable({
   providedIn: 'root',
@@ -11,8 +11,9 @@ import { item } from '../models/item.entity';
 export class ComprasService {
   private url: string = 'http://localhost:3000/api/compras'; 
   private url2: string= 'http://localhost:3000/api/compras/persona';
-  private item_compra: item[] = [];
-
+  private url3: string= 'http://localhost:3000/api/compras/stock'
+  private item_compra: Item[] = [];
+  private item_devolucion: Item[] = [];
   constructor(private http: HttpClient,
     
   ) {}
@@ -35,7 +36,7 @@ export class ComprasService {
   }
 
   // Método para actualizar una compra
-  update(compra: Compra): Observable<ApiResponse<Compra>> {
+  update(compra:Compra): Observable<ApiResponse<Compra>> {
     return this.http.put<ApiResponse<Compra>>(`${this.url}/${compra.id}`, compra);
   }
 
@@ -47,11 +48,24 @@ export class ComprasService {
     return this.http.get<ApiResponse<Compra>>(`${this.url2}/${idUser}`);
   }
 
-  setItem(items:item[]){
+  setItem(items:Item[]){
 this.item_compra=items
 
   }
-  getItems(): item[] {
+  getItems(): Item[] {
     return this.item_compra;
   }
+setDevolucion(itemDevolucion:Item){
+  this.item_devolucion
+}
+getItemsDevolucion(){
+  return this.item_devolucion
+}
+
+updateStock(id: string): Observable<ApiResponse<Compra>> {
+  return this.http.put<ApiResponse<Compra>>(`${this.url3}/${id}`, null, { responseType: 'json' });
+}
+
+
+
 }

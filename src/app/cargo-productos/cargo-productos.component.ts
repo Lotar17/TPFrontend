@@ -38,7 +38,6 @@ export class CargoProductosComponent {
       // Manejar la situación de que el usuario no está logueado
       return;
     }
-
     const producto: Producto = {
       descripcion: this.publicaForm.value.descripcion,
       stock: this.publicaForm.value.stock,

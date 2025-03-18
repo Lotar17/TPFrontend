@@ -18,14 +18,14 @@ import { map } from 'rxjs';
     constructor(private http: HttpClient) {}
   
     getOne(productoId: string): Observable<number | undefined> {
-        return this.http
-          .get<ApiResponse<HistoricoPrecio>>(`${this.url}/${productoId}`)
-          .pipe(
-            map((response) => response.data?.valor) // Solo extraemos el valor
-          );
-      }
-      
-
+      return this.http
+        .get<ApiResponse<HistoricoPrecio>>(`${this.url}/${productoId}`)
+        .pipe(
+          map((response) => response.data?.valor) // Solo extraemos el valor
+        );
+    }
+    
+    
 
 
 }

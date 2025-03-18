@@ -13,9 +13,7 @@
         <p class="text-sm font-semibold leading-6 text-gray-900">
           {{ producto.descripcion }}
         </p>
-        <p class="mt-1 truncate text-xs leading-5 text-gray-500">
-          {{ producto.categoria?.descripcion }}
-        </p>
+      
         <p class="mt-1 truncate text-xs leading-5 text-gray-500">
           Stock: {{ producto.stock }}
         </p>
@@ -23,17 +21,13 @@
     </div>
     <div class="hidden shrink-0 sm:flex sm:flex-row sm:items-center gap-5">
       <div>
-        <p class="text-sm leading-6 text-gray-900">
-          {{ producto.persona?.mail }}
-        </p>
+      
         <p class="text-sm leading-6 text-gray-900">
           ${{
             producto.hist_precios?.at(producto.hist_precios!.length - 1)?.valor
           }}
         </p>
-        <p class="mt-1 text-xs leading-5 text-gray-500">
-          Compras: {{ producto.compras ? producto.compras.length : 0 }}
-        </p>
+       
       </div>
       <div class="flex gap-2">
         <button (click)="OpenAddDialog(producto)">

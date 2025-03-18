@@ -15,10 +15,11 @@ import { AdminCategoriasComponent } from './pages/admin/categorias/admin-categor
 import { AdminFormasDePagoComponent } from './pages/admin/formas-de-pago/admin-formas-de-pago/admin-formas-de-pago.component.js';
 import { MisComprasComponent } from './miscompras/miscompras.component.js';
 import { checkRolGuard } from './guards/check-rol.guard.js';
-
+import { DirectBuysComponent } from './direct-buys/direct-buys.component.js';
 import { CartComponent } from './cart/cart.component.js';
 import { BuysComponent } from './buys/buys.component.js';
 import { DevolucionComponent } from './devolucion/devolucion.component.js';
+import { PanelVendedorComponent } from './panel-vendedor/panel-vendedor.component.js';
 
 
 export const routes: Routes = [
@@ -53,7 +54,10 @@ export const routes: Routes = [
     path: 'productos',
     component: ProductosComponent,
   },
-  
+  {
+    path: 'comprasincart/:id',
+    component: DirectBuysComponent,
+  },
   {
     path: 'publicaprod',
     component: CargoProductosComponent,
@@ -77,7 +81,10 @@ export const routes: Routes = [
     path: 'buys',
     component: BuysComponent,
   },
-  
+  {
+    path: 'vendedor',
+    component: PanelVendedorComponent,
+  },
   {
     path: 'admin',
     canActivateChild: [checkRolGuard],

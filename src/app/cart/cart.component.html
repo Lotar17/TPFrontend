@@ -2,21 +2,24 @@
   <h2>Tu Carrito</h2>
   <div *ngFor="let item of items" class="item">
     <div class="item-details">
-      <p class="product-description">{{ item.productoDescripcion }}</p>
+      <p class="product-description">{{ item.producto?.descripcion }}</p>
       <p class="product-quantity">Cantidad: {{ item.cantidad_producto }}</p>
-      
+      <p class="product-quantity">Precio: {{ item.producto?.precio}}</p>
       
     </div>
     <div class="item-actions">
-      <button (click)="incrementarCantidad(item.producto_id,item)">+</button>
-      <button (click)="decrementarCantidad(item.producto_id, item)">-</button>
-      <button (click)="eliminarItem(item._id)">
+      <button (click)="incrementarCantidad(item.producto?.id,item)">+</button>
+      <button (click)="decrementarCantidad(item.producto?.id, item)">-</button>
+      <button (click)="eliminarItem(item.id)">
         🗑️
       </button>
+   
    
     </div>
     
   </div>
+  <p class="subtotal">Subtotal: ${{ subtotal | number:'1.2-2' }}</p>
+
   <button (click)="realizarCompra(items)">
     Realizar Compra
   </button>

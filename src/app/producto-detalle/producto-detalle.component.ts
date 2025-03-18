@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Input } from '@angular/core';
-import { Producto } from '../../models/producto.entity';
+import { Producto } from '../models/producto.entity';
 import { ProductosService } from '../api/producto.service';
 import { OnInit } from '@angular/core';
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
@@ -88,16 +88,7 @@ export class ProductoDetalleComponent implements OnInit {
     const idProducto= id_Producto || ""
 
 
-    this.carritoService.addItemToCarrito(idProducto, idPersona).subscribe({
-      next: (response: any) => {  
-        if (response) {
-          console.log(response.message);
-        }
-      },
-      error: (error) => {  
-        console.error('Error:', error);
-      }
-    });
+    this.carritoService.addItemToCarrito(idProducto, idPersona)
     
   }
 

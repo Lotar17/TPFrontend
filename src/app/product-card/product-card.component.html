@@ -1,5 +1,5 @@
 <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-black-800 dark:border-gray-300">
-    <div class="rounded-t-lg h-60 w-full" style="background-color: #3e7a9c;"></div>
+    <div class="rounded-t-lg h-60 w-full" style="background-color: #4fa29f;"></div>
 
     <div class="p-5">
         <a>
@@ -17,7 +17,9 @@
             <a class="button" [routerLink]="['/productos', producto.id]">Ver más</a> |
           </nav>
           <button (click)="agregarAlCarrito(producto.id)">Agregar al carrito</button>
-
+          <nav>
+            <a class="button" [routerLink]="['/comprasincart', producto.id]">Comprar ahora</a> |
+          </nav>
           
     </div>
 </div>

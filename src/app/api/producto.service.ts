@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { ApiResponse } from '../../models/ApiResponse.js';
-import { Producto } from '../../models/producto.entity.js';
+import { Producto } from '../models/producto.entity.js';
 import { map } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root',
@@ -11,8 +11,8 @@ import { map } from 'rxjs/operators';
 export class ProductosService {
   private productosSubject = new BehaviorSubject<Producto[]>([]);
   productos$ = this.productosSubject.asObservable();
-
-
+  private Url='http://localhost:3000/api/productos';
+  private Url2='http://localhost:3000/api/productos/persona'
   constructor(private http: HttpClient) {}
 
 
@@ -23,6 +23,10 @@ export class ProductosService {
       if (response.data) this.productosSubject.next(response.data);
     });
   }
+  getProductosByPersona(idPersona: string): Observable<Producto[]> {
+    return this.http.get<Producto[]>(`${this.Url2}/${idPersona}`);
+  }
+
 
 getOne(id: string): Observable<Producto> { 
   const url = `http://localhost:3000/api/productos/${id}`;
@@ -32,6 +36,9 @@ getOne(id: string): Observable<Producto> {
 }
 
 
+actualizarProducto(idProducto: string, productoActualizado: Producto): Observable<any> {
+  return this.http.put(`${this.Url}/${idProducto}`, productoActualizado);
+}
 
 
 }

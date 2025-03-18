@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Input } from '@angular/core';
-import { Producto } from '../../models/producto.entity';
+import { Producto } from '../models/producto.entity';
 import { RouterLink } from '@angular/router';
 import { HistoricoPrecioService } from '../api/calculaprecio.service';
 import { CommonModule } from '@angular/common';
@@ -49,21 +49,17 @@ export class ProductCardComponent {
 
   agregarAlCarrito(id_Producto: string| undefined) {
     
-    const idPersona = this.authService.getUserId();
+   
     const idProducto= id_Producto || ""
 
 
-    this.carritoService.addItemToCarrito(idProducto, idPersona).subscribe({
-      next: (response: any) => {  
-        if (response) {
-          console.log(response.message);
-        }
-      },
-      error: (error) => {  
-        console.error('Error:', error);
-      }
-    });
+    
+      if (!idProducto) return;
+  
+      const idPersona = this.authService.getUserId();
+      this.carritoService.addItemToCarrito(idProducto, idPersona);
+    }
     
   }
 
-}
+

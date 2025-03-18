@@ -1,0 +1,17 @@
+<div *ngIf="producto">
+  <h2>{{ producto.descripcion }}</h2>
+  <p>{{ producto.precio | currency }}</p>
+
+  <form [formGroup]="publicaForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="direccion_entrega">Dirección de Entrega</label>
+      <input id="direccion_entrega" formControlName="direccion_entrega" type="text" class="form-control" />
+      
+      <label for="cantidad_producto">Cantidad Producto</label>
+      <input id="cantidad_producto" formControlName="cantidad_producto" type="text" class="form-control" />
+    </div>
+    <button type="submit">Comprar</button>
+  </form>
+</div>
+
+<p *ngIf="!producto" class="text-red-500">Cargando producto...</p>

@@ -2,11 +2,13 @@ import { Component } from '@angular/core';
 import { CarritoService } from '../api/cart.service';
 import { ActivatedRoute, Route } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { item } from '../models/item.entity';
+import { Item } from '../models/item.entity';
 import { AuthService } from '../api/Auth.service';
 import { RouterLink } from '@angular/router';
 import { ComprasService } from '../api/compra.service';
 import { Router } from '@angular/router';
+import { HistoricoPrecio } from '../models/historicoprecio.entity';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-cart',
@@ -16,93 +18,82 @@ import { Router } from '@angular/router';
   styleUrl: './cart.component.css'
 })
 export class CartComponent {
-  items: item[] = [];
+  items: Item[] = [];
+  subtotal!:number
   constructor(
     private route: ActivatedRoute,
     private carritoService: CarritoService,
     private authService:AuthService,
     private compraService: ComprasService,
-    private router:Router
+    private router:Router,
+    private cd:ChangeDetectorRef
   ) {}
 
   ngOnInit() {
-    const idPersona = this.authService.getUserId()
+    const idPersona = this.authService.getUserId();
     if (idPersona) {
-      this.carritoService.getCarrito(idPersona).subscribe({
-       next: (response:any) => {
-            console.log("Respuesta del servidor:", response); 
-             this.carritoService.actualizarCarrito(response);
-            if (response && response.data) {
-                this.items = response.data;
-                console.log("Items asignados:", this.items); 
-            }
-        },
-       error: (error) => {
-            console.error('Error al obtener el carrito:', error);
-        }
-    });
-    
+      this.carritoService.getCarrito(idPersona);
+
+      // Nos suscribimos al carrito para recibir actualizaciones en tiempo real
+      this.carritoService.carritoItems$.subscribe((items) => {
+        this.items = items;
+        this.calcularSubtotal();
+      });
     }
   }
 
-incrementarCantidad(idProducto:string, item: item){
-  const idPersona = this.authService.getUserId();
-item.cantidad_producto++;
-  this.carritoService.addItemToCarrito(idProducto, idPersona).subscribe({
-    next: (response: any) => {  
-      if (response) {
-        console.log(response.message);
-      }
-    },
-    error: (error) => {  
-      console.error('Error:', error);
-    }
-  });
+  incrementarCantidad(idProducto: string | undefined, item: Item) {
+    if (!idProducto) return;
 
-}
-decrementarCantidad(idProducto:string, item:item){
-  const idPersona = this.authService.getUserId();
-  item.cantidad_producto--;
-  this.carritoService.decrementQuantityofItem(idProducto, idPersona).subscribe({
-    next: (response: any) => {  
-      if (response) {
-        console.log(response.message);
-      }
-    },
-    error: (error) => {  
-      console.error('Error:', error);
-    }
-  });
+    const idPersona = this.authService.getUserId();
+    this.carritoService.addItemToCarrito(idProducto, idPersona);
+  }
+  decrementarCantidad(idProducto: string | undefined, item: Item) {
+    if (!idProducto) return;
 
-
-
-}
-eliminarItem(idItem:string|undefined){
-  if (!idItem) {
-    console.error('Error: idItem es undefined');
-    return;
+    const idPersona = this.authService.getUserId();
+    this.carritoService.DecrementQuantity(idProducto, idPersona);
+  }
+  eliminarItem(itemId: string | undefined) {
+    if (!itemId) return;
+  
+    
+    this.carritoService.removeItem(itemId);
+    this.cd.detectChanges(); // 🔄 Forzamos que Angular detecte los cambios
   }
   
-  this.carritoService.removeItem(idItem).subscribe({
-    next: (response: any) => {  
-      if (response) {
-        console.log(response.message);
-      }
-    },
-    error: (error) => {  
-      console.error('Error:', error);
-    }
-  });
 
+  realizarCompra(items_compra: Item[]): void {
+    this.compraService.setItem(items_compra);
+    
+    // 🔥 Filtrar los items comprados del carrito
+    const carritoActualizado = this.items.filter(
+      item => !items_compra.some(compraItem => compraItem.id === item.id)
+    );
+
+    this.carritoService.actualizarCarrito(carritoActualizado); // 🚀 Actualizar el estado del carrito
+    this.router.navigate(['/buys']);
+  }
+
+
+
+
+
+
+
+
+
+  calcularSubtotal() {
+    this.subtotal = this.items.reduce((total, item) => {
+      if (!item.producto || !item.producto.hist_precios) return total;
+
+      const preciosConFecha = item.producto.hist_precios.filter((p: any) => p.fechaDesde);
+      const preciosOrdenados = [...preciosConFecha].sort((a: any, b: any) =>
+        new Date(b.fechaDesde ?? 0).getTime() - new Date(a.fechaDesde ?? 0).getTime()
+      );
+
+      const precioActual = preciosOrdenados.length > 0 ? preciosOrdenados[0].valor : 0;
+      return total + precioActual * item.cantidad_producto;
+    }, 0);
+  }
 }
-realizarCompra(items_compra: item[]): void {
-  this.compraService.setItem(items_compra); // Asegúrate que el nombre coincide
-  this.router.navigate(['/buys']);
-}
-}
-
-
-
-
-
-
