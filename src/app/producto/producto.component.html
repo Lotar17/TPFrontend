@@ -32,60 +32,16 @@
               Ver Carrito
             </a>
           </li>
+          <li>
+            <a
+              class="block bg-sky-600 hover:bg-sky-700 transition duration-300 rounded-xl px-4 py-2 text-base font-medium"
+              routerLink="/vendedor">
+              Mis Publicaciones
+            </a>
+          </li>
         </ul>
       </div>
 
-<<<<<<< HEAD
-<app-search-bar (searchEvent)="updateSearchTerm($event)" class="mb-6"></app-search-bar>
-
-<div class="flex">
-  <!-- Sidebar de navegación (Botones al lado izquierdo) -->
-  <div class="w-64 bg-gray-800 text-white p-6 flex flex-col space-y-4 shadow-lg">
-    
-    <ul class="flex flex-col space-y-3">
-      <li>
-        <a
-          class="block bg-sky-600 hover:bg-sky-700 transition duration-300 rounded-xl px-4 py-2 text-base font-medium"
-          routerLink="/publicaprod">
-          Cargar Producto
-        </a>
-      </li>
-      <li>
-     
-      </li>
-      <li>
-        <a
-          class="block bg-sky-600 hover:bg-sky-700 transition duration-300 rounded-xl px-4 py-2 text-base font-medium"
-          routerLink="/compras">
-          Ver mis compras
-        </a>
-      </li>
-      <li>
-        <a
-          class="block bg-sky-600 hover:bg-sky-700 transition duration-300 rounded-xl px-4 py-2 text-base font-medium"
-          (click)="verCarrito()">
-          Ver Carrito
-        </a>
-        </li>
-        <li>
-        <a
-          class="block bg-sky-600 hover:bg-sky-700 transition duration-300 rounded-xl px-4 py-2 text-base font-medium"
-          routerLink="/vendedor">
-          Mis Publicaciones
-        </a>
-      </li>
-    </ul>
-  </div>
-
-  <!-- Contenido principal a la derecha (productos) -->
-  <div class="flex-1 p-8">
-    <div class="productos-list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 mt-8">
-      <app-product-card
-        *ngFor="let producto of productos"
-        [producto]="producto"
-        class="border rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105">
-      </app-product-card>
-=======
       <div class="flex-1 pl-8 mt-4">
         <app-search-bar
           (searchEvent)="updateSearchTerm($event)"
@@ -98,8 +54,8 @@
             class="border rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105"
           ></app-product-card>
         </div>
+        
       </div>
->>>>>>> origin/lotar
     </div>
   </div>
 </div>

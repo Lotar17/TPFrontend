@@ -1,21 +1,34 @@
-
-<div class="cart-container">
-    <h2>Tu Carrito</h2>
-    <div *ngFor="let item of items" class="item">
-      <div class="item-details">
-        <p class="product-quantity">Nombre: {{ item.producto?.descripcion }}</p>
-        <p class="product-quantity">Cantidad: {{ item.cantidad_producto }}</p>
+<div class="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 p-6">
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-2xl p-6">
+    
+    <!-- Carrito -->
+    <h2 class="text-2xl font-bold text-gray-800 text-center mb-4">🛒 Tu Carrito</h2>
+    
+    <div class="space-y-4">
+      <div *ngFor="let item of items" class="flex items-center justify-between p-4 bg-gray-100 rounded-lg shadow">
+        <div>
+          <p class="text-lg font-semibold text-gray-700">📦 {{ item.producto?.descripcion }}</p>
+          <p class="text-sm text-gray-600">Cantidad: <span class="font-bold">{{ item.cantidad_producto }}</span></p>
+        </div>
       </div>
     </div>
-  
-    <h2>Realizar Compra</h2>
-  
-    <form [formGroup]="publicaForm" (ngSubmit)="onSubmit()">
-        <div class="form-group">
-            <label for="direccion_entrega">Dirección de Entrega</label>
-            <input id="direccion_entrega" formControlName="direccion_entrega" type="text" class="form-control" />
-          </div>
-      <button type="submit">Comprar</button>
+
+    <hr class="my-6 border-gray-300">
+
+    <!-- Formulario de Compra -->
+    <h2 class="text-2xl font-bold text-gray-800 text-center mb-4">💳 Realizar Compra</h2>
+
+    <form [formGroup]="publicaForm" (ngSubmit)="onSubmit()" class="space-y-4">
+      <div>
+        <label for="direccion_entrega" class="block text-gray-700 font-semibold">📍 Dirección de Entrega</label>
+        <input id="direccion_entrega" formControlName="direccion_entrega" type="text" 
+          class="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none shadow">
+      </div>
+
+      <button type="submit"
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105">
+        🛒 Comprar Ahora
+      </button>
     </form>
   </div>
-  
+</div>

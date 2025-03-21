@@ -1,22 +1,42 @@
-<div class="max-w-7xl mx-auto px-6 py-8">
-  <h1 class="text-3xl font-semibold text-gray-900 mb-8 text-center">Mis Compras</h1>
-  
-  <div *ngFor="let compra of MisCompras" class="bg-white shadow-lg rounded-lg p-6 mb-6">
-    <h3 class="text-xl font-bold text-gray-800">- Total: ${{ compra.total_compra }}</h3>
-    <div class="mt-4">
-      <div *ngFor="let item of compra.items" class="border-b border-gray-200 py-4">
-        <div *ngIf="item.producto" class="flex items-center justify-between">
-          <div class="text-lg text-gray-700">
-            <strong>Producto:</strong> {{ getProductoDescripcion(item) }}
-          </div>
-          <div class="text-lg text-gray-500">
-            <strong>Cantidad:</strong> {{ item.cantidad_producto }}
-          </div>
+<div class="max-w-6xl mx-auto px-6 py-8">
+  <h1 class="text-4xl font-bold text-gray-900 text-center mb-8">🛍️ Mis Compras</h1>
+
+  <div *ngIf="MisCompras.length > 0; else emptyCompras" class="space-y-6">
+    
+    <div *ngFor="let compra of MisCompras" class="bg-white shadow-lg rounded-xl p-6 border-l-4 border-blue-500">
       
+      <!-- Total de la compra -->
+      <h3 class="text-xl font-bold text-gray-800">💰 Total: <span class="text-green-600">${{ compra.total_compra }}</span></h3>
+
+      <!-- Lista de productos -->
+      <div class="mt-4 space-y-4">
+        <div *ngFor="let item of compra.items" class="border-b border-gray-300 pb-4">
+          
+          <div *ngIf="item.producto" class="flex items-center justify-between">
+            <div class="text-lg text-gray-700">
+              <strong>📦 Producto:</strong> {{ getProductoDescripcion(item) }}
+            </div>
+            <div class="text-lg text-gray-500">
+              <strong>🔢 Cantidad:</strong> {{ item.cantidad_producto }}
+            </div>
+          </div>
+
         </div>
-       
       </div>
-      <td><button (click)="validarDevolucion(compra.fecha_hora_compra, compra.id)">Realizar Devolucion</button></td>
+
+      <!-- Botón de devolución -->
+      <div class="mt-4 flex justify-end">
+        <button (click)="validarDevolucion(compra.fecha_hora_compra, compra.id)" 
+          class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105">
+          🔄 Realizar Devolución
+        </button>
+      </div>
+
     </div>
   </div>
+
+  <!-- Mensaje si no hay compras -->
+  <ng-template #emptyCompras>
+    <p class="text-center text-gray-700 font-semibold text-lg">📭 No tienes compras registradas.</p>
+  </ng-template>
 </div>

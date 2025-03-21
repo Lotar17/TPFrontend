@@ -19,7 +19,9 @@ import { ChangeDetectorRef } from '@angular/core';
 })
 export class CartComponent {
   items: Item[] = [];
-  subtotal!:number
+  subtotal!:number;
+  showNotification: boolean = false; // Variable para controlar la visibilidad del cartel
+  mensajeNotificacion: string = ''; 
   constructor(
     private route: ActivatedRoute,
     private carritoService: CarritoService,

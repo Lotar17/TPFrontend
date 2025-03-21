@@ -19,6 +19,8 @@ import localeEs from '@angular/common/locales/es-AR';
 export class ProductCardComponent {
   @Input() producto!: Producto;
   precio!: number;
+  showNotification: boolean = false; // Variable para controlar la visibilidad del cartel
+  mensajeNotificacion: string = ''; 
 
   constructor(
     private historicoprecioService: HistoricoPrecioService,
@@ -51,7 +53,6 @@ export class ProductCardComponent {
     );
   }
 
-<<<<<<< HEAD
   agregarAlCarrito(id_Producto: string| undefined) {
     
    
@@ -63,26 +64,17 @@ export class ProductCardComponent {
   
       const idPersona = this.authService.getUserId();
       this.carritoService.addItemToCarrito(idProducto, idPersona);
+      this.mostrarNotificacion(`${this.producto.descripcion} se agregó al carrito.`);
     }
-    
+    mostrarNotificacion(mensaje: string) {
+      this.mensajeNotificacion = mensaje;
+      this.showNotification = true;
+  
+      // Ocultar el cartel después de 3 segundos
+      setTimeout(() => {
+        this.showNotification = false;
+      }, 3000);
+    }
   }
 
 
-=======
-  agregarAlCarrito(id_Producto: string | undefined) {
-    const idPersona = this.authService.getUserId();
-    const idProducto = id_Producto || '';
-
-    this.carritoService.addItemToCarrito(idProducto, idPersona).subscribe({
-      next: (response: any) => {
-        if (response) {
-          console.log(response.message);
-        }
-      },
-      error: (error) => {
-        console.error('Error:', error);
-      },
-    });
-  }
-}
->>>>>>> origin/lotar
