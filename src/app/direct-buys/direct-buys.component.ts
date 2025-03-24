@@ -67,7 +67,7 @@ item!:Item
     );
     
   }
-  async onSubmit() {
+ async  onSubmit() {
     console.log("✅ Iniciando proceso de compra...");
   
     this.idPersona = this.authService.getUserId();

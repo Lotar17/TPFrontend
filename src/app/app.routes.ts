@@ -20,7 +20,9 @@ import { CartComponent } from './cart/cart.component.js';
 import { BuysComponent } from './buys/buys.component.js';
 import { DevolucionComponent } from './devolucion/devolucion.component.js';
 import { PanelVendedorComponent } from './panel-vendedor/panel-vendedor.component.js';
-
+import { SolicitudDevolucionComponent } from './solicitud-devolucion/solicitud-devolucion.component.js';
+import { DevolucionVendedorComponent } from './devolucion-vendedor/devolucion-vendedor.component.js';
+import { DevolucionCompradorComponent } from './devolucion-comprador/devolucion-comprador.component.js';
 export const routes: Routes = [
   {
     path: 'login',
@@ -54,6 +56,10 @@ export const routes: Routes = [
     path: 'comprasincart/:id',
     component: DirectBuysComponent,
   },
+  {
+    path: 'solicitud',
+    component: SolicitudDevolucionComponent,
+  },
 
 
   {
@@ -82,6 +88,14 @@ export const routes: Routes = [
   {
     path: 'vendedor',
     component: PanelVendedorComponent,
+  },
+  {
+    path: 'devolucionVendedor',
+    component: DevolucionVendedorComponent,
+  },
+  {
+    path: 'devolucionComprador',
+    component: DevolucionCompradorComponent,
   },
 
   {

@@ -3,15 +3,15 @@ import { ActivatedRoute } from '@angular/router';
 import { ComprasService } from '../api/compra.service';
 import { ProductosService } from '../api/producto.service';
 import { Compra } from '../models/compra.entity';
-import { error } from 'console';
+import { ItemService } from '../api/item.service';
 import { CommonModule } from '@angular/common';
 import { Item } from '../models/item.entity';
 import { CarritoService } from '../api/cart.service';
-import { response } from 'express';
+
 import { Producto } from '../models/producto.entity';
-import { switchMap,map } from 'rxjs';
+
 import { HistoricoPrecioService } from '../api/calculaprecio.service';
-import { firstValueFrom } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-devolucion',
@@ -41,7 +41,9 @@ subTotal!:number
       private productoService: ProductosService,
       private route:ActivatedRoute,
      private cartService:CarritoService,
-     private historicoPrecioService:HistoricoPrecioService
+     private historicoPrecioService:HistoricoPrecioService,
+     private router:Router,
+     private itemService:ItemService
     ) {}
 
     ngOnInit(): void {
@@ -72,7 +74,10 @@ subTotal!:number
       
       
       }
-
+      RealizarDevolucion(item: Item) {
+        this.itemService.setItem(item)
+        this.router.navigate(['/solicitud'])
+      }
       realizarDevolucion(itemDevuelto: Item) {
         if (!itemDevuelto.producto?.id) {
           console.error("Producto es undefined");

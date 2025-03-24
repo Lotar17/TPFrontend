@@ -1,0 +1,47 @@
+<div class="container mx-auto p-4">
+    <h1 class="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">Solicitudes</h1>
+  
+    <div *ngIf="solicitudes && solicitudes.length > 0; else noSolicitudes">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div *ngFor="let solicitud of solicitudes" class="bg-white rounded-xl shadow-lg p-6 hover:shadow-2xl transition-shadow duration-300">
+          <h2 class="text-xl font-semibold mb-4 text-blue-600">Solicitud #{{ solicitud.vendedor?.nombre }}</h2>
+  
+          <div class="mb-3">
+            <strong class="text-gray-700">Cliente:</strong>
+            <span class="text-gray-900 ml-1">{{ solicitud.codigoConfirmacion }}</span>
+          </div>
+          <div class="mb-3">
+            <strong class="text-gray-700">Producto:</strong>
+            <span class="text-gray-900 ml-1">{{ solicitud.item }}</span>
+          </div>
+          <div class="mb-3">
+            <strong class="text-gray-700">Cantidad:</strong>
+            <span class="text-gray-900 ml-1">{{ solicitud.fechaSolicitud }}</span>
+          </div>
+          <div class="mb-3">
+            <strong class="text-gray-700">Fecha:</strong>
+            <span class="text-gray-900 ml-1">{{ solicitud.fechaConfirmacion| date }}</span>
+          </div>
+          <div class="mb-3">
+            <strong class="text-gray-700">Estado:</strong>
+            <span class="text-gray-900 ml-1">{{ solicitud.estado }}</span>
+          </div>
+          <div class="mt-6 flex justify-end space-x-2" *ngIf="solicitud.id">
+            <button (click)="requestDecission(solicitud.id, 'Aprobada')" 
+              class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105">
+              ✅ Aceptar Solicitud
+            </button>
+            <button (click)="requestDecission(solicitud.id, 'Rechazada')" 
+              class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105">
+              ❌ Rechazar Solicitud
+            </button>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  
+    <ng-template #noSolicitudes>
+      <p class="text-center text-gray-600 py-8">No hay solicitudes disponibles.</p>
+    </ng-template>
+  </div>

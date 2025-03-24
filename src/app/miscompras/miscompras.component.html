@@ -1,9 +1,9 @@
-<div class="max-w-6xl mx-auto px-6 py-8">
+<div class="max-w-6xl mx-auto px-6 py-8 bg-gradient-to-r from-indigo-100 via-indigo-200 to-indigo-300 min-h-screen">
   <h1 class="text-4xl font-bold text-gray-900 text-center mb-8">🛍️ Mis Compras</h1>
 
   <div *ngIf="MisCompras.length > 0; else emptyCompras" class="space-y-6">
     
-    <div *ngFor="let compra of MisCompras" class="bg-white shadow-lg rounded-xl p-6 border-l-4 border-blue-500">
+    <div *ngFor="let compra of MisCompras" class="bg-white shadow-lg rounded-xl p-6 border-l-4 border-blue-500 bg-gradient-to-r from-gray-50 via-gray-100 to-gray-200">
       
       <!-- Total de la compra -->
       <h3 class="text-xl font-bold text-gray-800">💰 Total: <span class="text-green-600">${{ compra.total_compra }}</span></h3>
