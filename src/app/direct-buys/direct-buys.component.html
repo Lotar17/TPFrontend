@@ -28,6 +28,9 @@
     </button>
   </form>
 </div>
+<div *ngIf="mensajeVisible" class="notification mt-2">
+  {{ mensajeVisible }}
+</div>
 
 <!-- Mensaje de carga -->
 <p *ngIf="!producto" class="text-center text-red-500 font-semibold mt-6">⏳ Cargando producto...</p>

@@ -18,14 +18,10 @@ import { Item } from '../models/item.entity.js';
        
     ) {}
 
-    createDevolutionRequest(item: Item, motivo: string): Observable<any> {
+    createDevolutionRequest(itemId: string, motivo: string): Observable<any> {
         
         const payload = { 
-          item: { 
-            producto: item.producto?.id, 
-            persona: item.persona, 
-            cantidad_producto: item.cantidad_producto
-          }, 
+          itemId,
           motivo 
         };
         return this.http.post('http://localhost:3000/api/devolucion', payload);

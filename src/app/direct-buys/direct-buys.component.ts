@@ -30,13 +30,15 @@ cantidad_producto!:number
 items: Item[] = []
 compra!:Compra
 item!:Item
-
+compraExitosa:boolean= false;
+mensajeVisible:string=''
 
 
   constructor(
     private compraService: ComprasService,
     private authService: AuthService,
     private route:ActivatedRoute,
+    
     private productoService:ProductosService,
     private carritoService:CarritoService
   ) {}
@@ -74,7 +76,8 @@ item!:Item
     this.direccion_entrega = this.publicaForm.value.direccion_entrega || '';
     this.fecha_hora_compra = new Date().toISOString();
     this.cantidad_producto = this.publicaForm.value.cantidad_producto;
-  
+    this.compraExitosa = true;
+
     if (!this.producto) {
       console.error("❌ Error: El producto no se ha cargado correctamente.");
       return;
@@ -123,7 +126,7 @@ item!:Item
               console.error("❌ Error: La respuesta del servidor no contiene el ID de la compra.");
               return;
             }
-  
+            this.mostrarNotificacion(`Compra creada con exito`);
             console.log("✅ Compra creada con éxito:", response.data);
   
             // Actualizar stock solo si la compra se creó correctamente
@@ -146,4 +149,15 @@ item!:Item
       }
     });
   }
-}  
+  mostrarNotificacion(mensaje: string) {
+    this.mensajeVisible = mensaje;
+    this.compraExitosa= true;
+
+    // Ocultar el cartel después de 3 segundos
+    setTimeout(() => {
+      this.compraExitosa = false;
+   
+    }, 3000);
+  }
+}
+

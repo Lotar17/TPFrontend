@@ -52,25 +52,20 @@ this.vendedor=this.item1.producto?.persona
 }
  })
 }
- async onSubmit(){
-  this.motivo=this.publicaForm.value.motivoDevolucion
+async onSubmit() {
+  this.motivo = this.publicaForm.value.motivoDevolucion;
 
   console.log('Motivo:', this.motivo);
-  console.log('Item:', this.item1); 
-this.solicitudService.createDevolutionRequest(this.item1,this.motivo).subscribe({
-next:(response:any)=>{
-console.log('Solicitud creada con exito',response.data)
-
-},
-error:(error:any)=>{
-  console.error('Error en la creacion de la solicitud',error)
+  console.log('Item ID:', this.item1.id); 
+if(this.item1.id)
+  this.solicitudService.createDevolutionRequest(this.item1.id, this.motivo).subscribe({
+    next: (response: any) => {
+      console.log('Solicitud creada con éxito', response.data);
+    },
+    error: (error: any) => {
+      console.error('Error en la creación de la solicitud', error);
+    }
+  });
 }
 
-
-
-})
-
-
-
-}
 }

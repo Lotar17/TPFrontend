@@ -53,7 +53,7 @@ export class BuysComponent {
   
     this.compraService.addCompra(this.compra).subscribe({
       next: (response: any) => {
-        console.log("Respuesta del servidor:", response.data); 
+        console.log("Respuesta del servidor, datos de la compra:", response.data); 
         
        
         if (response.data.id) {

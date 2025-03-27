@@ -4,24 +4,32 @@
     <div *ngIf="  solicitudesComprador.length > 0; else noSolicitudes">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div *ngFor="let solicitud of solicitudesComprador" class="bg-white rounded-xl shadow-lg p-6 hover:shadow-2xl transition-shadow duration-300">
-          <h2 class="text-xl font-semibold mb-4 text-blue-600">Solicitud #{{ solicitud.comprador?.nombre }}</h2>
-  
+          <h2 class="text-xl font-semibold mb-4 text-blue-600">Solicitud </h2>
+          <div class="mb-3">
+            <strong class="text-gray-700">Codigo de Confirmacion:</strong>
+            <span class="text-gray-900 ml-1">{{ solicitud.codigoConfirmacion}}</span>
+          </div>
           <div class="mb-3">
             <strong class="text-gray-700">Cliente:</strong>
-            <span class="text-gray-900 ml-1">{{ solicitud.codigoConfirmacion }}</span>
+            <span class="text-gray-900 ml-1">{{ solicitud.comprador?.nombre }} {{solicitud.comprador?.apellido}}</span>
           </div>
           <div class="mb-3">
             <strong class="text-gray-700">Producto:</strong>
-            <span class="text-gray-900 ml-1">{{ solicitud.item }}</span>
+            <span class="text-gray-900 ml-1">{{ solicitud.item.producto?.descripcion }}</span>
           </div>
           <div class="mb-3">
             <strong class="text-gray-700">Cantidad:</strong>
-            <span class="text-gray-900 ml-1">{{ solicitud.fechaSolicitud }}</span>
+            <span class="text-gray-900 ml-1">{{ solicitud.item.cantidad_producto }}</span>
           </div>
           <div class="mb-3">
-            <strong class="text-gray-700">Fecha:</strong>
+            <strong class="text-gray-700">Fecha Solicitud:</strong>
+            <span class="text-gray-900 ml-1">{{ solicitud.fechaSolicitud| date }}</span>
+          </div>
+          <div class="mb-3">
+            <strong class="text-gray-700">Fecha Confirmacion:</strong>
             <span class="text-gray-900 ml-1">{{ solicitud.fechaConfirmacion| date }}</span>
           </div>
+          
           <div class="mb-3">
             <strong class="text-gray-700">Estado:</strong>
             <span class="text-gray-900 ml-1">{{ solicitud.estado }}</span>
