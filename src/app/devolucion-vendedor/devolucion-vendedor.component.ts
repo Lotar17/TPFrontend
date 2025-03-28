@@ -2,10 +2,15 @@ import { Component } from '@angular/core';
 import { SolicitudService } from '../api/solicitud.service';
 import { Devolucion } from '../models/solicitudDevolucion.entity';
 import { AutenticacionService } from '../api/autenticacion.service';
-import { response } from 'express';
+import { ItemService } from '../api/item.service';
 import { error } from 'console';
 import { CommonModule } from '@angular/common';
-
+import { Item } from '../models/item.entity';
+import { Compra } from '../models/compra.entity';
+import { Producto } from '../models/producto.entity';
+import { ProductosService } from '../api/producto.service';
+import { HistoricoPrecioService } from '../api/calculaprecio.service';
+import { ComprasService } from '../api/compra.service';
 @Component({
   selector: 'app-devolucion-vendedor',
   standalone: true,
@@ -17,12 +22,27 @@ export class DevolucionVendedorComponent {
 idVendedor!:string
 solicitudes:Devolucion[]=[];
 idSolicitud!:string;
-estadoSolicitud!:string
+estadoSolicitud!:string;
+item1!:Item
+stockNuevo!:number;
+productoActualizado!:Producto
+compra!:Compra
+stockProducto!:number
+precioActual!:number
+totalAnterior!:number
+valorCompra!:number
+compraActualizada!:Compra
+subTotal!:number
+cantidadDevuelta!:number
+solicitud!:Devolucion
 
 constructor(
 private autenticacionService:AutenticacionService,
-private solicitudService:SolicitudService
-
+private solicitudService:SolicitudService,
+private productoService:ProductosService,
+private historicoPrecioService:HistoricoPrecioService,
+private compraService:ComprasService,
+private itemService:ItemService
 ){}
 
 ngOnInit(){
@@ -36,36 +56,130 @@ next:(response:any)=>{
 this.solicitudes=response.data
 
 }
-
-
-  })
-
-
+ })
  },
  error:(error:any) =>{
   console.error("salmflfd",error)
  }
-})
+})}
+requestDecission(solicitud:Devolucion, decision: string, item: Item) {
+  if(solicitud.id)
+  this.solicitudService.makeDecission(solicitud.id, decision).subscribe({
+    next: (response: any) => {
+      console.log('Solicitud aprobada/rechazada con éxito', response.data);
+this.solicitud=solicitud
+      if (decision === 'Aprobada') {
+        this.item1 = item;
+        this.cantidadDevuelta=this.solicitud.cantidad_devuelta
+        if (this.item1.producto?.stock !== undefined) {
+          this.stockProducto = Number(this.item1.producto.stock) || 0;
+  this.cantidadDevuelta = Number(this.cantidadDevuelta) || 0;
+ 
+          this.stockNuevo = this.cantidadDevuelta + this.stockProducto;
+          console.log(this.stockNuevo);
+        } else {
+          console.error("Stock del producto es undefined");
+          return;
+        }
 
+        this.productoActualizado = {
+          ...this.item1.producto,
+          stock: this.stockNuevo
+        };
+console.log("Aca esta el producto actualizado",this.productoActualizado)
+        if (this.item1.producto.id) {
+          this.productoService.actualizarProducto(this.item1.producto.id, this.productoActualizado).subscribe({
+            next: (response: any) => {
+              console.log("Producto actualizado", response.data);
 
-}
-requestDecission(idSolicitud:string,decision:string){
-this.solicitudService.makeDecission(idSolicitud,decision).subscribe({
+              if (this.item1.producto?.id) {
+                this.historicoPrecioService.getOne(this.item1.producto.id).subscribe({
+                  next: (valor: any) => {
+                    console.log('Precio histórico obtenido:', valor);
+                    
+                    this.totalAnterior = this.item1.compra?.total_compra ?? 0;
+                    
+                    this.subTotal = this.cantidadDevuelta * valor;
+                    this.valorCompra = this.totalAnterior - this.subTotal;
+                    console.log("Valor anterior de la compra",this.totalAnterior)
+                    console.log("Subtotal",this.subTotal)
+                    console.log("valor",this.valorCompra)
+                    console.log(this.item1.cantidad_producto)
+                    console.log('Nuevo total de la compra:', this.valorCompra);
+
+                    if (this.item1.compra) {
+                      this.compraActualizada = {
+                        id: this.item1.compra.id,
+                        direccion_entrega: this.item1.compra.direccion_entrega,
+                        persona: this.item1.compra.persona,
+                        fecha_hora_compra: this.item1.compra.fecha_hora_compra,
+                        total_compra: this.valorCompra
+                      };
+                    }
+                    if(this.item1.compra?.id)
+              this.compraService.update(this.compraActualizada).subscribe({
+            next:(response)=>{
+console.log("La compra se actualizo",response.data)
+
+this.itemService.update(this.item1,this.cantidadDevuelta).subscribe({
 next:(response:any)=>{
-console.log('Solicitud aprobada/rechazada con exito',response.data)
+console.log("Item actualizado con exito",response.data)
 
-},
-error:(error:any)=>{
-  console.error("No se realizo la solicitud",error)
+
+}, error:(error:any)=>{
+  console.error("No se actualizo el item",error)
 }
 
 
 
 })
-  
+
+
+            },
+            error:(error:any)=>{
+              console.error("La compra no se actualizo",error)
+            }
+            
+            
+            
+            
+            
+            
+            
+            
+              })    
+                  
+                  
+                  
+              
+                  
+                  
+                  
+                  },
+                  error: (error: any) => {
+                    console.error('Error al obtener el precio histórico', error);
+                  }
+                });
+              }
+            },
+            error: (error: any) => {
+              console.error('Producto no actualizado', error);
+            }
+          });
+        }
+      }
+    },
+    error: (error: any) => {
+      console.error('Error en la decisión de la solicitud', error);
+    }
+  });
+}
+
+
+
 
 
 }
 
 
-}
+

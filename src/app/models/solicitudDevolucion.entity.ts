@@ -12,7 +12,8 @@ motivo:string,
 estado:string,
 codigoConfirmacion:number,
 fechaSolicitud:string,
-fechaConfirmacion:string
+fechaConfirmacion:string,
+cantidad_devuelta:number
 
 
 

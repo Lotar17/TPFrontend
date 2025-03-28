@@ -11,6 +11,7 @@ import { Item } from '../models/item.entity';
   export class ItemService{
 item!: Item
 private apiUrl = ' http://localhost:3000/api/item'; 
+private apiUrl2 = ' http://localhost:3000/api/item/update';
 
 constructor(private http: HttpClient) {}
 setItem(it: Item) {
@@ -26,6 +27,15 @@ getOne(id: string): Observable<ApiResponse<Item>> {
     return this.http.get<ApiResponse<Item>>(`${this.apiUrl}/${id}`);
   }
 
+update(item:Item,cantidad_devuelta:number): Observable<ApiResponse<Item>> {
+
+  const payload=
+  {
+    cantidad_devuelta
+
+  }
+    return this.http.put<ApiResponse<Item>>(`${this.apiUrl2}/${item.id}`, payload);
+  }
 
 
   }

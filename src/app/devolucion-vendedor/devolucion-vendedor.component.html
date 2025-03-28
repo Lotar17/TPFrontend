@@ -15,12 +15,15 @@
             <span class="text-gray-900 ml-1">{{ solicitud.item.producto?.descripcion}}</span>
           </div>
           <div class="mb-3">
-            <strong class="text-gray-700">Producto:</strong>
+            <strong class="text-gray-700">Cantidad Producto:</strong>
             <span class="text-gray-900 ml-1">{{ solicitud.item.cantidad_producto}}</span>
           </div>
           <div class="mb-3">
-            <strong class="text-gray-700">Producto:</strong>
+            <strong class="text-gray-700">Total Compra:</strong>
             <span class="text-gray-900 ml-1">{{ solicitud.item.compra?.total_compra}}</span>
+          </div><div class="mb-3">
+            <strong class="text-gray-700">Cantidad Devuelta:</strong>
+            <span class="text-gray-900 ml-1">{{ solicitud.cantidad_devuelta}}</span>
           </div>
           <div class="mb-3">
             <strong class="text-gray-700">Cantidad:</strong>
@@ -35,11 +38,11 @@
             <span class="text-gray-900 ml-1">{{ solicitud.estado }}</span>
           </div>
           <div class="mt-6 flex justify-end space-x-2" *ngIf="solicitud.id">
-            <button (click)="requestDecission(solicitud.id, 'Aprobada')" 
+            <button (click)="requestDecission(solicitud, 'Aprobada',solicitud.item)" 
               class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105">
               ✅ Aceptar Solicitud
             </button>
-            <button (click)="requestDecission(solicitud.id, 'Rechazada')" 
+            <button (click)="requestDecission(solicitud, 'Rechazada',solicitud.item)" 
               class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105">
               ❌ Rechazar Solicitud
             </button>

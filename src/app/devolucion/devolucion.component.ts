@@ -55,7 +55,7 @@ subTotal!:number
       this.compraService.getOne(this.id_compra).subscribe({
       next:(response:any)=>{
       this.compra=response.data
-      
+      this.compraService.setCompra(this.compra)
       
       console.log(response.data)
       

@@ -14,6 +14,7 @@ export class ComprasService {
   private url3: string= 'http://localhost:3000/api/compras/stock'
   private item_compra: Item[] = [];
   private item_devolucion: Item[] = [];
+  private compra!:Compra
   constructor(private http: HttpClient,
     
   ) {}
@@ -65,7 +66,11 @@ getItemsDevolucion(){
 updateStock(id: string): Observable<ApiResponse<Compra>> {
   return this.http.put<ApiResponse<Compra>>(`${this.url3}/${id}`, null, { responseType: 'json' });
 }
-
-
+setCompra(compra:Compra){
+  this.compra=compra
+}
+getCompra(){
+  return this.compra
+}
 
 }
