@@ -11,14 +11,15 @@ import { AddCompraComponent } from '../add-compra/add-compra.component';
 import { RouterLink } from '@angular/router';
 import { HistoricoPrecioService } from '../api/calculaprecio.service';
 import { CRUDService } from '../api/crud.service';
-import { AuthService } from '../api/Auth.service';
+import { AutenticacionService } from '../api/autenticacion.service';
 import { CarritoService } from '../api/cart.service';
+import e, { response } from 'express';
 
 
 @Component({
   selector: 'app-producto-detalle',
   standalone: true,
-  imports: [CommonModule, AddCompraComponent,RouterLink,RouterOutlet],
+  imports: [CommonModule,RouterLink],
   templateUrl: './producto-detalle.component.html',
   styleUrls: ['./producto-detalle.component.css']
 })
@@ -26,7 +27,9 @@ export class ProductoDetalleComponent implements OnInit {
   producto!: Producto;
   error!: string; 
   precio!: number;
-  nacho!: string
+ idUsuario!:string
+ showNotification: boolean = false; // Variable para controlar la visibilidad del cartel
+ mensajeNotificacion: string = ''; 
 
 
   constructor(
@@ -34,7 +37,7 @@ export class ProductoDetalleComponent implements OnInit {
     private productosService: ProductosService,
     private historicoprecioService: HistoricoPrecioService,
     private crudService: CRUDService<Producto>, 
-    private authService: AuthService,
+    private autenticacionService:AutenticacionService,
     private carritoService:CarritoService
   ) {}
 
@@ -52,7 +55,7 @@ export class ProductoDetalleComponent implements OnInit {
 
   getOne(id: string): void { 
     this.productosService.getOne(id).subscribe(
-      (producto: Producto) => { // Espera un Producto
+      (producto: any) => { // Espera un Producto
         this.producto = producto; // Asigna el producto recuperado
       },
       (error) => {
@@ -60,7 +63,7 @@ export class ProductoDetalleComponent implements OnInit {
         console.error('Error fetching product:', error);
       }
     );
-    console.log(this.nacho)
+    
   }
   calcularPrecio(id: string): void {
     this.historicoprecioService.getOne(id).subscribe(
@@ -84,15 +87,34 @@ export class ProductoDetalleComponent implements OnInit {
   }
   agregarAlCarrito(id_Producto: string| undefined) {
     
-    const idPersona = this.authService.getUserId();
+  
     const idProducto= id_Producto || ""
+this.autenticacionService.getUserInformation().subscribe({
+next:(response:any)=>{
+this.idUsuario=response.data?.id
+this.carritoService.addItemToCarrito(idProducto, this.idUsuario)
+this.mostrarNotificacion(`${this.producto.descripcion} se agregó al carrito.`);
+},
+error:(error:any)=>
+{
+  console.error("No se encontro el usuario",error)
+}
 
 
-    this.carritoService.addItemToCarrito(idProducto, idPersona)
+})
+
     
   }
 
-  
+  mostrarNotificacion(mensaje: string) {
+    this.mensajeNotificacion = mensaje;
+    this.showNotification = true;
+
+    // Ocultar el cartel después de 3 segundos
+    setTimeout(() => {
+      this.showNotification = false;
+    }, 3000);
+  }
 
   
 

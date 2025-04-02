@@ -4,9 +4,11 @@ import { ComprasService } from '../api/compra.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormGroup, FormControl } from '@angular/forms';
-import { AuthService } from '../api/Auth.service';
+
 import { Compra } from '../models/compra.entity';
 import { error } from 'node:console';
+import { AutenticacionService } from '../api/autenticacion.service';
+import { response } from 'express';
 @Component({
   selector: 'app-buys',
   standalone: true,
@@ -29,15 +31,22 @@ export class BuysComponent {
 
   constructor(
     private compraService: ComprasService,
-    private authService: AuthService
+    private autenticacionService:AutenticacionService
   ) {}
 
   ngOnInit() {
     this.items = this.compraService.getItems();
+    this.autenticacionService.getUserInformation().subscribe({
+next:(response:any)=>{
+
+  this.idPersona=response.data.id
+}
+
+    })
   }
 
   async onSubmit() {
-    this.idPersona = this.authService.getUserId();
+    
     this.direccion_entrega = this.publicaForm.value.direccion_entrega || '';
     this.fecha_hora_compra = new Date().toISOString(); 
 
@@ -50,7 +59,7 @@ export class BuysComponent {
       fecha_hora_compra: this.fecha_hora_compra,
       items: this.items
     };
-  
+  console.log(this.compra)
     this.compraService.addCompra(this.compra).subscribe({
       next: (response: any) => {
         console.log("Respuesta del servidor, datos de la compra:", response.data); 

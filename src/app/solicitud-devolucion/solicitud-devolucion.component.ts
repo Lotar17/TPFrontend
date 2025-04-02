@@ -39,6 +39,7 @@ totalAnterior!:number
 valorCompra!:number
 compraActualizada!:number
 subotal!:number
+idProducto!:string
   constructor(
 private itemService:ItemService,
 private autenticacionService:AutenticacionService,
@@ -62,10 +63,29 @@ this.compra=this.item.compra
 if (this.item.id)
   this.itemService.getOne(this.item.id).subscribe({
 next:(response:any)=>{
+
 this.item1=response.data
-console.log(this.item1)
-if(this.item1.producto?.persona)
-this.vendedor=this.item1.producto?.persona
+console.log(this.item1.producto?.id)
+if(this.item1.producto?.id)
+  this.idProducto=this.item1.producto.id
+if(this.idProducto)
+  console.log('ID del producto antes de la petición:', this.idProducto);
+
+this.historicoPrecioService.getOne(this.idProducto).subscribe({
+  next: (precioData: any) => {
+    if(this.item1.producto?.id)
+    console.log(`Precio recibido para producto ${this.item1.producto.id}:`, precioData);
+  if(this.item1.producto)
+   this.item1.producto.precio = precioData; // Asignamos el precio unitario
+  },
+  error: (error: any) => {
+    console.error(`Error obteniendo precio para producto ${this.item1}:`, error);
+  }
+  
+
+
+})
+
 },error:(error:any)=>{
   console.error('No se encontro el item',error)
 }

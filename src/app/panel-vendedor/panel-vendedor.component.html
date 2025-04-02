@@ -28,6 +28,8 @@
             <th class="border border-gray-300 px-4 py-2">Nombre</th>
             <th class="border border-gray-300 px-4 py-2">Precio</th>
             <th class="border border-gray-300 px-4 py-2">Stock</th>
+            <th class="border border-gray-300 px-4 py-2">Acciones</th> 
+            <th class="border border-gray-300 px-4 py-2">Borrar Producto</th> <!-- Nueva columna para los botones -->
           </tr>
         </thead>
         <tbody>
@@ -35,9 +37,28 @@
             <td class="border border-gray-300 px-4 py-2">{{ producto.descripcion }}</td>
             <td class="border border-gray-300 px-4 py-2">{{ producto.precio | currency }}</td>
             <td class="border border-gray-300 px-4 py-2">{{ producto.stock }}</td>
+            <td class="border border-gray-300 px-4 py-2 text-center">
+              <!-- Botón para modificar el producto -->
+              <button 
+              (click)="modificarProducto(producto)" 
+              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded transition duration-300"
+            >
+              ✏️ Modificar
+            </button>
+            </td>
+            <td class="border border-gray-300 px-4 py-2 text-center">
+              <!-- Botón para modificar el producto -->
+              <button 
+              (click)="borrarProducto(producto)" 
+              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded transition duration-300"
+            >
+               Borrar Producto
+            </button>
+            </td>
           </tr>
         </tbody>
       </table>
+      
     </div>
 
     <ng-template #noProductos>

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { ApiResponse } from '../models/ApiResponse';
 import { HistoricoPrecio } from '../models/historicoprecio.entity';
 import { map } from 'rxjs';
+import { Item } from '../models/item.entity';
 
 
 @Injectable({
@@ -13,7 +14,7 @@ import { map } from 'rxjs';
  
   
     url = 'http://localhost:3000/api/historico-precios/producto';
-
+ url2 = 'http://localhost:3000/api/historico-precios/create'
 
     constructor(private http: HttpClient) {}
   
@@ -25,6 +26,18 @@ import { map } from 'rxjs';
         );
     }
     
+    createPrecio(valor:number,productoId:string): Observable<any> {
+const payload={
+valor,
+productoId
+
+}
+
+        return this.http.post(`${this.url2}`,payload);
+    
+    
+        
+      }
     
 
 

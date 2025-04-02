@@ -1,15 +1,15 @@
 <div class="max-w-7xl mx-auto px-6 py-8 bg-gray-100 rounded-lg shadow-xl">
 
   <h1 class="text-3xl font-bold text-center text-indigo-600 mb-8">Solicitud de Devolución</h1>
-<h2>{{item1.producto?.stock}}</h2>
+
   <!-- Producto a Devolver -->
   <div class="bg-gradient-to-r from-indigo-100 via-indigo-200 to-indigo-300 shadow-xl rounded-lg p-6 mb-6">
     <h2 class="text-2xl font-semibold text-gray-800 mb-4">Producto a Devolver</h2>
     <div class="flex items-center space-x-4">
       <div class="flex-1">
-        <p class="text-lg font-semibold text-gray-700">Descripción: {{ item?.producto?.descripcion }}</p>
-        <p class="text-md text-gray-500">Cantidad: {{ item?.cantidad_producto }}</p>
-        <p class="text-md text-gray-500">Precio: ${{ item?.producto?.precio | number: '1.2-2' }}</p>
+        <p class="text-lg font-semibold text-gray-700">Descripción: {{ item1?.producto?.descripcion }}</p>
+        <p class="text-md text-gray-500">Cantidad: {{ item1?.cantidad_producto }}</p>
+        <p class="text-md text-gray-500">Precio: ${{ item1?.producto?.precio | number: '1.2-2' }}</p>
       </div>
     </div>
   </div>
@@ -44,7 +44,7 @@
         <label for="motivoDevolucion" class="text-gray-700 font-semibold">Cantidad A Devolver</label>
         <textarea id="motivoDevolucion" formControlName="cantidadDevuelta" rows="4"
           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-          placeholder="Escribe el motivo de tu devolución..." required></textarea>
+          placeholder="Escribe la cantidad a Devolver" required></textarea>
           
       </div>
 

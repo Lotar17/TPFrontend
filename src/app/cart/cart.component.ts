@@ -9,6 +9,10 @@ import { ComprasService } from '../api/compra.service';
 import { Router } from '@angular/router';
 import { HistoricoPrecio } from '../models/historicoprecio.entity';
 import { ChangeDetectorRef } from '@angular/core';
+import { AutenticacionService } from '../api/autenticacion.service';
+import { response } from 'express';
+import { error } from 'console';
+import { HistoricoPrecioService } from '../api/calculaprecio.service';
 
 @Component({
   selector: 'app-cart',
@@ -22,40 +26,84 @@ export class CartComponent {
   subtotal!:number;
   showNotification: boolean = false; // Variable para controlar la visibilidad del cartel
   mensajeNotificacion: string = ''; 
+  idUser!:string
+  idCliente!:string
   constructor(
     private route: ActivatedRoute,
     private carritoService: CarritoService,
-    private authService:AuthService,
+   private historicoPrecioService:HistoricoPrecioService,
     private compraService: ComprasService,
     private router:Router,
-    private cd:ChangeDetectorRef
+    private cd:ChangeDetectorRef,
+    private autenticacionService:AutenticacionService
   ) {}
 
   ngOnInit() {
-    const idPersona = this.authService.getUserId();
-    if (idPersona) {
-      this.carritoService.getCarrito(idPersona);
+    this.autenticacionService.getUserInformation().subscribe({
+      next: (response: any) => {
+        this.idUser = response.data.id;
+    
+        if (this.idUser) {
+          this.carritoService.getCarrito(this.idUser);
+          
+          // Nos suscribimos al carrito para recibir actualizaciones en tiempo real
+          this.carritoService.carritoItems$.subscribe((items) => {
+            this.items = items;
+            this.obtenerPreciosHistoricos();
+            this.calcularSubtotal();
+          });
+        }
+      },
+      error: (error: any) => {
+        console.error("No se encontró información del usuario", error);
+      }
+    });
+    
 
-      // Nos suscribimos al carrito para recibir actualizaciones en tiempo real
-      this.carritoService.carritoItems$.subscribe((items) => {
-        this.items = items;
-        this.calcularSubtotal();
-      });
-    }
-  }
+
+
+
+}
 
   incrementarCantidad(idProducto: string | undefined, item: Item) {
     if (!idProducto) return;
+    if(item.producto?.stock)
+    if (item.cantidad_producto >= item.producto.stock) {
+      console.warn("❌ No puedes agregar más productos. Stock insuficiente.");
+      return;
+    }
+  
+let idUser=''
+this.autenticacionService.getUserInformation().subscribe({
+next:(response:any)=>{
+idUser=response.data.id
+this.carritoService.addItemToCarrito(idProducto, idUser);
+},
+error:(error:any)=>{
 
-    const idPersona = this.authService.getUserId();
-    this.carritoService.addItemToCarrito(idProducto, idPersona);
-  }
+  console.error("No se encontro el usuario",error)
+}
+
+})
+}
   decrementarCantidad(idProducto: string | undefined, item: Item) {
     if (!idProducto) return;
-
-    const idPersona = this.authService.getUserId();
-    this.carritoService.DecrementQuantity(idProducto, idPersona);
+    if (item.cantidad_producto <= 1) {
+      console.warn("❌ No puedes reducir más la cantidad.");
+      return;
+    }
+let userId
+this.autenticacionService.getUserInformation().subscribe({
+  next:(response:any)=>{
+  userId=response.data.id
+    this.carritoService.DecrementQuantity(idProducto, userId);
+  },
+  error:(error:any)=>{
+  
+    console.error("No se encontro el usuario",error)
   }
+  
+   })}
   eliminarItem(itemId: string | undefined) {
     if (!itemId) return;
   
@@ -68,7 +116,6 @@ export class CartComponent {
   realizarCompra(items_compra: Item[]): void {
     this.compraService.setItem(items_compra);
     
-    // 🔥 Filtrar los items comprados del carrito
     const carritoActualizado = this.items.filter(
       item => !items_compra.some(compraItem => compraItem.id === item.id)
     );
@@ -76,14 +123,6 @@ export class CartComponent {
     this.carritoService.actualizarCarrito(carritoActualizado); // 🚀 Actualizar el estado del carrito
     this.router.navigate(['/buys']);
   }
-
-
-
-
-
-
-
-
 
   calcularSubtotal() {
     this.subtotal = this.items.reduce((total, item) => {
@@ -98,4 +137,26 @@ export class CartComponent {
       return total + precioActual * item.cantidad_producto;
     }, 0);
   }
+
+  obtenerPreciosHistoricos() {
+    this.items.forEach((item) => {
+      if (item.producto?.id) {
+        this.historicoPrecioService.getOne(item.producto.id).subscribe({
+          next: (precioData: any) => {
+            if(item.producto)
+              
+            item.producto.precio = precioData; 
+            this.cd.detectChanges();
+            console.log('Precio',item.producto?.precio)
+          },
+          error: (error: any) => {
+            if(item.producto)
+            console.error(`Error obteniendo precio para producto ${item.producto.id}`, error);
+          }
+        });
+      }
+    });
+  }
+  
+
 }

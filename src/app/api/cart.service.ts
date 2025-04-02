@@ -12,6 +12,7 @@ export class CarritoService {
   private carritoItems = new BehaviorSubject<Item[]>([]); // Almacena el estado del carrito
   carritoItems$ = this.carritoItems.asObservable(); // Observable para que el componente se suscriba
   private Url = 'http://localhost:3000/api/item'; 
+  private Url1 = 'http://localhost:3000/api/item/decrementa';
   private Url2 = 'http://localhost:3000/api/item/persona';
   private Url3 = 'http://localhost:3000/api/item/create'
   constructor(private http: HttpClient) {}
@@ -62,7 +63,7 @@ export class CarritoService {
   }
 
   DecrementQuantity(idProducto: string, idPersona: string): void {
-    this.http.post<{ message: string }>(`${this.Url}/`, { producto: idProducto, persona: idPersona })
+    this.http.post<{ message: string }>(`${this.Url1}/`, { producto: idProducto, persona: idPersona })
       .subscribe({
         next: () => {
           let carritoActual = this.carritoItems.getValue();

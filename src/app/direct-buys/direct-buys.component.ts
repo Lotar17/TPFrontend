@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AuthService } from '../api/Auth.service';
+
 import { ComprasService } from '../api/compra.service';
 import { ActivatedRoute, Route } from '@angular/router';
 import { ProductosService } from '../api/producto.service';
@@ -11,7 +11,7 @@ import { Item } from '../models/item.entity';
 import { response } from 'express';
 import { Compra } from '../models/compra.entity';
 import { CommonModule } from '@angular/common';
-
+import { AutenticacionService } from '../api/autenticacion.service';
 @Component({
   selector: 'app-direct-buys',
   standalone: true,
@@ -32,13 +32,13 @@ compra!:Compra
 item!:Item
 compraExitosa:boolean= false;
 mensajeVisible:string=''
-
+idUser!:string
 
   constructor(
     private compraService: ComprasService,
-    private authService: AuthService,
+   
     private route:ActivatedRoute,
-    
+    private autenticacionService:AutenticacionService,
     private productoService:ProductosService,
     private carritoService:CarritoService
   ) {}
@@ -49,6 +49,16 @@ mensajeVisible:string=''
   });
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id'); 
+    this.autenticacionService.getUserInformation().subscribe({
+      next:(response:any)=>{
+      this.idUser=response.data.id
+
+      },
+      error:(error:any)=>{
+      
+        console.error("No se encontro el usuario",error)
+      }})
+    
     if (id) {
       this.getOne(id);
      
@@ -72,7 +82,7 @@ mensajeVisible:string=''
  async  onSubmit() {
     console.log("✅ Iniciando proceso de compra...");
   
-    this.idPersona = this.authService.getUserId();
+   
     this.direccion_entrega = this.publicaForm.value.direccion_entrega || '';
     this.fecha_hora_compra = new Date().toISOString();
     this.cantidad_producto = this.publicaForm.value.cantidad_producto;
@@ -82,12 +92,18 @@ mensajeVisible:string=''
       console.error("❌ Error: El producto no se ha cargado correctamente.");
       return;
     }
+    if(this.producto.stock)
+    if (this.cantidad_producto <= 0 || this.cantidad_producto > this.producto.stock) {
+      console.error("❌ Error: La cantidad debe ser mayor a 0 y menor o igual al stock disponible.");
+      this.mostrarNotificacion("❌ Cantidad no válida. Stock disponible: " + this.producto.stock);
+      return;
+    }
   
     console.log("📌 Producto cargado correctamente:", this.producto);
     console.log("📌 Creando item en el carrito...");
   if(this.producto.id)
     
-    this.carritoService.createItem(this.producto.id, this.idPersona, this.cantidad_producto).subscribe({
+    this.carritoService.createItem(this.producto.id, this.idUser, this.cantidad_producto).subscribe({
       next: (response: any) => {
         if (!response || !response.data) {
           console.error("❌ Error: La respuesta del servidor no contiene datos del item.");
@@ -103,7 +119,7 @@ mensajeVisible:string=''
   
         // Crear la compra
         this.compra = {
-          personaId: this.idPersona,
+          personaId: this.idUser,
           direccion_entrega: this.direccion_entrega,
           fecha_hora_compra: this.fecha_hora_compra,
           items: this.items
@@ -159,5 +175,15 @@ mensajeVisible:string=''
    
     }, 3000);
   }
+
+  cantidadInvalida: boolean = false;
+
+  validarCantidad() {
+    const cantidad = this.publicaForm.value.cantidad_producto;
+    if(this.producto.stock)
+    this.cantidadInvalida = cantidad <= 0 || cantidad > this.producto.stock;
+  }
+  
+
 }
 

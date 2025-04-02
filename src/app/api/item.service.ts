@@ -37,5 +37,9 @@ update(item:Item,cantidad_devuelta:number): Observable<ApiResponse<Item>> {
     return this.http.put<ApiResponse<Item>>(`${this.apiUrl2}/${item.id}`, payload);
   }
 
+removeItem(idItem:string): Observable<ApiResponse<Item>>{
+  return this.http.delete<ApiResponse<Item>>(`${this.apiUrl}/${idItem}`);
 
+
+}
   }

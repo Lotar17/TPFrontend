@@ -6,9 +6,10 @@ import { HistoricoPrecioService } from '../api/calculaprecio.service';
 import { CommonModule } from '@angular/common';
 import { Response } from 'express';
 import { CarritoService } from '../api/cart.service';
-import { AuthService } from '../api/Auth.service';
+
 import { CurrencyPipe } from '@angular/common';
 import localeEs from '@angular/common/locales/es-AR';
+import { AutenticacionService } from '../api/autenticacion.service';
 @Component({
   selector: 'app-product-card',
   standalone: true,
@@ -25,7 +26,7 @@ export class ProductCardComponent {
   constructor(
     private historicoprecioService: HistoricoPrecioService,
     private carritoService: CarritoService,
-    private authService: AuthService
+    private autenticacionService:AutenticacionService
   ) {}
 
   ngOnInit(): void {
@@ -55,17 +56,28 @@ export class ProductCardComponent {
 
   agregarAlCarrito(id_Producto: string| undefined) {
     
-   
+   let userId
     const idProducto= id_Producto || ""
+if (!idProducto) return;
+this.autenticacionService.getUserInformation().subscribe({
+  next:(response:any)=>{
+  userId=response.data.id
+  this.carritoService.addItemToCarrito(idProducto, userId);
+  this.mostrarNotificacion(`${this.producto.descripcion} se agregó al carrito.`);
 
 
-    
-      if (!idProducto) return;
+
+  },
+  error:(error:any)=>{
   
-      const idPersona = this.authService.getUserId();
-      this.carritoService.addItemToCarrito(idProducto, idPersona);
-      this.mostrarNotificacion(`${this.producto.descripcion} se agregó al carrito.`);
-    }
+    console.error("No se encontro el usuario",error)
+  }
+
+
+
+
+      
+    })}
     mostrarNotificacion(mensaje: string) {
       this.mensajeNotificacion = mensaje;
       this.showNotification = true;

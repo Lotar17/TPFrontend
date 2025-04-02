@@ -1,0 +1,12 @@
+.notification {
+    position: var(15px);
+    bottom: 20px; /* 🔥 Mueve el cartel a la parte inferior */
+    right: 20px;  /* 🔥 Lo alinea a la derecha */
+    background-color: #173f19; /* Verde */
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    font-size: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    animation: fadeInOut 3s ease-in-out;
+  }

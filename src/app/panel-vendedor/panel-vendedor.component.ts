@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AuthService } from '../api/Auth.service';
+import { HistoricoPrecioService } from '../api/calculaprecio.service';
 import { PersonaService } from '../api/per.service';
 import { Persona } from '../models/persona.entity';
 import { Producto } from '../models/producto.entity';
@@ -7,6 +7,8 @@ import { CRUDService } from '../api/crud.service';
 import { CommonModule } from '@angular/common';
 import { AutenticacionService } from '../api/autenticacion.service';
 import { RouterLink } from '@angular/router';
+import { ProductosService } from '../api/producto.service';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-panel-vendedor',
   standalone: true,
@@ -20,7 +22,10 @@ idUser!:string
 user!:Persona
 constructor(
   private autenticacionService: AutenticacionService,
-  private personaService: PersonaService
+  private personaService: PersonaService,
+  private historicoPrecioService:HistoricoPrecioService,
+  private productoService:ProductosService,
+  private route:Router
 ) {}
 
 ngOnInit() {
@@ -36,6 +41,42 @@ ngOnInit() {
             this.user = response.data;
             this.productos = this.user ? this.user.prods_publicados : [];
             console.log('Usuario:', this.user);
+            this.productos?.forEach((producto)=>{
+if(producto.id){
+
+this.historicoPrecioService.getOne(producto.id).subscribe({
+  next:(precioActual:any)=>{
+producto.precio=precioActual
+  },
+  error:(error:any)=>{
+  
+    console.error("No se encontro el precio",error)
+  }
+  
+  
+
+
+
+
+
+
+
+})
+
+
+
+
+}
+
+
+
+
+
+            }
+            
+          
+            )
+
           },
           error: (error) => {
             console.error('Error al obtener la compra:', error);
@@ -48,6 +89,18 @@ ngOnInit() {
     error: (error) => {
       console.error('Error al obtener la información de autenticación:', error);
     },
+  });
+}
+modificarProducto(producto:Producto){
+this.productoService.setProducto(producto)
+this.route.navigate(['/modificaProducto'])
+
+}
+borrarProducto(producto:Producto) {
+  if(producto.id)
+  this.productoService.deleteProducto(producto.id).subscribe({
+    next: () => console.log(`Producto ${producto.id} eliminado y lista actualizada`),
+    error: (error) => console.error('Error al eliminar producto:', error),
   });
 }
 }

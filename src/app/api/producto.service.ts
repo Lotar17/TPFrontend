@@ -12,7 +12,10 @@ export class ProductosService {
   private productosSubject = new BehaviorSubject<Producto[]>([]);
   productos$ = this.productosSubject.asObservable();
   private Url='http://localhost:3000/api/productos';
-  private Url2='http://localhost:3000/api/productos/persona'
+  private Url2='http://localhost:3000/api/productos/persona';
+  private producto!:Producto
+  private productosVendedorSubject = new BehaviorSubject<Producto[]>([]);
+  productosVendedor$ = this.productosVendedorSubject.asObservable(); 
   constructor(private http: HttpClient) {}
 
 
@@ -28,17 +31,32 @@ export class ProductosService {
   }
 
 
-getOne(id: string): Observable<Producto> { 
-  const url = `http://localhost:3000/api/productos/${id}`;
-  return this.http.get<ApiResponse<Producto>>(url).pipe(
-    map((response: ApiResponse<Producto>) => response.data) 
-  );
-}
+  getOne(id: string): Observable<Producto> { 
+    const url = `http://localhost:3000/api/productos/${id}`;
+    return this.http.get<ApiResponse<Producto>>(url).pipe(
+      map((response: ApiResponse<Producto>) => response.data) 
+    );
+  }
+  
 
 
 actualizarProducto(idProducto: string, productoActualizado: Producto): Observable<any> {
   return this.http.put(`${this.Url}/${idProducto}`, productoActualizado);
 }
 
-
+setProducto(producto:Producto){
+  this.producto=producto
+}
+getProducto(){
+  return this.producto
+}
+deleteProducto(id: string) {
+  return this.http.delete(`${this.Url}/${id}`).pipe(
+    tap(() => {
+      
+      const productosActualizados = this.productosSubject.getValue().filter(p => p.id !== id);
+      this.productosSubject.next(productosActualizados);
+    })
+  );
+}
 }

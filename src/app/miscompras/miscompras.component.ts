@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ComprasService } from '../api/compra.service';
 import { Compra } from '../models/compra.entity';
-import { AuthService } from '../api/Auth.service';
+import { AutenticacionService } from '../api/autenticacion.service';
 import { Producto } from '../models/producto.entity';
 import { ProductosService } from '../api/producto.service';
 import { RouterLink } from '@angular/router';
 import { Router } from '@angular/router';
+import { HistoricoPrecioService } from '../api/calculaprecio.service';
 
 
 import { Item } from '../models/item.entity';
@@ -28,9 +29,10 @@ export class MisComprasComponent {
 
   constructor(
     private compraService: ComprasService,
-    private authService: AuthService,
+    private autenticacionService:AutenticacionService,
     private productoService: ProductosService,
-    private router:Router
+    private router:Router,
+    private historicoPrecioService:HistoricoPrecioService
   ) {}
 
   ngOnInit(): void {
@@ -38,13 +40,36 @@ export class MisComprasComponent {
   }
 
   loadMisCompras(): void {
-    this.personaId = this.authService.getUserId();
+    let userId;
+    this.autenticacionService.getUserInformation().subscribe({
+      next: (response: any) => {
+        userId = response.data.id;
+        this.compraService.getcomprasByUser(userId).subscribe((response: any) => {
+          if (response && Array.isArray(response.data)) {
+            this.MisCompras = response.data;
   
-    this.compraService.getcomprasByUser(this.personaId).subscribe((response: any) => {
-      if (response && Array.isArray(response.data)) {
-        this.MisCompras = response.data;
-
-     
+            // Recorremos cada compra y sus items para obtener el precio de cada producto
+            this.MisCompras.forEach((compra) => {
+              if(compra.items)
+              compra.items.forEach((item: any) => {
+                if (item.producto?.id) {
+                  this.historicoPrecioService.getOne(item.producto.id).subscribe({
+                    next: (precioData: any) => {
+                      console.log(`Precio recibido para producto ${item.producto.id}:`, precioData);
+                      item.producto.precio = precioData; // Asignamos el precio unitario
+                    },
+                    error: (error: any) => {
+                      console.error(`Error obteniendo precio para producto ${item.producto.id}:`, error);
+                    }
+                  });
+                }
+              });
+            });
+          }
+        });
+      },
+      error: (error: any) => {
+        console.error("No se encontró información del usuario", error);
       }
     });
   }

@@ -35,6 +35,7 @@ compraActualizada!:Compra
 subTotal!:number
 cantidadDevuelta!:number
 solicitud!:Devolucion
+compraUpdate!:Compra
 
 constructor(
 private autenticacionService:AutenticacionService,
@@ -101,12 +102,7 @@ console.log("Aca esta el producto actualizado",this.productoActualizado)
                     
                     this.subTotal = this.cantidadDevuelta * valor;
                     this.valorCompra = this.totalAnterior - this.subTotal;
-                    console.log("Valor anterior de la compra",this.totalAnterior)
-                    console.log("Subtotal",this.subTotal)
-                    console.log("valor",this.valorCompra)
-                    console.log(this.item1.cantidad_producto)
-                    console.log('Nuevo total de la compra:', this.valorCompra);
-
+                   
                     if (this.item1.compra) {
                       this.compraActualizada = {
                         id: this.item1.compra.id,
@@ -121,9 +117,50 @@ console.log("Aca esta el producto actualizado",this.productoActualizado)
             next:(response)=>{
 console.log("La compra se actualizo",response.data)
 
+const compraActual=response.data
+console.log('items',compraActual?.items?.length)
+
 this.itemService.update(this.item1,this.cantidadDevuelta).subscribe({
 next:(response:any)=>{
+  this.item1=response.data
+
 console.log("Item actualizado con exito",response.data)
+console.log('compra',this.item1.compra)
+if (this.item1.cantidad_producto===0) {
+  
+  console.log(compraActual)
+ 
+  console.log(this.item1.cantidad_producto)
+  if (this.item1.id) {
+    console.log('🗑 Eliminando item con ID:', this.item1.id);
+    this.itemService.removeItem(this.item1.id).subscribe({
+      next: (response: any) => {
+        console.log('✅ Item eliminado con éxito', response.data);
+
+        if(compraActual)
+        if(compraActual.items?.length===1){
+          if(compraActual.id)
+this.compraService.delete(compraActual.id).subscribe({
+next:(response:any)=>{
+console.log('Compra eliminada con exito',response.data)
+}, 
+  error:(error:any)=>{
+    console.error('No se pudo eliminar la compra', error)
+  }
+
+
+})
+
+        }
+      },
+      error: (error: any) => {
+        console.error("❌ No se eliminó el item", error);
+      }
+    });
+  } else {
+    console.error("❌ No se puede eliminar el item: ID no definido");
+  }
+}
 
 
 }, error:(error:any)=>{
