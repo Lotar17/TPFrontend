@@ -55,4 +55,8 @@ filtrarSolicitudes() {
     s.estado.toLowerCase().includes(filtro)
   );
 }
+envioRealizado(solicitud:Devolucion){
+
+
+}
 }

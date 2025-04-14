@@ -13,7 +13,7 @@ import { HistoricoPrecioService } from '../api/calculaprecio.service';
 import { ComprasService } from '../api/compra.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { switchMap,tap,map,of,pipe,filter,every } from 'rxjs';
-import { Pipe } from '@angular/core';
+import { CorreoService } from '../api/correo.service';
 @Component({
   selector: 'app-devolucion-vendedor',
   standalone: true,
@@ -44,7 +44,6 @@ mostrarProductoLlego: boolean = false; // Controla visibilidad de "Llegó el pro
   mostrarCierre: boolean = false; // Controla visibilidad del formulario de cierre
   mensajeCierre: string = ''; // Almacena el mensaje de cierre
 
-  // Métodos existentes''
 
 constructor(
 private autenticacionService:AutenticacionService,
@@ -52,7 +51,8 @@ private solicitudService:SolicitudService,
 private productoService:ProductosService,
 private historicoPrecioService:HistoricoPrecioService,
 private compraService:ComprasService,
-private itemService:ItemService
+private itemService:ItemService,
+private correoService:CorreoService
 ){}
 
 ngOnInit(){
@@ -91,16 +91,16 @@ requestDecission(solicitud: Devolucion, decision: string, item: Item) {
     console.error("ID del producto no definido");
     return;
   }
+
   if (decision === 'Aprobada') {
     this.solicitudService.Decission(solicitud.id, decision).pipe(
-      
       switchMap(() => this.historicoPrecioService.getOne(idProducto)),
-      filter((valor:any): valor is number => valor !== undefined), // <--- ACA el cambio importante
+      filter((valor: any): valor is number => valor !== undefined),
       map((valor: number) => {
         this.totalAnterior = this.item1.compra?.total_compra ?? 0;
         this.subTotal = this.cantidadDevuelta * valor;
         this.valorCompra = this.totalAnterior - this.subTotal;
-    
+
         if (this.item1.compra) {
           this.compraActualizada = {
             id: this.item1.compra.id,
@@ -110,28 +110,57 @@ requestDecission(solicitud: Devolucion, decision: string, item: Item) {
             total_compra: this.valorCompra
           };
         }
+
         return this.compraActualizada;
       }),
       switchMap(compra => this.compraService.update(compra)),
       map(response => response.data),
       switchMap(compraActual => {
-        if(compraActual)
-        this.compra = compraActual;
+        if (compraActual) this.compra = compraActual;
         return this.itemService.update(this.item1, this.cantidadDevuelta);
       }),
       map(response => response.data),
-      tap(itemActualizado => {
-        if(itemActualizado)
-        this.item1 = itemActualizado;
-    
-      
-        
+      switchMap(itemActualizado => {
+        if (itemActualizado) this.item1 = itemActualizado;
+
+        const destinatario = this.solicitud.comprador?.mail || 'destino@correo.com'; // asegurate que tenga email
+        const asunto = 'Devolución aprobada ✅';
+        const mensaje = `Tu solicitud de devolución fue *aprobada*. Se descontó un total de $${this.subTotal.toFixed(2)} de la compra.`;
+
+        return this.correoService.sendEmail(
+         
+          destinatario,
+          asunto,
+          mensaje
+        );
+      }),
+      tap(() => {
+        console.log("Proceso completo con mail enviado ✅");
       })
     ).subscribe({
-      next: () => console.log("Proceso completo ✅"),
       error: err => console.error("Error en el proceso de devolución", err)
     });
-    
+
+  } else if (decision === 'Rechazada') {
+    this.solicitudService.Decission(solicitud.id, decision).pipe(
+      switchMap(() => {
+        const destinatario = this.solicitud.comprador?.mail || 'destino@correo.com';
+        const asunto = 'Devolución rechazada ❌';
+        const mensaje = `Tu solicitud de devolución fue *rechazada*. Para más detalles podés revisar el panel de devoluciones.`;
+
+        return this.correoService.sendEmail(
+         
+          destinatario,
+          asunto,
+          mensaje
+        );
+      }),
+      tap(() => {
+        console.log("Solicitud rechazada y mail enviado.");
+      })
+    ).subscribe({
+      error: err => console.error("Error en rechazo de devolución o en el envío de mail", err)
+    });
   }
 }
 

@@ -11,7 +11,7 @@ import { Producto } from '../models/producto.entity';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { SolicitudService } from '../api/solicitud.service';
 import { ProductosService } from '../api/producto.service';
-import { ComprasService } from '../api/compra.service';
+import { CorreoService } from '../api/correo.service';
 import { Compra } from '../models/compra.entity';
 import { HistoricoPrecioService } from '../api/calculaprecio.service';
 @Component({
@@ -46,7 +46,8 @@ private autenticacionService:AutenticacionService,
 private personaService:PersonaService,
 private solicitudService:SolicitudService,
 private productoService:ProductosService,
-private historicoPrecioService:HistoricoPrecioService
+private historicoPrecioService:HistoricoPrecioService,
+private correoService:CorreoService
 
   ){}
 
@@ -102,7 +103,23 @@ if(this.item1.id)
   this.solicitudService.createDevolutionRequest(this.item1.id, this.motivo,this.cantidadDevuelta).subscribe({
     next: (response: any) => {
       console.log('Solicitud creada con éxito', response.data);
+const mailDestinatario= response.data.vendedor.mail
+const asunto= "Devolución Recibida"
+const mensaje= `Usted ${response.data.vendedor.nombre} ${response.data.vendedor.apellido} recibio una solicitud de devolucion por parte de la siguiente persona:
+${response.data.comprador.nombre} ${response.data.comprador.apellido} sobre el siguiente producto: ${response.data.item.producto.descripcion}
+en una cantidad de ${response.data.cantidad_devuelta}. Vaya al panel de Mis publicaciones, dentro de este vaya a Mis Solicitudes, ahi podra
+visualizar dicha solicitud de la cual debe optar por aceptar o rechazar`
+this.correoService.sendEmail(mailDestinatario,asunto,mensaje).subscribe({
+  next:(response:any)=>{
+console.log('Correo enviado con exito a',mailDestinatario)
+  },
+  error:(error:any)=>{
+  
+    console.error("No se encontro el usuario",error)
+  }
+  
 
+})
       
 
 
