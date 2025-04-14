@@ -9,6 +9,8 @@ import { map } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class ProductosService {
+  private productosPublicados=new BehaviorSubject <Producto[]>([]);
+  productosPublicados$=this.productosPublicados.asObservable();
   private productosSubject = new BehaviorSubject<Producto[]>([]);
   productos$ = this.productosSubject.asObservable();
   private Url='http://localhost:3000/api/productos';

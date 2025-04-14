@@ -1,0 +1,60 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-100 via-white to-blue-200 p-6">
+  <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8">
+    <!-- Título -->
+    <h1 class="text-2xl font-bold text-center text-blue-700 mb-6">Seguimiento de tu compra</h1>
+
+    <!-- Barra de búsqueda -->
+    <div class="flex gap-2 mb-4">
+      <input
+        type="number"
+        placeholder="Ingresá el código de seguimiento"
+        [(ngModel)]="codigoBusqueda"
+        class="border border-gray-300 rounded px-4 py-2 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <button
+        (click)="buscarSeguimiento()"
+        class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
+      >
+        Buscar
+      </button>
+    </div>
+
+    <!-- Mensaje inicial -->
+    <div *ngIf="!codigoBusqueda && !busquedaRealizada" class="text-center text-blue-700 mt-10 text-xl font-semibold">
+      Ingresá un código de seguimiento para ver el estado de su compra
+    </div>
+
+    <!-- Resultado de la búsqueda -->
+    <div *ngIf="seguimientoEncontrado" class="mt-6 border-l-4 border-blue-500 bg-white shadow p-6 rounded-lg">
+      <p class="font-bold text-lg text-blue-600 mb-2">
+        Código de seguimiento: {{ seguimientoEncontrado.codigoSeguimiento }}
+      </p>
+
+      <div class="mt-4">
+        <p class="font-semibold mb-4 text-gray-700">Línea de tiempo del pedido:</p>
+        <ul class="relative border-l border-blue-400 pl-6">
+          <li
+            *ngFor="let estado of seguimientoEncontrado.estados"
+            class="mb-6 ml-2"
+          >
+            <div class="absolute -left-2 w-4 h-4 bg-blue-500 rounded-full border-2 border-white"></div>
+            <div class="bg-blue-50 p-4 rounded shadow-sm">
+              <p><strong>Estado:</strong> {{ estado.estado }}</p>
+              <p><strong>Condición:</strong> {{ estado.condicion }}</p>
+              <p><strong>Fecha:</strong> {{ estado.fecha }}</p>
+              <p><strong>Localidad:</strong> {{ estado.localidad.nombre }}</p>
+              <p><strong>Provincia:</strong> {{ estado.localidad.provincia }}</p>
+              <p><strong>Nombre Empleado</strong> {{ estado.empleado.nombre }}</p>
+              <p><strong>Apellido Empleado:</strong> {{ estado.empleado.apellido}}</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Si no se encontró nada -->
+    <div *ngIf="busquedaRealizada && !seguimientoEncontrado" class="mt-10 text-center text-red-600 text-lg font-medium">
+      No se encontró ningún seguimiento con ese código.
+    </div>
+  </div>
+</div>

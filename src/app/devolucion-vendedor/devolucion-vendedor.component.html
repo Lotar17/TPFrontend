@@ -1,58 +1,137 @@
-<div class="container mx-auto p-4">
-    <h1 class="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">Solicitudes</h1>
-  
+<div class="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-500 to-purple-600 p-6 flex items-center justify-center">
+  <div class="w-full max-w-6xl bg-white shadow-2xl rounded-2xl p-8">
+    <h1 class="text-3xl font-bold text-gray-800 text-center mb-10">📦 Solicitudes</h1>
+
     <div *ngIf="solicitudes && solicitudes.length > 0; else noSolicitudes">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div *ngFor="let solicitud of solicitudes" class="bg-white rounded-xl shadow-lg p-6 hover:shadow-2xl transition-shadow duration-300">
-          <h2 class="text-xl font-semibold mb-4 text-blue-600">Solicitud #{{ solicitud.vendedor?.nombre }}</h2>
-  
-          <div class="mb-3">
-            <strong class="text-gray-700">Cliente:</strong>
-            <span class="text-gray-900 ml-1">{{ solicitud.codigoConfirmacion }}</span>
+        <div
+          *ngFor="let solicitud of solicitudes"
+          class="bg-gray-50 shadow-lg rounded-lg p-6 border-l-4 border-indigo-500 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+        >
+          <h2 class="text-xl font-semibold text-gray-800 mb-4">
+            Solicitud #{{ solicitud.vendedor?.nombre }}
+          </h2>
+
+          <div class="space-y-2 text-sm text-gray-700">
+            <div>
+              <strong>Cliente:</strong>
+              <span class="ml-1">{{ solicitud.codigoConfirmacion }}</span>
+            </div>
+            <div>
+              <strong>Producto:</strong>
+              <span class="ml-1">{{ solicitud.item.producto?.descripcion }}</span>
+            </div>
+            <div>
+              <strong>Cantidad Producto:</strong>
+              <span class="ml-1">{{ solicitud.item.cantidad_producto }}</span>
+            </div>
+            <div>
+              <strong>Total Compra:</strong>
+              <span class="ml-1">{{ solicitud.item.compra?.total_compra }}</span>
+            </div>
+            <div>
+              <strong>Cantidad Devuelta:</strong>
+              <span class="ml-1">{{ solicitud.cantidad_devuelta }}</span>
+            </div>
+            <div>
+              <strong>Fecha Solicitud:</strong>
+              <span class="ml-1">{{ solicitud.fechaSolicitud | date }}</span>
+            </div>
+            <div>
+              <strong>Fecha Confirmación:</strong>
+              <span class="ml-1">{{ solicitud.fechaConfirmacion | date }}</span>
+            </div>
+            <div>
+              <strong>Estado:</strong>
+              <span
+                class="ml-1 px-2 py-1 rounded-full text-xs font-medium"
+                [ngClass]="{
+                  'bg-yellow-100 text-yellow-800': solicitud.estado === 'pendiente',
+                  'bg-green-100 text-green-800': solicitud.estado === 'aprobada',
+                  'bg-red-100 text-red-800': solicitud.estado === 'rechazada'
+                }"
+              >
+                {{ solicitud.estado | titlecase }}
+              </span>
+            </div>
           </div>
-          <div class="mb-3">
-            <strong class="text-gray-700">Producto:</strong>
-            <span class="text-gray-900 ml-1">{{ solicitud.item.producto?.descripcion}}</span>
-          </div>
-          <div class="mb-3">
-            <strong class="text-gray-700">Cantidad Producto:</strong>
-            <span class="text-gray-900 ml-1">{{ solicitud.item.cantidad_producto}}</span>
-          </div>
-          <div class="mb-3">
-            <strong class="text-gray-700">Total Compra:</strong>
-            <span class="text-gray-900 ml-1">{{ solicitud.item.compra?.total_compra}}</span>
-          </div><div class="mb-3">
-            <strong class="text-gray-700">Cantidad Devuelta:</strong>
-            <span class="text-gray-900 ml-1">{{ solicitud.cantidad_devuelta}}</span>
-          </div>
-          <div class="mb-3">
-            <strong class="text-gray-700">Cantidad:</strong>
-            <span class="text-gray-900 ml-1">{{ solicitud.fechaSolicitud }}</span>
-          </div>
-          <div class="mb-3">
-            <strong class="text-gray-700">Fecha:</strong>
-            <span class="text-gray-900 ml-1">{{ solicitud.fechaConfirmacion| date }}</span>
-          </div>
-          <div class="mb-3">
-            <strong class="text-gray-700">Estado:</strong>
-            <span class="text-gray-900 ml-1">{{ solicitud.estado }}</span>
-          </div>
-          <div class="mt-6 flex justify-end space-x-2" *ngIf="solicitud.id">
-            <button (click)="requestDecission(solicitud, 'Aprobada',solicitud.item)" 
-              class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105">
-              ✅ Aceptar Solicitud
+
+          <!-- Botones Aceptar/Rechazar (existentes) -->
+          <div
+            class="mt-6 flex justify-end space-x-2"
+            *ngIf="solicitud.id && solicitud.estado === 'pendiente'"
+          >
+            <button
+              (click)="requestDecission(solicitud, 'Aprobada', solicitud.item)"
+              class="bg-green-600 hover:bg-green-700 text-white font-medium py-1.5 px-3 rounded-lg shadow-sm transition-all duration-300 hover:scale-105"
+            >
+              ✅ Aceptar
             </button>
-            <button (click)="requestDecission(solicitud, 'Rechazada',solicitud.item)" 
-              class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105">
-              ❌ Rechazar Solicitud
+            <button
+              (click)="requestDecission(solicitud, 'Rechazada', solicitud.item)"
+              class="bg-red-600 hover:bg-red-700 text-white font-medium py-1.5 px-3 rounded-lg shadow-sm transition-all duration-300 hover:scale-105"
+            >
+              ❌ Rechazar
             </button>
+          </div>
+
+          <!-- Enlace "¿Llegó el producto?" -->
+          <div class="mt-4 text-center">
+            <button
+              (click)="mostrarProductoLlego = !mostrarProductoLlego; solicitudSeleccionadaId = solicitud.id|| ''; mostrarCierre = false; mensajeCierre = ''"
+              class="text-indigo-600 hover:text-indigo-800 font-medium text-sm transition duration-200"
+            >
+              {{ mostrarProductoLlego && solicitudSeleccionadaId === solicitud.id ? 'Ocultar opciones' : '¿Llegó el producto?' }}
+            </button>
+          </div>
+
+          <!-- Opciones de "Llegó el producto" -->
+          <div
+            *ngIf="mostrarProductoLlego && solicitudSeleccionadaId === solicitud.id"
+            class="mt-4 p-4 bg-gray-100 rounded-lg space-y-4"
+          >
+            <div class="flex justify-between space-x-2">
+              <button
+                (click)="actualizarStock(solicitud.item,solicitud)"
+                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-1.5 px-3 rounded-lg shadow-sm transition-all duration-300 hover:scale-105"
+              >
+                📦 Actualizar Stock
+              </button>
+              <button
+                (click)="mostrarCierre = !mostrarCierre; mensajeCierre = ''"
+                class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-medium py-1.5 px-3 rounded-lg shadow-sm transition-all duration-300 hover:scale-105"
+              >
+                🔒 Realizar Cierre
+              </button>
+            </div>
+
+            <!-- Formulario de cierre -->
+            <div *ngIf="mostrarCierre" class="space-y-3">
+              <label for="mensajeCierre" class="block text-sm font-medium text-gray-700">
+                Mensaje de Cierre Devolución
+              </label>
+              <textarea
+                id="mensajeCierre"
+                [(ngModel)]="mensajeCierre"
+                class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition duration-200"
+                placeholder="Escribe el mensaje de cierre..."
+                rows="4"
+              ></textarea>
+              <button
+              (click)="cerrarDevolucion(solicitud)"
+              class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-1.5 px-3 rounded-lg shadow-sm transition-all duration-300 hover:scale-105"
+            >
+              ✅ Cierre
+            </button>
+            </div>
           </div>
           
         </div>
       </div>
     </div>
-  
+
     <ng-template #noSolicitudes>
-      <p class="text-center text-gray-600 py-8">No hay solicitudes disponibles.</p>
+      <p class="text-center text-gray-600 font-medium text-lg py-10">📭 No hay solicitudes disponibles.</p>
     </ng-template>
   </div>
+</div>

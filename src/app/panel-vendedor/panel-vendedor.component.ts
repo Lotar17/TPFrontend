@@ -99,7 +99,10 @@ this.route.navigate(['/modificaProducto'])
 borrarProducto(producto:Producto) {
   if(producto.id)
   this.productoService.deleteProducto(producto.id).subscribe({
-    next: () => console.log(`Producto ${producto.id} eliminado y lista actualizada`),
+    next: () =>{ console.log(`Producto ${producto.id} eliminado y lista actualizada`)
+    if(this.productos)
+    this.productos = this.productos.filter(p => p.id !== producto.id);
+  },
     error: (error) => console.error('Error al eliminar producto:', error),
   });
 }

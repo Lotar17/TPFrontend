@@ -40,16 +40,21 @@ export class MisComprasComponent {
   }
 
   loadMisCompras(): void {
-    let userId;
     this.autenticacionService.getUserInformation().subscribe({
       next: (response: any) => {
-        userId = response.data.id;
+        const userId = response.data.id;
+  
         this.compraService.getcomprasByUser(userId).subscribe((response: any) => {
           if (response && Array.isArray(response.data)) {
-            this.MisCompras = response.data;
+            const todasLasCompras = response.data;
   
-            // Recorremos cada compra y sus items para obtener el precio de cada producto
-            this.MisCompras.forEach((compra) => {
+            // Filtrar compras activas (al menos un item con cantidad > 0)
+            this.MisCompras = todasLasCompras.filter((compra: any) => {
+              return compra.items?.some((item: any) => item.cantidad_producto > 0);
+            });
+  
+            // Recorremos cada compra y sus items para obtener el precio
+            this.MisCompras.forEach((compra: any) => {
               if(compra.items)
               compra.items.forEach((item: any) => {
                 if (item.producto?.id) {
@@ -68,11 +73,10 @@ export class MisComprasComponent {
           }
         });
       },
-      error: (error: any) => {
-        console.error("No se encontró información del usuario", error);
-      }
+      error: (err) => console.error("Error obteniendo usuario", err)
     });
   }
+  
   
   
   

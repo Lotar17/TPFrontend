@@ -36,7 +36,7 @@ constructor(private productoService:ProductosService,
 
 ngOnInit() {
   this.producto=this.productoService.getProducto()
-  
+  if(this.producto.descripcion)
 this.descripcionOriginal=this.producto.descripcion
 if(this.producto.stock)
 this.stockOriginal=this.producto.stock
@@ -100,7 +100,7 @@ guardaStock(){
       }
 })}
 guardaPrecio(){
-  if(this.producto.id)
+  if(this.producto.id && this.producto.precio)
   this.historicoPrecioService.createPrecio(this.producto.precio,this.producto.id).subscribe({
 
     next:(response:any)=>{

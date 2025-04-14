@@ -13,7 +13,9 @@ estado:string,
 codigoConfirmacion:number,
 fechaSolicitud:string,
 fechaConfirmacion:string,
-cantidad_devuelta:number
+cantidad_devuelta:number,
+fechaCierre?:string
+mensajeCierre?:string
 
 
 

@@ -42,15 +42,15 @@ this.cargaExitosa=true
 userId=response.data.id
 if (!userId) {
   console.error('El usuario no está logueado.');
-  // Manejar la situación de que el usuario no está logueado
+ 
   return;
 }
 const producto: Producto = {
   descripcion: this.publicaForm.value.descripcion,
   stock: this.publicaForm.value.stock,
   precio: this.publicaForm.value.precio,
-  categoriaId: this.publicaForm.value.categoria, // Nombre de la categoría
-  personaId: userId, // ID de la persona logueada
+  categoriaId: this.publicaForm.value.categoria, 
+  personaId: userId, 
 };
 this.crudService.add('productos', producto);
       },

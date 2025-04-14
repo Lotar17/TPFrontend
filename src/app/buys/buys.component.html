@@ -1,9 +1,9 @@
 <div class="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 p-6">
   <div class="w-full max-w-2xl bg-white shadow-lg rounded-2xl p-6">
-    
+
     <!-- Carrito -->
     <h2 class="text-2xl font-bold text-gray-800 text-center mb-4">🛒 Tu Carrito</h2>
-    
+
     <div class="space-y-4">
       <div *ngFor="let item of items" class="flex items-center justify-between p-4 bg-gray-100 rounded-lg shadow">
         <div>
@@ -19,12 +19,62 @@
     <h2 class="text-2xl font-bold text-gray-800 text-center mb-4">💳 Realizar Compra</h2>
 
     <form [formGroup]="publicaForm" (ngSubmit)="onSubmit()" class="space-y-4">
-      <div>
-        <label for="direccion_entrega" class="block text-gray-700 font-semibold">📍 Dirección de Entrega</label>
-        <input id="direccion_entrega" formControlName="direccion_entrega" type="text" 
-          class="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none shadow">
+
+      <!-- Dirección Existente -->
+      <div *ngIf="!mostrarNuevaDireccion">
+        <label for="direccion" class="block text-gray-700 font-semibold mb-1">📍 Seleccioná una Dirección</label>
+        <select id="direccion" formControlName="direccion"
+          class="w-full p-3 border border-gray-300 rounded-lg shadow focus:ring-2 focus:ring-blue-500 focus:outline-none">
+          <option *ngFor="let dir of direcciones" [value]="dir.id">
+            {{ dir.calle }} {{ dir.numero }}
+          </option>
+        </select>
+
+        <div class="text-center mt-2">
+          <button type="button" (click)="mostrarNuevaDireccion = true"
+            class="text-blue-600 hover:underline font-semibold">
+            ¿Querés ingresar una nueva dirección?
+          </button>
+        </div>
       </div>
 
+      <!-- Nueva dirección -->
+      <div *ngIf="mostrarNuevaDireccion" class="space-y-4 bg-gray-50 p-4 rounded-lg border border-gray-300">
+
+        <div>
+          <label class="block text-gray-700 font-semibold">Calle</label>
+          <input type="text" formControlName="calle"
+            class="w-full mt-1 p-3 border border-gray-300 rounded-lg shadow focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            required />
+        </div>
+
+        <div>
+          <label class="block text-gray-700 font-semibold">Número</label>
+          <input type="number" formControlName="numero"
+            class="w-full mt-1 p-3 border border-gray-300 rounded-lg shadow focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            required />
+        </div>
+
+        <div>
+          <label class="block text-gray-700 font-semibold">Localidad</label>
+          <select formControlName="localidad"
+            class="w-full p-3 border border-gray-300 rounded-lg shadow focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            required>
+            <option *ngFor="let loc of localidades" [value]="loc.id">
+              {{ loc.nombre }}
+            </option>
+          </select>
+        </div>
+
+        <div class="text-center">
+          <button type="button" (click)="mostrarNuevaDireccion = false"
+            class="text-red-600 hover:underline font-semibold">
+            Cancelar nueva dirección
+          </button>
+        </div>
+      </div>
+
+      <!-- Botón de Compra -->
       <button type="submit"
         class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105">
         🛒 Comprar Ahora

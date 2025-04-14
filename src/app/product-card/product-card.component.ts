@@ -20,7 +20,7 @@ import { AutenticacionService } from '../api/autenticacion.service';
 export class ProductCardComponent {
   @Input() producto!: Producto;
   precio!: number;
-  showNotification: boolean = false; // Variable para controlar la visibilidad del cartel
+  showNotification: boolean = false; 
   mensajeNotificacion: string = ''; 
 
   constructor(
