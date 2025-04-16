@@ -18,3 +18,4 @@ export class ClienteComponent {
     joinedDate: '2022-01-15'
   };
 }
+// Borrar este componente

@@ -15,11 +15,17 @@ import { AdminCategoriasComponent } from './pages/admin/categorias/admin-categor
 import { AdminFormasDePagoComponent } from './pages/admin/formas-de-pago/admin-formas-de-pago/admin-formas-de-pago.component.js';
 import { MisComprasComponent } from './miscompras/miscompras.component.js';
 import { checkRolGuard } from './guards/check-rol.guard.js';
-
+import { DirectBuysComponent } from './direct-buys/direct-buys.component.js';
 import { CartComponent } from './cart/cart.component.js';
 import { BuysComponent } from './buys/buys.component.js';
 import { DevolucionComponent } from './devolucion/devolucion.component.js';
-
+import { PanelVendedorComponent } from './panel-vendedor/panel-vendedor.component.js';
+import { SolicitudDevolucionComponent } from './solicitud-devolucion/solicitud-devolucion.component.js';
+import { DevolucionVendedorComponent } from './devolucion-vendedor/devolucion-vendedor.component.js';
+import { DevolucionCompradorComponent } from './devolucion-comprador/devolucion-comprador.component.js';
+import { ModificaProductoComponent } from './vendedor-pages/modifica-producto/modifica-producto.component.js';
+import { PanelSeguimientoClienteComponent } from './seguimiento/panel-seguimiento-cliente/panel-seguimiento-cliente.component.js';
+import { PanelEmpleadoSegumientoComponent } from './seguimiento/panel-empleado-segumiento/panel-empleado-segumiento.component.js';
 export const routes: Routes = [
   {
     path: 'login',
@@ -50,6 +56,16 @@ export const routes: Routes = [
   },
 
   {
+    path: 'comprasincart/:id',
+    component: DirectBuysComponent,
+  },
+  {
+    path: 'solicitud',
+    component: SolicitudDevolucionComponent,
+  },
+
+
+  {
     path: 'publicaprod',
     component: CargoProductosComponent,
   },
@@ -72,6 +88,30 @@ export const routes: Routes = [
     component: BuysComponent,
   },
 
+  {
+    path: 'vendedor',
+    component: PanelVendedorComponent,
+  },
+  {
+    path: 'devolucionVendedor',
+    component: DevolucionVendedorComponent,
+  },
+  {
+    path: 'devolucionComprador',
+    component: DevolucionCompradorComponent,
+  },
+  {
+    path: 'modificaProducto',
+    component: ModificaProductoComponent,
+  },
+  {
+    path: 'panelSeguimientoCliente',
+    component: PanelSeguimientoClienteComponent,
+  },
+  {
+    path: 'panelSeguimientoEmpleado',
+    component: PanelEmpleadoSegumientoComponent,
+  },
   {
     path: 'admin',
     canActivateChild: [checkRolGuard],

@@ -1,14 +1,16 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ComprasService } from '../api/compra.service';
-import { Compra } from '../../models/compra.entity';
-import { AuthService } from '../api/Auth.service';
-import { Producto } from '../../models/producto.entity';
+import { Compra } from '../models/compra.entity';
+import { AutenticacionService } from '../api/autenticacion.service';
+import { Producto } from '../models/producto.entity';
 import { ProductosService } from '../api/producto.service';
 import { RouterLink } from '@angular/router';
 import { Router } from '@angular/router';
-import { ProductoConCantidad } from '../../models/producto.entity';
-import { item_Compra } from '../../models/compra.entity';
+import { HistoricoPrecioService } from '../api/calculaprecio.service';
+
+
+import { Item } from '../models/item.entity';
 
 
 @Component({
@@ -21,15 +23,16 @@ import { item_Compra } from '../../models/compra.entity';
 export class MisComprasComponent {
   MisCompras: Compra[] = [];
   personaId!: string;
-  mis_productos:ProductoConCantidad[]= [];
+  mis_productos:Producto[]= [];
 
 
 
   constructor(
     private compraService: ComprasService,
-    private authService: AuthService,
+    private autenticacionService:AutenticacionService,
     private productoService: ProductosService,
-    private router:Router
+    private router:Router,
+    private historicoPrecioService:HistoricoPrecioService
   ) {}
 
   ngOnInit(): void {
@@ -37,30 +40,43 @@ export class MisComprasComponent {
   }
 
   loadMisCompras(): void {
-    this.personaId = this.authService.getUserId();
+    this.autenticacionService.getUserInformation().subscribe({
+      next: (response: any) => {
+        const userId = response.data.id;
   
-    this.compraService.getcomprasByUser(this.personaId).subscribe((response: any) => {
-      if (response && Array.isArray(response.data)) {
-        this.MisCompras = response.data;
+        this.compraService.getcomprasByUser(userId).subscribe((response: any) => {
+          if (response && Array.isArray(response.data)) {
+            const todasLasCompras = response.data;
   
-        this.MisCompras.forEach((compra) => {
-          if (compra.items && Array.isArray(compra.items)) {
-            compra.items.forEach((item) => {
-              // Si item.producto es un string (ID del producto), buscar el producto completo
-              if (typeof item.producto === 'string') {
-                this.productoService.getOne(item.producto).subscribe({
-                  next: (producto: Producto) => {
-                    item.producto = producto; // Actualizamos el item.producto con el objeto completo
-                  },
-                  error: (err) => console.error('Error obteniendo producto:', err)
-                });
-              }
+            // Filtrar compras activas (al menos un item con cantidad > 0)
+            this.MisCompras = todasLasCompras.filter((compra: any) => {
+              return compra.items?.some((item: any) => item.cantidad_producto > 0);
+            });
+  
+            // Recorremos cada compra y sus items para obtener el precio
+            this.MisCompras.forEach((compra: any) => {
+              if(compra.items)
+              compra.items.forEach((item: any) => {
+                if (item.producto?.id) {
+                  this.historicoPrecioService.getOne(item.producto.id).subscribe({
+                    next: (precioData: any) => {
+                      console.log(`Precio recibido para producto ${item.producto.id}:`, precioData);
+                      item.producto.precio = precioData; // Asignamos el precio unitario
+                    },
+                    error: (error: any) => {
+                      console.error(`Error obteniendo precio para producto ${item.producto.id}:`, error);
+                    }
+                  });
+                }
+              });
             });
           }
         });
-      }
+      },
+      error: (err) => console.error("Error obteniendo usuario", err)
     });
   }
+  
   
   
   
@@ -81,7 +97,6 @@ export class MisComprasComponent {
     
     
     if (diferenciaDias<30) {
-      
       this.router.navigate(['/devolucion', id_compra]);
     } else {
       alert('No se puede devolver, la compra es de otro mes');

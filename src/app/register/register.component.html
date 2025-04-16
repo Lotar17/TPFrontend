@@ -1,80 +1,134 @@
-<div class="flex items-center justify-center h-screen bg-gray-100">
-    <div class="max-w-xl py-6 px-8 h-auto mt-20 bg-white rounded shadow-xl">
-        <form [formGroup]="registerForm" (submit)="onSubmit()">
-        
-        <!-- Name -->
-            <div class="mb-6">
-                <label for="name" class="block text-gray-800 font-bold">Name:</label>
-                <input
-                    type="text"
-                    formControlName="name"
-                    id="name"
-                    placeholder="John"
-                    class="w-full border border-gray-300 py-2 pl-3 rounded mt-2 outline-none focus:ring-indigo-600"/>
-            </div>
-        
-        <!-- Surename -->
-            <div class="mb-6">
-                <label for="surname" class="block text-gray-800 font-bold">Surename:</label>
-                <input
-                    type="text"
-                    formControlName="surname"
-                    id="surname"
-                    placeholder="Doe"
-                    class="w-full border border-gray-300 py-2 pl-3 rounded mt-2 outline-none focus:ring-indigo-600"
-                />
-            </div>
-
-            <div class="mb-6">
-                <label for="rol" class="block text-gray-800 font-bold">Rol:</label>
-                <input
-                    type="text"
-                    formControlName="rol"
-                    id="rol"
-                    placeholder="user"
-                    class="w-full border border-gray-300 py-2 pl-3 rounded mt-2 outline-none focus:ring-indigo-600"
-                />
-            </div>
-
+<div class="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-500 to-purple-600 p-6 flex items-center justify-center">
+    <div class="w-full max-w-lg bg-white shadow-2xl rounded-2xl p-8">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-800">Crear Cuenta</h2>
+        <p class="text-gray-500 mt-2">Regístrate para comenzar</p>
+      </div>
+  
+      <form [formGroup]="registerForm" (submit)="onSubmit()" class="space-y-6">
+        <!-- Nombre -->
+        <div>
+          <label for="name" class="block text-sm font-medium text-gray-700">Nombre</label>
+          <input
+            type="text"
+            formControlName="name"
+            id="name"
+            placeholder="John"
+            class="mt-1 w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition duration-200"
+          />
+        </div>
+  
+        <!-- Apellido -->
+        <div>
+          <label for="surname" class="block text-sm font-medium text-gray-700">Apellido</label>
+          <input
+            type="text"
+            formControlName="surname"
+            id="surname"
+            placeholder="Doe"
+            class="mt-1 w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition duration-200"
+          />
+        </div>
+  
+        <!-- Rol -->
+        <div>
+          <label for="rol" class="block text-sm font-medium text-gray-700">Rol</label>
+          <input
+            type="text"
+            formControlName="rol"
+            id="rol"
+            placeholder="user"
+            class="mt-1 w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition duration-200"
+          />
+        </div>
+  
         <!-- Email -->
-            <div class="mb-6">
-                <label for="mail" class="block text-gray-800 font-bold">mail:</label>
-                <input
-                    type="mail"
-                    formControlName="mail"
-                    id="mail"
-                    placeholder="johndoe@email.com"
-                    class="w-full border border-gray-300 py-2 pl-3 rounded mt-2 outline-none focus:ring-indigo-600"
-                />
-            </div>
-    
-            <!-- Phone -->
-            <div class="mb-6">
-                <label for="phone" class="block text-gray-800 font-bold">Phone:</label>
-                <input
-                    type="text"
-                    formControlName="phone"
-                    id="phone"
-                    placeholder="123-456-7890"
-                    class="w-full border border-gray-300 py-2 pl-3 rounded mt-2 outline-none focus:ring-indigo-600"
-                />
-            </div>
-    
-            <!-- Password -->
-            <div class="mb-6">
-                <label for="password" class="block text-gray-800 font-bold">Password:</label>
-                <input
-                    type="password"
-                    formControlName="password"
-                    id="password"
-                    placeholder="Password"
-                    class="w-full border border-gray-300 py-2 pl-3 rounded mt-2 outline-none focus:ring-indigo-600"
-                />
-            </div>
-            <!-- Submit Button -->
-            <button type="submit"class="cursor-pointer py-2 px-4 block mt-6 bg-indigo-500 text-white font-bold w-full text-center rounded">
-            Register
-            </button>
-        </form>
+    <!-- Email -->
+    <div>
+        <label for="mail" class="block text-sm font-medium text-gray-700">Correo Electrónico</label>
+        <input
+          type="email" 
+          formControlName="mail"
+          id="mail"
+          placeholder="johndoe@email.com"
+          class="mt-1 w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition duration-200"
+        />
+      </div>
+  
+        <!-- Teléfono -->
+        <div>
+          <label for="phone" class="block text-sm font-medium text-gray-700">Teléfono</label>
+          <input
+            type="text"
+            formControlName="phone"
+            id="phone"
+            placeholder="123-456-7890"
+            class="mt-1 w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition duration-200"
+          />
+        </div>
+  
+        <!-- Localidad -->
+        <div>
+          <label for="localidad" class="block text-sm font-medium text-gray-700">📍 Localidad</label>
+          <select
+            formControlName="localidad"
+            id="localidad"
+            class="mt-1 w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition duration-200"
+          >
+            <option *ngFor="let localidad of localidades" [value]="localidad.id">
+              {{ localidad.nombre }}
+            </option>
+          </select>
+        </div>
+  
+        <!-- Calle -->
+        <div>
+          <label for="calle" class="block text-sm font-medium text-gray-700">Calle</label>
+          <input
+            type="text"
+            formControlName="calle"
+            id="calle"
+            placeholder="Av Siempre Viva"
+            class="mt-1 w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition duration-200"
+          />
+        </div>
+  
+        <!-- Número -->
+        <div>
+          <label for="numero" class="block text-sm font-medium text-gray-700">Número</label>
+          <input
+            type="number"
+            formControlName="numero"
+            id="numero"
+            placeholder="174"
+            class="mt-1 w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition duration-200"
+          />
+        </div>
+  
+        <!-- Contraseña -->
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700">Contraseña</label>
+          <input
+            type="password"
+            formControlName="password"
+            id="password"
+            placeholder="••••••••"
+            class="mt-1 w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition duration-200"
+          />
+        </div>
+  
+        <!-- Botón de Registro -->
+        <button
+          type="submit"
+          class="w-full py-3 px-4 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-200"
+        >
+          Registrarse
+        </button>
+      </form>
+  
+      <p class="mt-6 text-center text-sm text-gray-600">
+        ¿Ya tienes una cuenta?
+        <a href="#" class="text-indigo-600 hover:text-indigo-800 font-medium">Inicia sesión</a> 
+      </p>
     </div>
-</div>
+  </div>

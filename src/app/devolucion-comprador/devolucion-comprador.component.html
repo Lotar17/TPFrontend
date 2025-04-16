@@ -1,0 +1,87 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-500 to-purple-600 p-6 flex items-center justify-center">
+  <div class="w-full max-w-6xl bg-white shadow-2xl rounded-2xl p-8">
+    <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">
+      📦 Solicitudes de Devolución
+    </h1>
+
+    <div class="mb-6 text-center">
+      <input
+        type="text"
+        class="px-4 py-2 w-full max-w-md border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        placeholder="🔍 Filtrar por estado (pendiente, aprobada, rechazada)..."
+        [(ngModel)]="filtroEstado"
+        (input)="filtrarSolicitudes()"
+      />
+    </div>
+    
+    
+
+    <ng-container *ngIf="solicitudesComprador.length > 0; else noSolicitudes">
+      <div class="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <div
+          *ngFor="let solicitud of solicitudesComprador"
+          class="bg-gray-50 shadow-md rounded-lg p-6 border-l-4 border-indigo-500 transition-all duration-300 hover:shadow-lg hover:scale-[1.02]"
+        >
+          <!-- Encabezado -->
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-800">📦 Solicitud</h2>
+            <span
+              class="text-xs font-medium px-3 py-1 rounded-full"
+              [ngClass]="{
+                'bg-yellow-100 text-yellow-800': solicitud.estado === 'pendiente',
+                'bg-green-100 text-green-800': solicitud.estado === 'aprobada',
+                'bg-red-100 text-red-800': solicitud.estado === 'rechazada'
+              }"
+            >
+              {{ solicitud.estado | titlecase }}
+            </span>
+          </div>
+
+          <!-- Detalles -->
+          <div class="space-y-2 text-sm text-gray-700">
+            <div class="flex">
+              <span class="font-medium text-gray-800 w-32">🔑 Código:</span>
+              <span>{{ solicitud.codigoConfirmacion }}</span>
+            </div>
+            <div class="flex">
+              <span class="font-medium text-gray-800 w-32">🙍 Cliente:</span>
+              <span>{{ solicitud.comprador?.nombre }} {{ solicitud.comprador?.apellido }}</span>
+            </div>
+            <div class="flex">
+              <span class="font-medium text-gray-800 w-32">🛒 Producto:</span>
+              <span>{{ solicitud.item.producto?.descripcion }}</span>
+            </div>
+            <div class="flex">
+              <span class="font-medium text-gray-800 w-32">🔢 Cantidad a devolver:</span>
+              <span>{{ solicitud.cantidad_devuelta }}</span>
+            </div>
+            <div class="flex">
+              <span class="font-medium text-gray-800 w-32">📅 Fecha Solicitud:</span>
+              <span>{{ solicitud.fechaSolicitud | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="flex">
+              <span class="font-medium text-gray-800 w-32">✅ Fecha Confirmación:</span>
+              <span>{{ solicitud.fechaConfirmacion | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <!-- Botón si tiene fechaConfirmacion -->
+<div *ngIf="solicitud.codigoConfirmacion!==0 && !solicitud.fechaEnvioCliente" class="mt-4 text-right">
+  <button
+    (click)="envioRealizado(solicitud)"
+    class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg shadow transition duration-300"
+  >
+    📧 Enviar Confirmación
+  </button>
+</div>
+
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #noSolicitudes>
+      <p class="text-center text-gray-600 font-medium text-lg py-12">
+        💤 No hay solicitudes disponibles en este momento.
+      </p>
+    </ng-template>
+  </div>
+</div>

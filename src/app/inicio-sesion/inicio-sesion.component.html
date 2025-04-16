@@ -1,39 +1,61 @@
-<div class="flex items-center justify-center h-screen bg-gray-100">
-  <div class="max-w-xl py-6 px-8 h-80 mt-20 bg-white rounded shadow-xl">
-    <form [formGroup]="loginForm" (submit)="onSubmit()">
-      <div class="mb-6">
-        <label for="Email" class="block text-gray-800 font-bold">Email:</label>
+<div class="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-600 via-purple-500 to-pink-500 p-6">
+  <div class="w-full max-w-md bg-white shadow-2xl rounded-2xl p-8">
+    <div class="text-center mb-8">
+      <h2 class="text-3xl font-bold text-gray-800">Bienvenido a Gaucho Buy</h2>
+      <p class="text-gray-500 mt-2">Por favor incia sesion</p>
+    </div>
+
+    <form [formGroup]="loginForm" (submit)="onSubmit()" class="space-y-6">
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
         <input
           type="email"
           name="email"
           formControlName="mail"
           id="email"
           placeholder="johndoe@email.com"
-          class="w-full border border-gray-300 py-2 pl-3 rounded mt-2 outline-none focus:ring-indigo-600 :ring-indigo-600"
+          class="mt-1 w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition duration-200"
         />
       </div>
+
       <div>
-        <label for="Password" class="block text-gray-800 font-bold"
-          >Password:</label
-        >
+        <label for="Password" class="block text-sm font-medium text-gray-700">Password</label>
         <input
           type="password"
           formControlName="password"
           name="Password"
           id="Password"
-          placeholder="Password"
-          class="w-full border border-gray-300 py-2 pl-3 rounded mt-2 outline-none focus:ring-indigo-600 :ring-indigo-600"
+          placeholder="••••••••"
+          class="mt-1 w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition duration-200"
         />
         @if (loginSuccesful === false) {
-        <p>El usuario o la contraseña son incorrectos</p>
+          <p class="mt-2 text-sm text-red-600">Incorrect email or password</p>
         }
       </div>
+
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <input
+            id="remember-me"
+            type="checkbox"
+            class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+          />
+          <label for="remember-me" class="ml-2 block text-sm text-gray-600">Remember me</label>
+        </div>
+        <a href="#" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">Forgot Password?</a>
+      </div>
+
       <button
         type="submit"
-        class="cursor-pointer py-2 px-4 block mt-6 bg-indigo-500 text-white font-bold w-full text-center rounded"
+        class="w-full py-3 px-4 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-200"
       >
-        Login
+        Sign In
       </button>
     </form>
+
+    <p class="mt-6 text-center text-sm text-gray-600">
+      Don't have an account?
+      <a href="#" class="text-indigo-600 hover:text-indigo-800 font-medium">Sign up</a>
+    </p>
   </div>
 </div>

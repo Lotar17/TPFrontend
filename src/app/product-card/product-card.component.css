@@ -1,0 +1,21 @@
+.notification {
+    position: fixed;
+    bottom: 20px; /* 🔥 Mueve el cartel a la parte inferior */
+    right: 20px;  /* 🔥 Lo alinea a la derecha */
+    background-color: #4CAF50; /* Verde */
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    font-size: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    animation: fadeInOut 3s ease-in-out;
+  }
+  
+  /* Animación para que aparezca y desaparezca */
+  @keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(20px); } /* Empieza desde abajo */
+    10% { opacity: 1; transform: translateY(0); }
+    90% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(20px); } /* Se va hacia abajo */
+  }
+  

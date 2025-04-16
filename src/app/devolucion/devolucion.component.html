@@ -1,25 +1,53 @@
-<div class="max-w-7xl mx-auto px-6 py-8">
-    <h1 class="text-3xl font-semibold text-gray-900 mb-8 text-center">Mis Compras</h1>
-    
-    <div  class="bg-white shadow-lg rounded-lg p-6 mb-6">
-      <h3 class="text-xl font-bold text-gray-800">- Total: ${{ compra.total_compra }}</h3>
-     
-    
-      <div class="mt-4">
-        <div *ngFor="let item of compra.items" class="border-b border-gray-200 py-4">
-          <div *ngIf="item.producto" class="flex items-center justify-between">
-            <div class="text-lg text-gray-700">
-              <strong>Producto:</strong> {{ getProductoDescripcion(item) }}
+<div class="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-500 to-purple-600 p-6 flex items-center justify-center">
+  <div class="w-full max-w-4xl bg-white shadow-2xl rounded-2xl p-8">
+    <h1 class="text-3xl font-bold text-gray-800 text-center mb-10">📦 Devoluciones</h1>
 
+    <div class="bg-gray-50 shadow-lg rounded-lg p-6">
+      <!-- Encabezado de la compra -->
+      <div class="mb-6 space-y-2">
+        <h3 class="text-lg font-semibold text-gray-800">
+          💰 Total: <span class="text-green-600">${{ compra.total_compra }}</span>
+        </h3>
+        <h3 class="text-lg font-semibold text-gray-800">
+          📅 Fecha Compra: {{ compra.fecha_hora_compra }}
+        </h3>
+        <h3 class="text-lg font-semibold text-gray-800">
+          📍 Dirección: {{ compra.direccion?.calle }} {{ compra.direccion?.numero }}
+          {{ compra.direccion?.localidad?.nombre }}
+          {{ compra.direccion?.localidad?.provincia }}
+        </h3>
+      </div>
+
+      <!-- Lista de ítems -->
+      <div class="space-y-4">
+        <div
+          *ngFor="let item of compra.items"
+          class="border-b border-gray-200 py-4 last:border-b-0"
+        >
+          <div *ngIf="item.producto" class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div class="text-sm text-gray-700">
+              <strong>Producto:</strong> {{ item.producto.descripcion }}
             </div>
-            <div class="text-lg text-gray-500">
+            <div class="text-sm text-gray-600">
               <strong>Cantidad:</strong> {{ item.cantidad_producto }}
             </div>
-            
+            <div class="text-sm text-gray-600">
+              <strong>Vendedor:</strong> {{ item.producto.persona?.nombre }} {{ item.producto.persona?.apellido }}
+            </div>
+            <div class="text-sm text-gray-600">
+              <strong>Localidad:</strong> {{ item.producto.persona?.direccion?.localidad?.nombre }}
+            </div>
+            <div>
+              <button
+                (click)="RealizarDevolucion(item)"
+                class="bg-red-600 hover:bg-red-700 text-white font-medium py-1.5 px-3 rounded-lg shadow-sm transition-all duration-300 hover:scale-105"
+              >
+                🔄 Devolución
+              </button>
+            </div>
           </div>
         </div>
-        <td><button (click)="realizarDevolucion()">Realizar Devolucion</button></td>
       </div>
     </div>
   </div>
-  
+</div>

@@ -2,33 +2,55 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable,BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { item } from '../models/item.entity';
+import { Item } from '../models/item.entity';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CarritoService {
 
-  private carritoItems = new BehaviorSubject<any[]>([]); 
-  carritoItems$ = this.carritoItems.asObservable(); //
+  private carritoItems = new BehaviorSubject<Item[]>([]); // Almacena el estado del carrito
+  carritoItems$ = this.carritoItems.asObservable(); // Observable para que el componente se suscriba
   private Url = 'http://localhost:3000/api/item'; 
+  private Url1 = 'http://localhost:3000/api/item/decrementa';
   private Url2 = 'http://localhost:3000/api/item/persona';
+  private Url3 = 'http://localhost:3000/api/item/create'
   constructor(private http: HttpClient) {}
 
-  addItemToCarrito(idProducto: string, idPersona: string) {
-    const item= { producto: idProducto, persona: idPersona };
 
-    return this.http.post(`${this.Url}/`, item);
+  getCarrito(idPersona: string): void {
+    this.http.get<{ data: Item[] }>(`${this.Url2}/${idPersona}`).subscribe({
+      next: (response) => {
+        this.carritoItems.next(response.data); // Emitimos los datos actualizados
+      },
+      error: (error) => console.error('Error al obtener carrito:', error)
+    });
   }
 
-  getCarrito(idPersona: string): Observable<any> {
-    return this.http.get(`${this.Url2}/${idPersona}`);
+  addItemToCarrito(idProducto: string, idPersona: string): void {
+    this.http.post<{ message: string }>(`${this.Url}/`, { producto: idProducto, persona: idPersona })
+      .subscribe({
+        next: () => {
+          let carritoActual = this.carritoItems.getValue();
+          let itemExistente = carritoActual.find(i => i.producto?.id === idProducto);
 
+          if (itemExistente) {
+            itemExistente.cantidad_producto++; // Incrementamos en la interfaz
+          } else {
+            this.getCarrito(idPersona); // Si es un nuevo ítem, recargamos desde el backend
+            return;
+          }
 
-    
+          this.carritoItems.next([...carritoActual]); // Emitimos el nuevo estado del carrito
+        },
+        error: (error) => console.error('Error al agregar item:', error)
+      });
   }
-  getItemById(id: string): Observable<item> {
-    return this.http.get<item>(`${this.Url}/${id}`);
+
+
+ 
+  getItemById(id: string): Observable<Item> {
+    return this.http.get<Item>(`${this.Url}/${id}`);
   }
 
   obtenerCarrito(): any[] {
@@ -40,21 +62,40 @@ export class CarritoService {
     this.carritoItems.next(nuevoCarrito);
   }
 
-decrementQuantityofItem(idProducto: string, idPersona: string){
+  DecrementQuantity(idProducto: string, idPersona: string): void {
+    this.http.post<{ message: string }>(`${this.Url1}/`, { producto: idProducto, persona: idPersona })
+      .subscribe({
+        next: () => {
+          let carritoActual = this.carritoItems.getValue();
+          let itemExistente = carritoActual.find(i => i.producto?.id === idProducto);
+
+          if (itemExistente) {
+            itemExistente.cantidad_producto--; // Decrementamos en la interfaz
+          } 
+
+          this.carritoItems.next([...carritoActual]); // Emitimos el nuevo estado del carrito
+        },
+        error: (error) => console.error('Error al agregar item:', error)
+      });
+  }
 
 
-  const item= { producto: idProducto, persona: idPersona };
 
-  return this.http.post(`${this.Url}/decrementa`, item);
-}
-
-removeItem(idItem:string){
-
+  removeItem(itemId: string): void {
+    this.http.delete<{ message: string }>(`${this.Url}/${itemId}`).subscribe({
+      next:()=>{
+    let carritoActual = this.carritoItems.getValue();
+    carritoActual = carritoActual.filter(i => i.id !== itemId);
+    this.carritoItems.next([...carritoActual]); // Emitimos el nuevo carrito
   
-  return this.http.delete(`${this.Url}/${idItem}`)
-
+  },error: (error) => console.error('Error al eliminar el item:', error)
+});
+}
+createItem(idProducto:string,idPersona:string,cantidad_producto:number):Observable<Item>{
+  const item={producto:idProducto,persona:idPersona,cantidad_producto:cantidad_producto}
+  return this.http.post<Item>(`${this.Url3}`,item);
 
 }
+  
 
 }
-

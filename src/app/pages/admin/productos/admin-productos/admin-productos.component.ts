@@ -60,7 +60,7 @@ export class AdminProductosComponent {
     if (producto) {
       this.isUpdating = true;
       this.idEdited = producto.id;
-      this.addForm.controls.descripcion.setValue(producto.descripcion);
+      this.addForm.controls.descripcion.setValue(producto.descripcion ?? '');
       this.addForm.controls.stock.setValue(producto.stock ?? 0);
       this.addForm.controls.personaId.setValue(producto.persona?.id ?? '');
       this.addForm.controls.categoriaId.setValue(producto.categoria?.id ?? '');

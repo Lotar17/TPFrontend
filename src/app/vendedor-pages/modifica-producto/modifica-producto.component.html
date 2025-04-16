@@ -1,0 +1,60 @@
+<div class="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
+  <div class="w-full max-w-3xl bg-white shadow-lg rounded-2xl p-6 border border-gray-200">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">✏️ Modificar Producto</h2>
+
+    <div *ngIf="producto" class="bg-white shadow-md rounded-lg p-6 border border-gray-300">
+ 
+      
+      <!-- 📄 Descripción -->
+      <div class="flex justify-between items-center mb-4">
+        <div class="w-full">
+          <h3 class="text-lg font-semibold text-gray-700">📄 Descripción:</h3>
+          <p *ngIf="!editandoDescripcion" class="text-gray-600">{{ producto.descripcion }}</p>
+          <input *ngIf="editandoDescripcion" [(ngModel)]="producto.descripcion" type="text"
+            class="border border-gray-300 rounded px-2 py-1 w-full" />
+        </div>
+        <button (click)="editandoDescripcion = !editandoDescripcion"
+          class="text-blue-500 hover:text-blue-700 flex items-center">
+          ✏️ Editar
+        </button>
+      </div>
+
+      <!-- 💲 Precio -->
+      <div class="flex justify-between items-center mb-4">
+        <div class="w-full">
+          <h3 class="text-lg font-semibold text-gray-700">💲 Precio:</h3>
+          <p *ngIf="!editandoPrecio" class="text-gray-600">{{ producto.precio | currency }}</p>
+          <input *ngIf="editandoPrecio" [(ngModel)]="producto.precio" type="number"
+            class="border border-gray-300 rounded px-2 py-1 w-full" />
+        </div>
+        <button (click)="editandoPrecio = !editandoPrecio"
+          class="text-blue-500 hover:text-blue-700 flex items-center">
+          ✏️ Editar
+        </button>
+      </div>
+
+      <!-- 📦 Stock -->
+      <div class="flex justify-between items-center mb-4">
+        <div class="w-full">
+          <h3 class="text-lg font-semibold text-gray-700">📦 Stock:</h3>
+          <p *ngIf="!editandoStock" class="text-gray-600">{{ producto.stock }}</p>
+          <input *ngIf="editandoStock" [(ngModel)]="producto.stock" type="number"
+            class="border border-gray-300 rounded px-2 py-1 w-full" />
+        </div>
+        <button (click)="editandoStock = !editandoStock"
+          class="text-blue-500 hover:text-blue-700 flex items-center">
+          ✏️ Editar
+        </button>
+      </div>
+
+      
+      <!-- 🔥 Botón Guardar Cambios -->
+      <button (click)="guardarCambios()" 
+        class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 mt-4">
+        💾 Guardar Cambios
+      </button>
+    </div>
+
+    <p *ngIf="!producto" class="text-center text-red-500 font-semibold mt-6">⏳ Cargando producto...</p>
+  </div>
+</div>
