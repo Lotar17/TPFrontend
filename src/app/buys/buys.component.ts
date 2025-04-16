@@ -111,7 +111,7 @@ this.mailDestino=response.data?.mail
     this.fecha_hora_compra = new Date().toISOString();
   
     if (this.mostrarNuevaDireccion) {
-      // Se crea con los campos individuales
+    
       this.compra = {
         personaId: this.idPersona,
         fecha_hora_compra: this.fecha_hora_compra,
@@ -121,7 +121,7 @@ this.mailDestino=response.data?.mail
         localidadId: this.publicaForm.value.localidad || '',
       };
     } else {
-      // Se usa dirección seleccionada
+    
       this.compra = {
         personaId: this.idPersona,
         direccionId: this.direccion_entrega,
@@ -142,7 +142,7 @@ this.mailDestino=response.data?.mail
   
         return this.compraService.updateStock(idCompra).pipe(
           tap(() => console.log("Stock actualizado")),
-          switchMap(() => from(items).pipe(
+          switchMap(() => from(items).pipe( // sigue este flujo por cada item dentro de la compra
             concatMap((item: any) => {
               const idItem = item.id;
   
@@ -153,27 +153,35 @@ this.mailDestino=response.data?.mail
   
                   
                   this.mailAsunto = `Compra con código de seguimiento nro: ${seguimiento.codigoSeguimiento}`;
-                  this.mailMensaje = `Tu compra fue realizada con éxito. Ingresando el código de seguimiento en el panel de ver seguimientos podrás ver el recorrido de tu pedido.`;
+                  this.mailMensaje = `Tu compra fue realizada con éxito. Ingresando el código de seguimiento en el panel de ver seguimientos podrás ver el recorrido de tu pedido
+                  del producto ${seguimiento.item.producto.descripcion}.`;
   
                   return this.seguimientoService.searchEmployeeLocalidad(localidadId).pipe(
                     switchMap((empleadoResponse: any) => {
                       const empleado = empleadoResponse.data;
-  
-                      return this.seguimientoService.createEstado1(seguimiento.id, empleado.id, localidadId).pipe(
+                  console.log('Mail del empleado',empleado.mail)
+                      const destinatarioEmpleado = empleado.mail;
+                      const asuntoEmpleado = 'Proceso del seguimiento asignado';
+                      const mensajeEmpleado = `Hola ${empleado.nombre} se te asignó el proceso de clasificación para el producto ${seguimiento.item.producto.descripcion}. 
+                      Cuando termines el proceso, dirigite al panel y seleccioná la próxima localidad a la que debe enviarse el producto para que avance a la siguiente etapa.`;
+                  
+                     
+                      return this.correoService.sendEmail(destinatarioEmpleado, asuntoEmpleado, mensajeEmpleado).pipe(
+                        tap(() => console.log(`Correo enviado al empleado: ${destinatarioEmpleado}`)),
+                  
+                      
+                        switchMap(() => this.seguimientoService.createEstado1(seguimiento.id, empleado.id, localidadId)),
+                  
                         tap(() => console.log(`Estado creado para seguimiento ${seguimiento.id}`)),
-                        switchMap(() => {
-                          return this.correoService.sendEmail(
-                            
-                            this.mailDestino,
-                            this.mailAsunto,
-                            this.mailMensaje
-                          ).pipe(
-                            tap(() => console.log(`Correo enviado a ${this.mailDestino}`))
-                          );
-                        })
+                  
+                        // Tercero: enviar correo al cliente
+                        switchMap(() => this.correoService.sendEmail(this.mailDestino, this.mailAsunto, this.mailMensaje)),
+                  
+                        tap(() => console.log(`Correo enviado al cliente: ${this.mailDestino}`))
                       );
                     })
                   );
+                  
                 })
               );
             }),

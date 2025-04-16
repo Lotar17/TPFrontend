@@ -8,6 +8,7 @@ import { Persona } from '../../models/persona.entity';
 import { CommonModule } from '@angular/common';
 import { Localidad } from '../../models/localidad.entity';
 import { ReactiveFormsModule, FormGroup,FormControl} from '@angular/forms';
+import { CorreoService } from '../../api/correo.service';
 @Component({
   selector: 'app-panel-empleado-segumiento',
   standalone: true,
@@ -19,6 +20,7 @@ export class PanelEmpleadoSegumientoComponent {
   estadosSeguimiento:EstadoSeguimiento[]=[]
   idEmpleado!:string
   localidades!:Localidad[]
+  empleado!:Persona
 
   localidadForm= new FormGroup({
 localidad: new FormControl()
@@ -26,7 +28,8 @@ localidad: new FormControl()
 })
 
   constructor(private autenticacionService:AutenticacionService,
-    private seguimientoService:SeguimientoService
+    private seguimientoService:SeguimientoService,
+    private correoService:CorreoService
   )
   {}
 ngOnInit(){
@@ -56,43 +59,85 @@ console.log('Localidades',this.localidades)
 }, error:(error:any)=>{
   console.error('No se encontro el usuario ',error)
 }})}
+cerrarProceso(idEstado: string) {
+  const localidad = this.localidadForm.value.localidad;
+  console.log('Localidad seleccionada:', localidad);
 
-cerrarProceso(idEstado:string){
-  const localidad= this.localidadForm.value.localidad
-  console.log('Localidad',localidad)
-this.seguimientoService.updateEstadoSeguimiento(idEstado,"Cerrado").subscribe({
-  next:(response:any)=>{
-    const estado=response.data
-    console.log('Estado',estado.seguimiento)
-console.log('Estado Cerrado con exito',response.data)
-this.seguimientoService.searchEmployeeLocalidad(localidad).subscribe({
-  next:(response)=>{
-const empleado= response.data
-console.log('empleado',empleado)
-if(empleado.id)
-this.seguimientoService.createEstado1(estado.seguimiento,empleado.id,localidad).subscribe({
+  this.seguimientoService.updateEstadoSeguimiento(idEstado, "Cerrado").subscribe({
+    next: (response: any) => {
+      const estado = response.data;
+      console.log('Estado cerrado con éxito:', estado);
 
-  next:(response)=>{
-console.log('Estado creado con exito',response.data)
-  },
-  error:(error)=>{
-    console.error('no se creo el estado',error)
-  }
-})
-  },
-  error:(error)=>{
-  
-    console.error("No se encontro el empleado de dicha localidad",error)
-  }
-  })
-  },
-  error:(error:any)=>{
-  
-    console.error("No se actualizo el estado",error)
-  }
-  })
+      this.seguimientoService.searchEmployeeLocalidad(localidad).subscribe({
+        next: (empleadoResponse) => {
+          this.empleado = empleadoResponse.data;
 
+          if (this.empleado?.id) {
+            this.seguimientoService.createEstado1(estado.seguimiento, this.empleado.id, localidad).subscribe({
+              next: (nuevoEstadoResponse) => {
+                console.log('Nuevo estado creado con éxito:', nuevoEstadoResponse.data);
+const estadoNuevo=nuevoEstadoResponse.data
+                const destinatario = this.empleado.mail;
+                const asunto = `Asignación proceso ${estadoNuevo.estado}`;
+                const mensaje = `Hola ${this.empleado.nombre}, se te asignó el proceso correspondiente.`;
 
+                this.correoService.sendEmail(destinatario, asunto, mensaje).subscribe({
+                  next: () => {
+                    console.log('Correo enviado con éxito a:', destinatario);
+                  },
+                  error: (error: any) => {
+                    console.error("❌ No se pudo enviar el correo:", error);
+                  }
+                });
+
+                if (estadoNuevo.estado === 'Cerrado') {
+                  const seguimiento = estadoNuevo.seguimiento;
+                  const producto = seguimiento?.item?.producto;
+                  const vendedorEmail = producto?.persona?.mail;
+                  const compradorEmail = seguimiento?.item?.persona?.mail;
+                  const nombreProducto = producto?.descripcion ?? 'el producto';
+
+                  if (vendedorEmail) {
+                    this.correoService.sendEmail(
+                      vendedorEmail,
+                      'Producto entregado',
+                      `Hola, te informamos que ${nombreProducto} ha sido entregado correctamente al cliente.`
+                    ).subscribe({
+                      next: () => console.log('📤 Correo enviado al vendedor:', vendedorEmail),
+                      error: (err) => console.error('❌ Error al enviar correo al vendedor:', err)
+                    });
+                  }
+
+                  if (compradorEmail) {
+                    this.correoService.sendEmail(
+                      compradorEmail,
+                      'Tu pedido ha llegado',
+                      `Hola, te informamos que ${nombreProducto} llegó correctamente a destino. ¡Gracias por tu compra!`
+                    ).subscribe({
+                      next: () => console.log('📤 Correo enviado al cliente:', compradorEmail),
+                      error: (err) => console.error('❌ Error al enviar correo al cliente:', err)
+                    });
+                  }
+                }
+              },
+              error: (error) => {
+                console.error('❌ No se pudo crear el nuevo estado:', error);
+              }
+            });
+          } else {
+            console.error('❌ No se encontró un empleado válido en la localidad');
+          }
+        },
+        error: (error) => {
+          console.error("❌ No se encontró el empleado de dicha localidad:", error);
+        }
+      });
+    },
+    error: (error: any) => {
+      console.error("❌ No se pudo actualizar el estado:", error);
+    }
+  });
 }
+
 
 }

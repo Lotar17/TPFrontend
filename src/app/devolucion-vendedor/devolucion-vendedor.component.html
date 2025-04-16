@@ -42,6 +42,11 @@
               <span class="ml-1">{{ solicitud.fechaConfirmacion | date }}</span>
             </div>
             <div>
+              <strong>Fecha Envio Cliente:</strong>
+              <span class="ml-1">{{ solicitud.fechaEnvioCliente | date }}</span>
+            </div>
+            <div>
+              
               <strong>Estado:</strong>
               <span
                 class="ml-1 px-2 py-1 rounded-full text-xs font-medium"
@@ -75,15 +80,16 @@
             </button>
           </div>
 
-          <!-- Enlace "¿Llegó el producto?" -->
-          <div class="mt-4 text-center">
-            <button
-              (click)="mostrarProductoLlego = !mostrarProductoLlego; solicitudSeleccionadaId = solicitud.id|| ''; mostrarCierre = false; mensajeCierre = ''"
-              class="text-indigo-600 hover:text-indigo-800 font-medium text-sm transition duration-200"
-            >
-              {{ mostrarProductoLlego && solicitudSeleccionadaId === solicitud.id ? 'Ocultar opciones' : '¿Llegó el producto?' }}
-            </button>
-          </div>
+        <!-- Enlace "¿Llegó el producto?" -->
+<div class="mt-4 text-center" *ngIf="solicitud.fechaEnvioCliente && !solicitud.fechaCierre">
+  <button
+    (click)="mostrarProductoLlego = !mostrarProductoLlego; solicitudSeleccionadaId = solicitud.id || ''; mostrarCierre = false; mensajeCierre = ''"
+    class="text-indigo-600 hover:text-indigo-800 font-medium text-sm transition duration-200"
+  >
+    {{ mostrarProductoLlego && solicitudSeleccionadaId === solicitud.id ? 'Ocultar opciones' : '¿Llegó el producto?' }}
+  </button> 
+</div>
+
 
           <!-- Opciones de "Llegó el producto" -->
           <div

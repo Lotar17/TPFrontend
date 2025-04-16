@@ -64,7 +64,7 @@
               <span>{{ solicitud.fechaConfirmacion | date:'dd/MM/yyyy' }}</span>
             </div>
             <!-- Botón si tiene fechaConfirmacion -->
-<div *ngIf="solicitud.codigoConfirmacion!==0" class="mt-4 text-right">
+<div *ngIf="solicitud.codigoConfirmacion!==0 && !solicitud.fechaEnvioCliente" class="mt-4 text-right">
   <button
     (click)="envioRealizado(solicitud)"
     class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg shadow transition duration-300"

@@ -16,6 +16,7 @@ fechaConfirmacion:string,
 cantidad_devuelta:number,
 fechaCierre?:string
 mensajeCierre?:string
+fechaEnvioCliente?:string
 
 
 

@@ -15,6 +15,8 @@ import { concatMap,switchMap,from,catchError,tap,of} from 'rxjs';
 import { SeguimientoService } from '../api/seguimiento.service';
 import { PersonaService } from '../api/per.service';
 import { Persona } from '../models/persona.entity';
+import { CorreoService } from '../api/correo.service';
+import { map } from 'rxjs';
 @Component({
   selector: 'app-direct-buys',
   standalone: true,
@@ -40,6 +42,7 @@ cliente!:Persona
 direcciones: Direccion[] = [];
 mostrarNuevaDireccion: boolean = false;
 localidades:Localidad[]=[]
+compradorDestinatario!:string
 
   constructor(
     private compraService: ComprasService,
@@ -49,7 +52,8 @@ localidades:Localidad[]=[]
     private productoService:ProductosService,
     private carritoService:CarritoService,
     private seguimientoService:SeguimientoService,
-    private personaService:PersonaService
+    private personaService:PersonaService,
+    private correoService:CorreoService
   ) {}
 
   publicaForm = new FormGroup({
@@ -65,10 +69,13 @@ localidades:Localidad[]=[]
     this.autenticacionService.getUserInformation().subscribe({
       next:(response:any)=>{
       this.idUser=response.data.id
+      
 if(this.idUser){
   this.personaService.getOne(this.idUser).subscribe({
     next:(response:any)=>{
 this.cliente=response.data
+if(this.cliente)
+  this.compradorDestinatario=this.cliente.mail
 
 if (this.cliente.direccion) {
   this.direcciones.push(this.cliente.direccion);
@@ -204,19 +211,49 @@ this. direcciones = this. direcciones.filter((dir, i, self) =>
               switchMap(() => this.seguimientoService.createSeguimiento(item.id, this.idUser)),
               switchMap((seguimientoResponse: any) => {
                 const seguimiento = seguimientoResponse.data;
-        
-                // Buscar empleado disponible de la localidad
+              
+                const mailComprador = this.compradorDestinatario;
+                const asuntoComprador = 'Código de seguimiento generado';
+                const mensajeComprador = `Hola ${this.cliente.nombre}, se ha generado un nuevo seguimiento para tu producto "${seguimiento.item.producto.descripcion}".
+              Tu código de seguimiento es: ${seguimiento.codigoSeguimiento}.
+              Podés seguir el estado de tu envío desde tu panel de seguimientos.`;
+              
+                // Enviar mail al comprador
+                return this.correoService.sendEmail(mailComprador, asuntoComprador, mensajeComprador).pipe(
+                  tap(() => console.log(`📩 Correo enviado al comprador: ${mailComprador}`)),
+                  map(() => seguimiento)
+                );
+              }),
+              switchMap((seguimiento) => {
                 return this.seguimientoService.searchEmployeeLocalidad(localidadId).pipe(
                   switchMap((empleadoResponse: any) => {
                     const empleado = empleadoResponse.data;
-        
-                    // Crear estado inicial "En Clasificación"
-                    return this.seguimientoService.createEstado1(seguimiento.id, empleado.id, localidadId).pipe(
-                      tap(() => console.log(`✅ Estado creado para seguimiento ${seguimiento.id}`))
+                    const mailEmpleado = empleado?.mail;
+              
+                    if (!mailEmpleado || mailEmpleado.trim() === '') {
+                      console.error('❌ Correo del empleado no definido');
+                     
+                    }
+              
+                    const asuntoEmpleado = 'Procedimiento asignado';
+                    const mensajeEmpleado = `Hola ${empleado.nombre}, se te asignó el proceso de clasificación para el producto "${seguimiento.item.producto.descripcion}". 
+              Por favor, ingresá al panel y continuá con el procedimiento correspondiente.`;
+              
+                    // Enviar mail al empleado
+                    return this.correoService.sendEmail(mailEmpleado, asuntoEmpleado, mensajeEmpleado).pipe(
+                      tap(() => console.log(`📩 Correo enviado al empleado: ${mailEmpleado}`)),
+              
+                      // Luego crear el estado inicial
+                      switchMap(() => {
+                        return this.seguimientoService.createEstado1(seguimiento.id, empleado.id, localidadId).pipe(
+                          tap(() => console.log(`✅ Estado creado para seguimiento ${seguimiento.id}`))
+                        );
+                      })
                     );
                   })
                 );
               })
+              
             );
           }),
           catchError(error => {

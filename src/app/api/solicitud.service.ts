@@ -7,6 +7,7 @@ import { map } from 'rxjs/operators';
 import { Devolucion } from '../models/solicitudDevolucion.entity.js';
 import { Item } from '../models/item.entity.js';
 
+
 @Injectable({
     providedIn: 'root',
   })
@@ -29,16 +30,21 @@ import { Item } from '../models/item.entity.js';
         };
         return this.http.post('http://localhost:3000/api/devolucion', payload);
       }
-      updateDevolucion(id:string,estado:string,fechaCierre:string,mensajeCierre:string): Observable<any> {
+      updateDevolucion(id:string,estado:string,fechaCierre:string,mensajeCierre:string): Observable<ApiResponse<Devolucion>> {
         
         const payload = { 
         estado,
         fechaCierre,
         mensajeCierre
         };
-        return this.http.patch(`${this.apiUrl}/${id}`,payload)
+        return this.http.patch<ApiResponse<Devolucion>>(`${this.apiUrl}/${id}`,payload)
       }
-      
+  cierreDevolucionCliente(id:string, fechaEnvioCliente:string):Observable<ApiResponse<Devolucion>> {
+const payload={
+  fechaEnvioCliente
+}
+    return this.http.patch<ApiResponse<Devolucion>>(`${this.apiUrl}/${id}`,payload)
+  }   
 
 
       getVendedorRequest(idVendedor:string): Observable<ApiResponse<Devolucion>>{

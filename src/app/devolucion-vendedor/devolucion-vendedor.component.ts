@@ -125,7 +125,8 @@ requestDecission(solicitud: Devolucion, decision: string, item: Item) {
 
         const destinatario = this.solicitud.comprador?.mail || 'destino@correo.com'; // asegurate que tenga email
         const asunto = 'Devolución aprobada ✅';
-        const mensaje = `Tu solicitud de devolución fue *aprobada*. Se descontó un total de $${this.subTotal.toFixed(2)} de la compra.`;
+        const mensaje = `Tu solicitud de devolución fue *aprobada*. Se descontó un total de $${this.subTotal.toFixed(2)} de la compra del 
+        producto: ${solicitud.item.producto?.descripcion}.`;
 
         return this.correoService.sendEmail(
          
@@ -144,7 +145,7 @@ requestDecission(solicitud: Devolucion, decision: string, item: Item) {
   } else if (decision === 'Rechazada') {
     this.solicitudService.Decission(solicitud.id, decision).pipe(
       switchMap(() => {
-        const destinatario = this.solicitud.comprador?.mail || 'destino@correo.com';
+        const destinatario = this.solicitud.comprador?.mail || '';
         const asunto = 'Devolución rechazada ❌';
         const mensaje = `Tu solicitud de devolución fue *rechazada*. Para más detalles podés revisar el panel de devoluciones.`;
 
@@ -206,10 +207,25 @@ cerrarDevolucion(solicitud: Devolucion) {
   const estado = "Cerrado";
 
   if (solicitud.id) {
+    const destinatario=solicitud.comprador?.mail
+    const asunto='Producto recibido'
+    const mensaje= `El producto ${solicitud.item.producto?.descripcion} ha sido devuelto con exito`
     this.solicitudService.updateDevolucion(solicitud.id, estado, fechaCierre, this.mensajeCierre)
       .subscribe({
         next: () => {
           console.log("✅ Devolución cerrada correctamente.");
+          if(destinatario)
+          this.correoService.sendEmail(destinatario,asunto,mensaje).subscribe({
+            next:(response:any)=>{
+console.log('Correo enviado con exito')
+            },
+            error:(error:any)=>{
+            
+              console.error("No se envio el coreo",error)
+            }
+            
+        
+          })
         },
         error: (err) => {
           console.error("❌ Error al cerrar la devolución:", err);
