@@ -26,6 +26,7 @@ import { DevolucionCompradorComponent } from './devolucion-comprador/devolucion-
 import { ModificaProductoComponent } from './vendedor-pages/modifica-producto/modifica-producto.component.js';
 import { PanelSeguimientoClienteComponent } from './seguimiento/panel-seguimiento-cliente/panel-seguimiento-cliente.component.js';
 import { PanelEmpleadoSegumientoComponent } from './seguimiento/panel-empleado-segumiento/panel-empleado-segumiento.component.js';
+import { LocalidadesComponent } from './pages/admin/localidades/localidades.component.js';
 export const routes: Routes = [
   {
     path: 'login',
@@ -63,7 +64,6 @@ export const routes: Routes = [
     path: 'solicitud',
     component: SolicitudDevolucionComponent,
   },
-
 
   {
     path: 'publicaprod',
@@ -130,6 +130,7 @@ export const routes: Routes = [
       },
       { path: 'categorias', component: AdminCategoriasComponent },
       { path: 'formas-de-pago', component: AdminFormasDePagoComponent },
+      { path: 'localidades', component: LocalidadesComponent },
     ],
     component: AdminComponent,
   },
