@@ -137,7 +137,8 @@ this.mailDestino=response.data?.mail
         console.log("Compra realizada:", response.data);
       }),
       switchMap(response => {
-        const idCompra = response.data.id;
+        const compra=response.data
+        const idCompra = compra.id;
         const items = response.data.items;
   
         return this.compraService.updateStock(idCompra).pipe(
@@ -145,13 +146,19 @@ this.mailDestino=response.data?.mail
           switchMap(() => from(items).pipe( // sigue este flujo por cada item dentro de la compra
             concatMap((item: any) => {
               const idItem = item.id;
-  
+              const mailVendedor=item.producto.persona.mail
+              const asuntoVendedor=`Compra del producto ${item.producto.descripcion}`
+              const mensaje=`El cliente ${compra.persona.nombre} ${compra.persona.apellido} realizo la compra del producto ${item.producto.descripcion}
+              en un total de ${item.cantidad_producto} unidades`
+        
+
+              
               return this.seguimientoService.createSeguimiento(idItem, this.idPersona).pipe(
                 switchMap((seguimientoResponse: any) => {
                   const seguimiento = seguimientoResponse.data;
                   const localidadId = item.producto.persona.direccion.localidad.id;
   
-                  
+                  console.log('Id de la localidad:',localidadId)
                   this.mailAsunto = `Compra con código de seguimiento nro: ${seguimiento.codigoSeguimiento}`;
                   this.mailMensaje = `Tu compra fue realizada con éxito. Ingresando el código de seguimiento en el panel de ver seguimientos podrás ver el recorrido de tu pedido
                   del producto ${seguimiento.item.producto.descripcion}.`;
@@ -177,7 +184,11 @@ this.mailDestino=response.data?.mail
                         // Tercero: enviar correo al cliente
                         switchMap(() => this.correoService.sendEmail(this.mailDestino, this.mailAsunto, this.mailMensaje)),
                   
-                        tap(() => console.log(`Correo enviado al cliente: ${this.mailDestino}`))
+                        tap(() => console.log(`Correo enviado al cliente: ${this.mailDestino}`)),
+
+                        switchMap(() => this.correoService.sendEmail(mailVendedor, asuntoVendedor, mensaje)),
+                  
+                        tap(() => console.log(`Correo enviado al vendedor: ${mailVendedor}}`))
                       );
                     })
                   );

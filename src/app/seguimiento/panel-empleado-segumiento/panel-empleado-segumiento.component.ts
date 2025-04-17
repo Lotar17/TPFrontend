@@ -59,13 +59,20 @@ console.log('Localidades',this.localidades)
 }, error:(error:any)=>{
   console.error('No se encontro el usuario ',error)
 }})}
-cerrarProceso(idEstado: string) {
-  const localidad = this.localidadForm.value.localidad;
-  console.log('Localidad seleccionada:', localidad);
 
+
+
+
+cerrarProceso(Estado:EstadoSeguimiento) {
+  const localidad = this.localidadForm.value.localidad;// aca asigno el id de localidad con el select
+  console.log('Localidad seleccionada:', localidad);
+const idEstado=Estado.id
+if(idEstado)
   this.seguimientoService.updateEstadoSeguimiento(idEstado, "Cerrado").subscribe({
     next: (response: any) => {
       const estado = response.data;
+      
+      console.log('Id del seguimiento',Estado.seguimiento)
       console.log('Estado cerrado con éxito:', estado);
 
       this.seguimientoService.searchEmployeeLocalidad(localidad).subscribe({
@@ -73,6 +80,8 @@ cerrarProceso(idEstado: string) {
           this.empleado = empleadoResponse.data;
 
           if (this.empleado?.id) {
+           
+        
             this.seguimientoService.createEstado1(estado.seguimiento, this.empleado.id, localidad).subscribe({
               next: (nuevoEstadoResponse) => {
                 console.log('Nuevo estado creado con éxito:', nuevoEstadoResponse.data);
@@ -94,8 +103,8 @@ const estadoNuevo=nuevoEstadoResponse.data
                   const seguimiento = estadoNuevo.seguimiento;
                   const producto = seguimiento?.item?.producto;
                   const vendedorEmail = producto?.persona?.mail;
-                  const compradorEmail = seguimiento?.item?.persona?.mail;
-                  const nombreProducto = producto?.descripcion ?? 'el producto';
+                  const compradorEmail = estadoNuevo.seguimiento?.cliente?.mail;
+                  const nombreProducto = producto?.descripcion ?? '';
 
                   if (vendedorEmail) {
                     this.correoService.sendEmail(
@@ -104,7 +113,7 @@ const estadoNuevo=nuevoEstadoResponse.data
                       `Hola, te informamos que ${nombreProducto} ha sido entregado correctamente al cliente.`
                     ).subscribe({
                       next: () => console.log('📤 Correo enviado al vendedor:', vendedorEmail),
-                      error: (err) => console.error('❌ Error al enviar correo al vendedor:', err)
+                      error: (err) => console.error(' Error al enviar correo al vendedor:', err)
                     });
                   }
 
@@ -114,27 +123,27 @@ const estadoNuevo=nuevoEstadoResponse.data
                       'Tu pedido ha llegado',
                       `Hola, te informamos que ${nombreProducto} llegó correctamente a destino. ¡Gracias por tu compra!`
                     ).subscribe({
-                      next: () => console.log('📤 Correo enviado al cliente:', compradorEmail),
-                      error: (err) => console.error('❌ Error al enviar correo al cliente:', err)
+                      next: () => console.log(' Correo enviado al cliente:', compradorEmail),
+                      error: (err) => console.error(' Error al enviar correo al cliente:', err)
                     });
                   }
                 }
               },
               error: (error) => {
-                console.error('❌ No se pudo crear el nuevo estado:', error);
+                console.error(' No se pudo crear el nuevo estado:', error);
               }
             });
           } else {
-            console.error('❌ No se encontró un empleado válido en la localidad');
+            console.error(' No se encontró un empleado válido en la localidad');
           }
         },
         error: (error) => {
-          console.error("❌ No se encontró el empleado de dicha localidad:", error);
+          console.error(" No se encontró el empleado de dicha localidad:", error);
         }
       });
     },
     error: (error: any) => {
-      console.error("❌ No se pudo actualizar el estado:", error);
+      console.error(" No se pudo actualizar el estado:", error);
     }
   });
 }

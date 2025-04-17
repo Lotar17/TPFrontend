@@ -16,7 +16,7 @@ import { SeguimientoService } from '../api/seguimiento.service';
 import { PersonaService } from '../api/per.service';
 import { Persona } from '../models/persona.entity';
 import { CorreoService } from '../api/correo.service';
-import { map } from 'rxjs';
+import { map,forkJoin } from 'rxjs';
 @Component({
   selector: 'app-direct-buys',
   standalone: true,
@@ -211,19 +211,29 @@ this. direcciones = this. direcciones.filter((dir, i, self) =>
               switchMap(() => this.seguimientoService.createSeguimiento(item.id, this.idUser)),
               switchMap((seguimientoResponse: any) => {
                 const seguimiento = seguimientoResponse.data;
+                const mailVendedor = seguimiento.item.producto.persona.mail;
+                const asuntoVendedor = `Compra del producto ${seguimiento.item.producto.descripcion}`;
+                const mensajeVendedor = `El cliente ${seguimiento.item.producto.persona.nombre} ${seguimiento.item.producto.persona.apellido} realizó la compra del producto ${seguimiento.item.producto.descripcion}
+                en un total de ${seguimiento.item.cantidad_producto} unidades`;
               
                 const mailComprador = this.compradorDestinatario;
                 const asuntoComprador = 'Código de seguimiento generado';
                 const mensajeComprador = `Hola ${this.cliente.nombre}, se ha generado un nuevo seguimiento para tu producto "${seguimiento.item.producto.descripcion}".
-              Tu código de seguimiento es: ${seguimiento.codigoSeguimiento}.
-              Podés seguir el estado de tu envío desde tu panel de seguimientos.`;
+                Tu código de seguimiento es: ${seguimiento.codigoSeguimiento}.
+                Podés seguir el estado de tu envío desde tu panel de seguimientos.`;
               
-                // Enviar mail al comprador
-                return this.correoService.sendEmail(mailComprador, asuntoComprador, mensajeComprador).pipe(
-                  tap(() => console.log(`📩 Correo enviado al comprador: ${mailComprador}`)),
-                  map(() => seguimiento)
+                return forkJoin([
+                  this.correoService.sendEmail(mailComprador, asuntoComprador, mensajeComprador).pipe(
+                    tap(() => console.log(`📩 Correo enviado al comprador: ${mailComprador}`))
+                  ),
+                  this.correoService.sendEmail(mailVendedor, asuntoVendedor, mensajeVendedor).pipe(
+                    tap(() => console.log(`📩 Correo enviado al vendedor: ${mailVendedor}`))
+                  )
+                ]).pipe(
+                  map(() => seguimiento) // retornás el seguimiento después de que ambos correos se manden
                 );
               }),
+              
               switchMap((seguimiento) => {
                 return this.seguimientoService.searchEmployeeLocalidad(localidadId).pipe(
                   switchMap((empleadoResponse: any) => {
@@ -242,7 +252,7 @@ this. direcciones = this. direcciones.filter((dir, i, self) =>
                     // Enviar mail al empleado
                     return this.correoService.sendEmail(mailEmpleado, asuntoEmpleado, mensajeEmpleado).pipe(
                       tap(() => console.log(`📩 Correo enviado al empleado: ${mailEmpleado}`)),
-              
+                      
                       // Luego crear el estado inicial
                       switchMap(() => {
                         return this.seguimientoService.createEstado1(seguimiento.id, empleado.id, localidadId).pipe(
