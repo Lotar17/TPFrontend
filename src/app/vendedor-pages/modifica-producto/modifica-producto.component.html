@@ -49,12 +49,45 @@
 
       
       <!-- 🔥 Botón Guardar Cambios -->
-      <button (click)="guardarCambios()" 
+      <button (click)="confirmarCambio()" 
         class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 mt-4">
         💾 Guardar Cambios
       </button>
     </div>
 
     <p *ngIf="!producto" class="text-center text-red-500 font-semibold mt-6">⏳ Cargando producto...</p>
+  </div>
+  <div *ngIf="confirmaCambio" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md text-center">
+      <h2 class="text-lg font-semibold mb-4 text-gray-800">¿Estás seguro de realizar cambios?</h2>
+      <div class="flex justify-center gap-4">
+        <button
+          class="px-3 py-1.5 text-sm bg-gray-500 text-white rounded-md hover:bg-gray-600 transition"
+          (click)="cerrarModalConfirmacion()"
+        >
+          Cancelar
+        </button>
+        <button
+          class="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+          (click)="realizarCambio()"
+        >
+          Confirmar
+        </button>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="cambioConfirmado" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-2xl">
+      <h2 class="text-lg font-semibold mb-4 text-gray-800">Producto modificado con éxito</h2>
+    
+      <div class="mt-6 text-center">
+        <button
+          class="px-3 py-1.5 text-sm bg-gray-600 text-white rounded-md hover:bg-gray-700 transition"
+          (click)="cerrarModalDetalle()"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
   </div>
 </div>

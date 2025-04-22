@@ -2,13 +2,11 @@ import { Component } from '@angular/core';
 import { SeguimientoService } from '../../api/seguimiento.service';
 import { AutenticacionService } from '../../api/autenticacion.service';
 import { EstadoSeguimiento } from '../../models/estado_seguimiento.entity';
-import { response } from 'express';
-import { error } from 'console';
 import { Persona } from '../../models/persona.entity';
 import { CommonModule } from '@angular/common';
 import { Localidad } from '../../models/localidad.entity';
 import { ReactiveFormsModule, FormGroup,FormControl} from '@angular/forms';
-import { CorreoService } from '../../api/correo.service';
+
 @Component({
   selector: 'app-panel-empleado-segumiento',
   standalone: true,
@@ -21,123 +19,147 @@ export class PanelEmpleadoSegumientoComponent {
   idEmpleado!:string
   localidades!:Localidad[]
   empleado!:Persona
+  estadosClasificacion: EstadoSeguimiento[] = [];
+  estadosDistribucion: EstadoSeguimiento[] = [];
+  estadosEnCamino: EstadoSeguimiento[] = [];
+  estadosCerrados: EstadoSeguimiento[] = [];
+
+  meses = [
+    { nombre: 'Enero', valor: '01' },
+    { nombre: 'Febrero', valor: '02' },
+    { nombre: 'Marzo', valor: '03' },
+    { nombre: 'Abril', valor: '04' },
+    { nombre: 'Mayo', valor: '05' },
+    { nombre: 'Junio', valor: '06' },
+    { nombre: 'Julio', valor: '07' },
+    { nombre: 'Agosto', valor: '08' },
+    { nombre: 'Septiembre', valor: '09' },
+    { nombre: 'Octubre', valor: '10' },
+    { nombre: 'Noviembre', valor: '11' },
+    { nombre: 'Diciembre', valor: '12' },
+  ];
 
   localidadForm= new FormGroup({
 localidad: new FormControl()
 
 })
+filtroForm = new FormGroup({
+  tipo: new FormControl(''),     // 'mes' o 'cliente'
+  cliente: new FormControl(''),
+  mes: new FormControl(''),
+});
+
 
   constructor(private autenticacionService:AutenticacionService,
     private seguimientoService:SeguimientoService,
-    private correoService:CorreoService
+  
   )
   {}
-ngOnInit(){
-this.autenticacionService.getUserInformation().subscribe({
-next:(response:any)=>{
-  this.idEmpleado=response.data.id
-  if(this.idEmpleado){
-this.seguimientoService.getEmployeEstado(this.idEmpleado).subscribe({
-
-next:(response:any)=>{
-this.estadosSeguimiento=response.data.estados_empleados
-this.seguimientoService.getLocalidades().subscribe({
-  next:(response:any)=>{
-this.localidades=response.data
-console.log('Localidades',this.localidades)
-  },
-  error:(error:any)=>{
-  
-    console.error("No se encontraron localidades",error)
-  }
-  
-})
-}, error:(error:any)=>{
-  console.error('No se encontraron los estados del empleado',error)
-}})  }
-
-}, error:(error:any)=>{
-  console.error('No se encontro el usuario ',error)
-}})}
-cerrarProceso(idEstado: string) {
-  const localidad = this.localidadForm.value.localidad;
-  console.log('Localidad seleccionada:', localidad);
-
-  this.seguimientoService.updateEstadoSeguimiento(idEstado, "Cerrado").subscribe({
-    next: (response: any) => {
-      const estado = response.data;
-      console.log('Estado cerrado con éxito:', estado);
-
-      this.seguimientoService.searchEmployeeLocalidad(localidad).subscribe({
-        next: (empleadoResponse) => {
-          this.empleado = empleadoResponse.data;
-
-          if (this.empleado?.id) {
-            this.seguimientoService.createEstado1(estado.seguimiento, this.empleado.id, localidad).subscribe({
-              next: (nuevoEstadoResponse) => {
-                console.log('Nuevo estado creado con éxito:', nuevoEstadoResponse.data);
-const estadoNuevo=nuevoEstadoResponse.data
-                const destinatario = this.empleado.mail;
-                const asunto = `Asignación proceso ${estadoNuevo.estado}`;
-                const mensaje = `Hola ${this.empleado.nombre}, se te asignó el proceso correspondiente.`;
-
-                this.correoService.sendEmail(destinatario, asunto, mensaje).subscribe({
-                  next: () => {
-                    console.log('Correo enviado con éxito a:', destinatario);
-                  },
-                  error: (error: any) => {
-                    console.error("❌ No se pudo enviar el correo:", error);
-                  }
-                });
-
-                if (estadoNuevo.estado === 'Cerrado') {
-                  const seguimiento = estadoNuevo.seguimiento;
-                  const producto = seguimiento?.item?.producto;
-                  const vendedorEmail = producto?.persona?.mail;
-                  const compradorEmail = seguimiento?.item?.persona?.mail;
-                  const nombreProducto = producto?.descripcion ?? 'el producto';
-
-                  if (vendedorEmail) {
-                    this.correoService.sendEmail(
-                      vendedorEmail,
-                      'Producto entregado',
-                      `Hola, te informamos que ${nombreProducto} ha sido entregado correctamente al cliente.`
-                    ).subscribe({
-                      next: () => console.log('📤 Correo enviado al vendedor:', vendedorEmail),
-                      error: (err) => console.error('❌ Error al enviar correo al vendedor:', err)
-                    });
-                  }
-
-                  if (compradorEmail) {
-                    this.correoService.sendEmail(
-                      compradorEmail,
-                      'Tu pedido ha llegado',
-                      `Hola, te informamos que ${nombreProducto} llegó correctamente a destino. ¡Gracias por tu compra!`
-                    ).subscribe({
-                      next: () => console.log('📤 Correo enviado al cliente:', compradorEmail),
-                      error: (err) => console.error('❌ Error al enviar correo al cliente:', err)
-                    });
-                  }
-                }
-              },
-              error: (error) => {
-                console.error('❌ No se pudo crear el nuevo estado:', error);
-              }
-            });
-          } else {
-            console.error('❌ No se encontró un empleado válido en la localidad');
-          }
-        },
-        error: (error) => {
-          console.error("❌ No se encontró el empleado de dicha localidad:", error);
+  ngOnInit() {
+    this.autenticacionService.getUserInformation().subscribe({
+      next: (response: any) => {
+        this.idEmpleado = response.data?.id;
+        if (!this.idEmpleado) {
+          console.warn('No se obtuvo ID del empleado');
+          return;
         }
-      });
+
+        this.cargarEstadosEmpleado(this.idEmpleado);
+        this.cargarLocalidades();
+      },
+      error: (error) => {
+        console.error('No se encontró el usuario', error);
+      }
+    });
+    this.filtroForm.valueChanges.subscribe(() => {
+      this.aplicarFiltros();
+    });
+  }
+
+  
+
+cerrarProceso(estado: EstadoSeguimiento) {
+  let localidad: string | null = null;
+
+  if (estado.estado === 'En camino') {
+    localidad = estado.seguimiento?.cliente?.direccion?.localidad?.id ?? null;
+  } else {
+    localidad = this.localidadForm.value.localidad;
+  }
+
+  if (localidad) {
+    this.seguimientoService.procesarCierreEstado(estado, localidad).subscribe({
+      next: () => {
+        console.log(' Proceso de cierre finalizado.');
+      },
+      error: (err) => {
+        console.error(' Error al cerrar proceso:', err);
+      }
+    });
+  } else {
+    console.warn(' No se seleccionó una localidad válida');
+  }
+}
+
+cargarEstadosEmpleado(idEmpleado: string) {
+  this.seguimientoService.getEmployeEstado(idEmpleado).subscribe({
+    next: (response:any) => {
+      this.estadosSeguimiento=response.data.estados_empleados
+
+      this.estadosClasificacion = this.estadosSeguimiento.filter(e => e.estado === 'En Clasificacion');
+      this.estadosDistribucion = this.estadosSeguimiento.filter(e => e.estado === 'En centro de distribución');
+      this.estadosEnCamino = this.estadosSeguimiento.filter(e => e.estado === 'En camino');
+      this.estadosCerrados = this.estadosSeguimiento.filter(e => e.estado === 'Cerrado');
     },
-    error: (error: any) => {
-      console.error("❌ No se pudo actualizar el estado:", error);
+    error: (error) => {
+      console.error('No se encontraron los estados del empleado', error);
+    }
+  });
+}
+cargarLocalidades() {
+  this.seguimientoService.getLocalidades().subscribe({
+    next: (response: any) => {
+      this.localidades = response.data ?? [];
+    },
+    error: (error) => {
+      console.error('No se encontraron localidades', error);
     }
   });
 }
 
+aplicarFiltros() {
+  const tipo = this.filtroForm.value.tipo;
+  const mes = this.filtroForm.value.mes;
+  const cliente = this.filtroForm.value.cliente?.toLowerCase() || '';
+
+  let filtrados = [...this.estadosSeguimiento];
+
+  if (tipo === 'mes' && mes) {
+    filtrados = filtrados.filter(e => {
+      const fecha = new Date(e.fecha);
+      const [filtroAnio, filtroMes] = mes.split('-');
+      return (
+        fecha.getMonth() + 1 === parseInt(filtroMes) &&
+        fecha.getFullYear() === parseInt(filtroAnio)
+      );
+    });
+  }
+
+  if (tipo === 'cliente' && cliente) {
+    filtrados = filtrados.filter(e => {
+      const nombre = `${e.seguimiento?.cliente?.nombre ?? ''} ${e.seguimiento?.cliente?.apellido ?? ''}`.toLowerCase();
+      return nombre.includes(cliente);
+    });
+  }
+
+  this.estadosClasificacion = filtrados.filter(e => e.estado === 'En Clasificacion');
+  this.estadosDistribucion = filtrados.filter(e => e.estado === 'En centro de distribución');
+  this.estadosEnCamino = filtrados.filter(e => e.estado === 'En camino');
+  this.estadosCerrados = filtrados.filter(e => e.estado === 'Cerrado');
+}
+
 
 }
+
+
+

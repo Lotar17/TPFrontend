@@ -55,7 +55,7 @@ subTotal!:number
       this.compraService.getOne(this.id_compra).subscribe({
       next:(response:any)=>{
       this.compra=response.data
-      this.compraService.setCompra(this.compra)
+      this.compraService.setCompra(this.compra) // Esto aca no va
       
       console.log(response.data)
       
@@ -75,6 +75,11 @@ subTotal!:number
       
       }
       RealizarDevolucion(item: Item) {
+        console.log('Estados seguimiento',item.seguimiento?.estados)
+if(item.seguimiento?.estados.length!==4){
+  return 
+}
+
         this.itemService.setItem(item)
         this.router.navigate(['/solicitud'])
       }

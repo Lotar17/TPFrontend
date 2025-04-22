@@ -11,7 +11,7 @@
       <p class="text-xl font-semibold text-green-600">{{ producto.precio | currency }}</p>
 
       <!-- Formulario de compra -->
-      <form [formGroup]="publicaForm" (ngSubmit)="onSubmit()" class="mt-6 space-y-4">
+      <form [formGroup]="publicaForm" class="mt-6 space-y-4">
 
         <!-- Dirección existente -->
         <div *ngIf="!mostrarNuevaDireccion">
@@ -82,7 +82,9 @@
 
         <!-- Botón de compra -->
         <button type="submit" [disabled]="cantidadInvalida"
-          class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
+          class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+          (click)="confirmarCompra()">
+          
           🛒 Comprar
         </button>
       </form>
@@ -97,4 +99,45 @@
     <p *ngIf="!producto" class="text-center text-red-500 font-semibold mt-6">⏳ Cargando producto...</p>
 
   </div>
+  <div *ngIf="confirmaCompra" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md text-center">
+      <h2 class="text-lg font-semibold mb-4 text-gray-800">¿Estás seguro de finalizar la compra?</h2>
+      <div class="flex justify-center gap-4">
+        <button
+          class="px-3 py-1.5 text-sm bg-gray-500 text-white rounded-md hover:bg-gray-600 transition"
+          (click)="cerrarModalConfirmacion()"
+        >
+          Cancelar
+        </button>
+        <button
+          class="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+          (click)="confirmarYEnviar()"
+        >
+          Confirmar
+        </button>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="muestraDetalle" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-2xl">
+      <h2 class="text-lg font-semibold mb-4 text-gray-800">Compra realizada con éxito</h2>
+      <div *ngIf="muestraCompra">
+        <p class="text-sm text-gray-700 mb-4">Código de compra: <strong>{{ muestraCompra.id }}</strong></p>
+        <ul class="space-y-2 text-sm text-gray-700">
+          <li *ngFor="let item of muestraCompra.items">
+            Producto: {{ item.producto?.descripcion }} | Cantidad: {{ item.cantidad_producto }}
+          </li>
+        </ul>
+      </div>
+      <div class="mt-6 text-center">
+        <button
+          class="px-3 py-1.5 text-sm bg-gray-600 text-white rounded-md hover:bg-gray-700 transition"
+          (click)="cerrarModalDetalle()"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
 </div>

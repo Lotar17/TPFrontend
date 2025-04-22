@@ -75,6 +75,7 @@ el cliente sera informado de dicha accion.`
 if(solicitud.id && fecha_hora_actual)
 this.solicitudService.cierreDevolucionCliente(solicitud.id,fecha_hora_actual).subscribe({
 next:(response)=>{
+  solicitud.fechaEnvioCliente = fecha_hora_actual;
 console.log('Fecha de envio del cliente asignada con exito',response.data)
     this.correoService.sendEmail(this.destinatario,this.asunto,this.mensaje).subscribe({
       next:(response:any)=>{

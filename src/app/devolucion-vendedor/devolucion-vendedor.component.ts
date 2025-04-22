@@ -81,8 +81,9 @@ error:(error:any)=>{
  }
 })}
 requestDecission(solicitud: Devolucion, decision: string, item: Item) {
+  console.log('Entro aca al metodo',solicitud,decision,item)
   if (!solicitud.id || !item.producto?.id || !item.compra?.id) return;
-
+  console.log('Llega bien el item')
   this.solicitud = solicitud;
   this.item1 = item;
   this.cantidadDevuelta = this.solicitud.cantidad_devuelta ?? 0;
@@ -93,6 +94,7 @@ requestDecission(solicitud: Devolucion, decision: string, item: Item) {
   }
 
   if (decision === 'Aprobada') {
+    solicitud.estado='Aprobada'
     this.solicitudService.Decission(solicitud.id, decision).pipe(
       switchMap(() => this.historicoPrecioService.getOne(idProducto)),
       filter((valor: any): valor is number => valor !== undefined),
@@ -143,6 +145,7 @@ requestDecission(solicitud: Devolucion, decision: string, item: Item) {
     });
 
   } else if (decision === 'Rechazada') {
+    solicitud.estado='Rechazada'
     this.solicitudService.Decission(solicitud.id, decision).pipe(
       switchMap(() => {
         const destinatario = this.solicitud.comprador?.mail || '';
@@ -196,6 +199,9 @@ console.log('Stock actualizado con exito ',response.data)
   this.solicitudSeleccionadaId = null;
 }
 cerrarDevolucion(solicitud: Devolucion) {
+  solicitud.fechaCierre=new Date().toISOString();
+  this.mostrarCierre=false
+  this.mostrarProductoLlego=false
   console.log('Entro')
   if (!this.mensajeCierre.trim()) {
     alert('Por favor, ingresa un mensaje de cierre.');

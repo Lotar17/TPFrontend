@@ -22,7 +22,14 @@ export class PersonaService {
   getOne(id: string): Observable<ApiResponse<Persona>> {
     return this.http.get<ApiResponse<Persona>>(`${this.apiUrl}/${id}`);
   }
-
+updatePersona(persona:Persona):Observable<ApiResponse<Persona>>{
+  const payload={
+    nombre: persona.nombre,
+    mail:persona.mail,
+    apelllido:persona.apellido
+  }
+  return this.http.patch<ApiResponse<Persona>>(`${this.apiUrl}/${persona.id}`,payload)
+}
   
   
 }

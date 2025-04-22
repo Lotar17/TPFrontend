@@ -10,7 +10,7 @@ export type Compra = {
     personaId?: string;
     persona?:Persona;
     items?: Item[];  
-    fecha_hora_compra: string;
+    fecha_hora_compra?: string;
     total_compra?: number;
     calle?:string,
     numero?:number,

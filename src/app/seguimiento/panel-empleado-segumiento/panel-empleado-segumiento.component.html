@@ -1,63 +1,160 @@
 <div class="min-h-screen bg-gradient-to-br from-gray-100 to-blue-100 p-6">
-    <div class="max-w-5xl mx-auto">
-      <!-- Título -->
-      <h1 class="text-3xl font-bold text-blue-800 mb-8 text-center">
-        Estados asignados al empleado
-      </h1>
+  <div class="max-w-6xl mx-auto">
+
+    <!-- Título -->
+    <h1 class="text-3xl font-bold text-blue-800 mb-8 text-center">
+      Estados asignados al empleado
+    </h1>
+    <!-- Filtros -->
+<div class="bg-white shadow-md rounded-lg p-6 mb-10">
+  <h2 class="text-xl font-semibold text-gray-800 mb-4">Filtros</h2>
   
-      <!-- Lista de estados -->
-      <div *ngIf="estadosSeguimiento.length > 0; else sinEstados" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <div
-          *ngFor="let estado of estadosSeguimiento"
-          class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition border-l-4 border-blue-500"
-        >
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-semibold text-blue-600">
-              {{ estado.estado }}
-            </h2>
-            <span
-              class="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full"
-            >
-              {{ estado.condicion }}
-            </span>
-          </div>
-          <div class="text-gray-700 space-y-2 text-sm">
-            <p><strong>Fecha:</strong> {{ estado.fecha }}</p>
-            <p><strong>Seguimiento:</strong> {{ estado.seguimiento?.codigoSeguimiento }}</p>
-            <p><strong>Localidad:</strong> {{ estado.localidad?.nombre ?? 'No disponible' }}</p>
-            <p><strong>Provincia:</strong> {{ estado.localidad?.provincia ?? 'No disponible' }}</p>
-            <div *ngIf="estado?.condicion !== 'Cerrado'&& estado.estado!=='Cerrado'">
-            <form [formGroup]="localidadForm">
-              <div>
-                <label for="localidad" class="block text-gray-700 font-semibold mb-1">📍 Localidad siguiente del proceso</label>
-                <select
-                  formControlName="localidad"
-                  class="w-full border border-gray-300 px-4 py-2 rounded-lg"
-                >
-                  <option [value]="null" disabled selected>Seleccione una localidad</option>
-                  <option *ngFor="let localidad of localidades" [value]="localidad.id">
-                    {{ localidad.nombre }}
-                  </option>
-                </select>
-              </div>
-            </form>
-            
-        
-          <button (click)="cerrarProceso(estado?.id|| '')" 
-          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-full transition-all duration-300">
-          Cerrar Estado
-        </button>
-      </div>
-        </div>
-      </div>
-      </div>
-  
-      <!-- Mensaje si no hay estados -->
-      <ng-template #sinEstados>
-        <div class="text-center mt-16 text-gray-600 text-lg">
-          Aún no tenés estados asignados.
-        </div>
-      </ng-template>
+  <form [formGroup]="filtroForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <!-- Selector de tipo de filtro -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Filtrar por</label>
+      <select formControlName="tipo" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+        <option value="">-- Seleccionar --</option>
+        <option value="mes">Mes</option>
+        <option value="cliente">Cliente</option>
+      </select>
     </div>
+
+    <!-- Selector de mes -->
+    <div *ngIf="filtroForm.value.tipo === 'mes'">
+      <label class="block text-sm font-medium text-gray-700">Mes</label>
+      <input type="month" formControlName="mes" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"/>
+    </div>
+
+    <!-- Input de cliente -->
+    <div *ngIf="filtroForm.value.tipo === 'cliente'">
+      <label class="block text-sm font-medium text-gray-700">Cliente</label>
+      <input type="text" formControlName="cliente" placeholder="Nombre o apellido" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"/>
+    </div>
+  </form>
+</div>
+
+
+
+    <!-- NUEVO DISEÑO: Panel dividido por columnas -->
+    <div class="mt-16">
+      <h2 class="text-2xl font-bold text-gray-700 mb-6 text-center">Panel de Estados por Etapa</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <!-- Columna: En Clasificación -->
+        <div>
+          <h3 class="text-lg font-semibold text-blue-700 mb-4 text-center">En Clasificación</h3>
+          <div *ngFor="let estado of estadosClasificacion" class="bg-white p-4 rounded shadow border-l-4 border-blue-500 mb-4">
+            <p class="text-sm text-gray-600"><strong>Código:</strong> {{ estado.seguimiento?.codigoSeguimiento }}</p>
+            <p class="text-sm"><strong>Fecha:</strong> {{ estado.fecha }}</p>
+
+            <!-- Mostrar localidad y botón solo si la condición no es "Cerrado" -->
+            <div *ngIf="estado?.condicion !== 'Cerrado'">
+              <form [formGroup]="localidadForm">
+                <div *ngIf="estado?.estado !== 'En camino'">
+                  <label class="block text-gray-700 font-semibold mb-1">📍 Localidad siguiente del proceso</label>
+                  <select
+                    formControlName="localidad"
+                    class="w-full border border-gray-300 px-4 py-2 rounded-lg"
+                  >
+                    <option [value]="null" disabled selected>Seleccione una localidad</option>
+                    <option *ngFor="let localidad of localidades" [value]="localidad.id">
+                      {{ localidad.nombre }}
+                    </option>
+                  </select>
+                </div>
+              </form>
+
+              <button (click)="cerrarProceso(estado)"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-full transition-all duration-300">
+                Cerrar Estado
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna: En Centro de Distribución -->
+        <div>
+          <h3 class="text-lg font-semibold text-green-700 mb-4 text-center">En Centro de Distribución</h3>
+          <div *ngFor="let estado of estadosDistribucion" class="bg-white p-4 rounded shadow border-l-4 border-green-500 mb-4">
+            <p class="text-sm text-gray-600"><strong>Código:</strong> {{ estado.seguimiento?.codigoSeguimiento }}</p>
+            <p class="text-sm"><strong>Fecha:</strong> {{ estado.fecha }}</p>
+
+            <!-- Mostrar localidad y botón solo si la condición no es "Cerrado" -->
+            <div *ngIf="estado?.condicion !== 'Cerrado'">
+              <form [formGroup]="localidadForm">
+                <div *ngIf="estado?.estado !== 'En camino'">
+                  <label class="block text-gray-700 font-semibold mb-1">📍 Localidad siguiente del proceso</label>
+                  <select
+                    formControlName="localidad"
+                    class="w-full border border-gray-300 px-4 py-2 rounded-lg"
+                  >
+                    <option [value]="null" disabled selected>Seleccione una localidad</option>
+                    <option *ngFor="let localidad of localidades" [value]="localidad.id">
+                      {{ localidad.nombre }}
+                    </option>
+                  </select>
+                </div>
+              </form>
+
+              <button (click)="cerrarProceso(estado)"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-full transition-all duration-300">
+                Cerrar Estado
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna: En Camino -->
+        <div>
+          <h3 class="text-lg font-semibold text-yellow-700 mb-4 text-center">En Camino</h3>
+          <div *ngFor="let estado of estadosEnCamino" class="bg-white p-4 rounded shadow border-l-4 border-yellow-500 mb-4">
+            <p class="text-sm text-gray-600"><strong>Código:</strong> {{ estado.seguimiento?.codigoSeguimiento }}</p>
+            <p class="text-sm"><strong>Fecha:</strong> {{ estado.fecha }}</p>
+
+            <!-- Mostrar localidad y botón solo si la condición no es "Cerrado" -->
+            <div *ngIf="estado?.condicion !== 'Cerrado'">
+              <form [formGroup]="localidadForm">
+                <div *ngIf="estado?.estado !== 'En camino'">
+                  <label class="block text-gray-700 font-semibold mb-1">📍 Localidad siguiente del proceso</label>
+                  <select
+                    formControlName="localidad"
+                    class="w-full border border-gray-300 px-4 py-2 rounded-lg"
+                  >
+                    <option [value]="null" disabled selected>Seleccione una localidad</option>
+                    <option *ngFor="let localidad of localidades" [value]="localidad.id">
+                      {{ localidad.nombre }}
+                    </option>
+                  </select>
+                </div>
+              </form>
+
+              <button (click)="cerrarProceso(estado)"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-full transition-all duration-300">
+                Cerrar Estado
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna: Cerrado -->
+        <div>
+          <h3 class="text-lg font-semibold text-gray-700 mb-4 text-center">Cerrado</h3>
+          <div *ngFor="let estado of estadosCerrados" class="bg-white p-4 rounded shadow border-l-4 border-gray-500 mb-4">
+            <p class="text-sm text-gray-600"><strong>Código:</strong> {{ estado.seguimiento?.codigoSeguimiento }}</p>
+            <p class="text-sm"><strong>Fecha:</strong> {{ estado.fecha }}</p>
+            <!-- Sin localidad ni botón cuando está cerrado -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mensaje si no hay estados -->
+    <ng-template #sinEstados>
+      <div class="text-center mt-16 text-gray-600 text-lg">
+        Aún no tenés estados asignados.
+      </div>
+    </ng-template>
   </div>
-  
+</div>

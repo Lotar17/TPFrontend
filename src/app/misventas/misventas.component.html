@@ -1,0 +1,57 @@
+<div class="p-6 max-w-7xl mx-auto">
+  <!-- Título -->
+  <h1 class="text-3xl font-semibold mb-6 text-center">Mis Ventas</h1>
+
+  <!-- Filtros -->
+  <div class="flex flex-wrap justify-center gap-4 mb-6">
+    <div>
+      <label for="mes" class="block text-sm font-medium mb-1">Filtrar por mes</label>
+      <select id="mes" [(ngModel)]="filtroMes" class="rounded-lg border border-gray-300 p-2">
+        <option value="">Todos</option>
+        <option *ngFor="let mes of meses" [value]="mes.valor">{{ mes.nombre }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Lista de ventas -->
+  <div *ngIf="(ventasFiltradas() || []).length > 0; else sinVentas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+    <div *ngFor="let item of ventasFiltradas()" class="bg-white shadow-md rounded-2xl p-4 border border-gray-200">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">{{ item.producto?.descripcion }}</h2>
+    
+      <p class="text-gray-600 mb-1">Comprador: {{ item.persona?.nombre }} {{ item.persona?.apellido }}</p>
+      <p class="text-gray-600 mb-1">Fecha: {{ item.compra?.fecha_hora_compra | date:'dd/MM/yyyy' }}</p>
+      <button
+        class="mt-3 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
+        (click)="abrirModal(item)"
+      >
+        Ver Detalle
+      </button>
+    </div>
+  </div>
+
+  <!-- Mensaje si no hay ventas -->
+  <ng-template #sinVentas>
+    <p class="text-center text-gray-500 mt-8">No hay ventas para mostrar.</p>
+  </ng-template>
+
+  <!-- Modal -->
+  <div *ngIf="ventaSeleccionada" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md relative">
+      <h3 class="text-2xl font-semibold mb-4">Detalle de Venta</h3>
+      
+      <p><strong>Descripción:</strong> {{ ventaSeleccionada.producto?.descripcion }}</p>
+      <p><strong>Cantidad:</strong> {{ ventaSeleccionada.cantidad_producto }}</p>
+      <p><strong>Comprador:</strong> {{ ventaSeleccionada.persona?.nombre }}</p>
+      <p><strong>Email:</strong> {{ ventaSeleccionada.persona?.mail }}</p>
+      <p><strong>Fecha:</strong> {{ ventaSeleccionada.compra?.fecha_hora_compra | date:'dd/MM/yyyy' }}</p>
+      
+      <button
+        (click)="cerrarModal()"
+        class="mt-4 px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition"
+      >
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>

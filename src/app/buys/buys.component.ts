@@ -10,10 +10,6 @@ import { PersonaService } from '../api/per.service';
 import { AutenticacionService } from '../api/autenticacion.service';
 import { Persona } from '../models/persona.entity';
 import { Seguimiento } from '../models/seguimiento.entity';
-import { concatMap,switchMap,tap } from 'rxjs';
-import { from ,of} from 'rxjs';
-import { catchError } from 'rxjs';
-import { CorreoService } from '../api/correo.service';
 import { Direccion } from '../models/direccion.entity';
 import { Localidad } from '../models/localidad.entity';
 @Component({
@@ -27,7 +23,7 @@ export class BuysComponent {
   idPersona!: string;
   items: Item[] = [];
   direccion_entrega!: string;
-  fecha_hora_compra!: string;
+ 
   compra!:Compra;
   producto!:string;
   cantidad_producto!:number;
@@ -37,10 +33,13 @@ itemIds:string[]=[]
 cliente!:Persona
  direcciones: Direccion[] = [];
  direccionSeleccionadaId: string = '';
- mailOrigen!:string
+ showConfirmModal: boolean = false;
+showDetailModal: boolean = false;
+compraRealizada: Compra | null = null;
+
+ 
  mailDestino!:string
-mailAsunto!:string
-mailMensaje!:string
+
 
 mostrarNuevaDireccion: boolean = false;
 
@@ -59,7 +58,7 @@ localidades:Localidad[]=[]
     private autenticacionService:AutenticacionService,
     private seguimientoService:SeguimientoService,
     private personaService:PersonaService,
-    private correoService:CorreoService
+
   ) {}
 
   ngOnInit() {
@@ -108,13 +107,13 @@ this.mailDestino=response.data?.mail
 
   async onSubmit() {
     this.direccion_entrega = this.publicaForm.value.direccion || '';
-    this.fecha_hora_compra = new Date().toISOString();
+   
   
     if (this.mostrarNuevaDireccion) {
     
       this.compra = {
         personaId: this.idPersona,
-        fecha_hora_compra: this.fecha_hora_compra,
+     
         items: this.items,
         calle: this.publicaForm.value.calle || '',
         numero: this.publicaForm.value.numero || 0,
@@ -125,78 +124,22 @@ this.mailDestino=response.data?.mail
       this.compra = {
         personaId: this.idPersona,
         direccionId: this.direccion_entrega,
-        fecha_hora_compra: this.fecha_hora_compra,
         items: this.items
       };
     }
   
     console.log(this.compra);
+    this.compraService.procesarCompra(this.compra, this.idPersona, this.mailDestino)
+    .subscribe({
+      next: () => {
+        console.log("Compra procesada correctamente");
+      },
+      error: (err) => {
+        console.error("Error al procesar la compra:", err);
+      }
+    });
   
-    this.compraService.addCompra(this.compra).pipe(
-      tap(response => {
-        console.log("Compra realizada:", response.data);
-      }),
-      switchMap(response => {
-        const idCompra = response.data.id;
-        const items = response.data.items;
-  
-        return this.compraService.updateStock(idCompra).pipe(
-          tap(() => console.log("Stock actualizado")),
-          switchMap(() => from(items).pipe( // sigue este flujo por cada item dentro de la compra
-            concatMap((item: any) => {
-              const idItem = item.id;
-  
-              return this.seguimientoService.createSeguimiento(idItem, this.idPersona).pipe(
-                switchMap((seguimientoResponse: any) => {
-                  const seguimiento = seguimientoResponse.data;
-                  const localidadId = item.producto.persona.direccion.localidad.id;
-  
-                  
-                  this.mailAsunto = `Compra con código de seguimiento nro: ${seguimiento.codigoSeguimiento}`;
-                  this.mailMensaje = `Tu compra fue realizada con éxito. Ingresando el código de seguimiento en el panel de ver seguimientos podrás ver el recorrido de tu pedido
-                  del producto ${seguimiento.item.producto.descripcion}.`;
-  
-                  return this.seguimientoService.searchEmployeeLocalidad(localidadId).pipe(
-                    switchMap((empleadoResponse: any) => {
-                      const empleado = empleadoResponse.data;
-                  console.log('Mail del empleado',empleado.mail)
-                      const destinatarioEmpleado = empleado.mail;
-                      const asuntoEmpleado = 'Proceso del seguimiento asignado';
-                      const mensajeEmpleado = `Hola ${empleado.nombre} se te asignó el proceso de clasificación para el producto ${seguimiento.item.producto.descripcion}. 
-                      Cuando termines el proceso, dirigite al panel y seleccioná la próxima localidad a la que debe enviarse el producto para que avance a la siguiente etapa.`;
-                  
-                     
-                      return this.correoService.sendEmail(destinatarioEmpleado, asuntoEmpleado, mensajeEmpleado).pipe(
-                        tap(() => console.log(`Correo enviado al empleado: ${destinatarioEmpleado}`)),
-                  
-                      
-                        switchMap(() => this.seguimientoService.createEstado1(seguimiento.id, empleado.id, localidadId)),
-                  
-                        tap(() => console.log(`Estado creado para seguimiento ${seguimiento.id}`)),
-                  
-                        // Tercero: enviar correo al cliente
-                        switchMap(() => this.correoService.sendEmail(this.mailDestino, this.mailAsunto, this.mailMensaje)),
-                  
-                        tap(() => console.log(`Correo enviado al cliente: ${this.mailDestino}`))
-                      );
-                    })
-                  );
-                  
-                })
-              );
-            }),
-            catchError(err => {
-              console.error("Error al procesar un item:", err);
-              return of(null);
-            })
-          ))
-        );
-      }),
-      catchError(err => {
-        console.error("Error general del flujo:", err);
-        return of(null);
-      })
-    ).subscribe();
+   
   }
   
 loadLocalidades(){
@@ -205,12 +148,23 @@ next:(response:any)=>{
 this.localidades=response.data
 },error:(error:any)=>{
   console.error('No se encontraron localidades',error)
+}})}
+
+confirmarCompra() {
+  this.showConfirmModal = true;
+}
+confirmarYEnviar() {
+  this.cerrarModalConfirmacion(); // opcional, si querés cerrar antes
+  this.onSubmit();
+  this.showDetailModal = true; 
+}
+cerrarModalConfirmacion() {
+  this.showConfirmModal = false;
 }
 
 
-
-})
-
+cerrarModalDetalle() {
+  this.showDetailModal = false;
+  this.compraRealizada = null;
 }
-
 }    

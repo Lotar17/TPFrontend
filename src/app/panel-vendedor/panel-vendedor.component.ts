@@ -9,10 +9,11 @@ import { AutenticacionService } from '../api/autenticacion.service';
 import { RouterLink } from '@angular/router';
 import { ProductosService } from '../api/producto.service';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-panel-vendedor',
   standalone: true,
-  imports: [CommonModule,RouterLink],
+  imports: [CommonModule,RouterLink,FormsModule],
   templateUrl: './panel-vendedor.component.html',
   styleUrl: './panel-vendedor.component.css'
 })
@@ -20,6 +21,10 @@ export class PanelVendedorComponent {
 productos?:Producto[]=[]
 idUser!:string
 user!:Persona
+deleteConfirmado= false// muestra el exito
+confirmadelete=false// uso de bandera
+filtroDescripcion: string = '';
+productosFiltrados: Producto[] = [];
 constructor(
   private autenticacionService: AutenticacionService,
   private personaService: PersonaService,
@@ -40,6 +45,8 @@ ngOnInit() {
           next: (response: any) => {
             this.user = response.data;
             this.productos = this.user ? this.user.prods_publicados : [];
+            if(this.productos)
+            this.productosFiltrados = this.productos;
             console.log('Usuario:', this.user);
             this.productos?.forEach((producto)=>{
 if(producto.id){
@@ -53,31 +60,7 @@ producto.precio=precioActual
     console.error("No se encontro el precio",error)
   }
   
-  
-
-
-
-
-
-
-
-})
-
-
-
-
-}
-
-
-
-
-
-            }
-            
-          
-            )
-
-          },
+})}} )},
           error: (error) => {
             console.error('Error al obtener la compra:', error);
           },
@@ -106,4 +89,28 @@ borrarProducto(producto:Producto) {
     error: (error) => console.error('Error al eliminar producto:', error),
   });
 }
+
+confirmarDelete() { // muestra el modal de confirmacion
+  this.confirmadelete = true;// me activa el metodo realizar cambio
+}
+realizarDelete(producto:Producto) { // muestro cuando se acepta en el modal
+  this.cerrarModalConfirmacion(); // opcional, si querés cerrar antes
+  this.borrarProducto(producto);
+  this.deleteConfirmado= true; 
+}
+cerrarModalConfirmacion() { // si la compra no se acepta en el modal
+  this.confirmadelete = false;
+}
+cerrarModalDetalle() {
+  this.deleteConfirmado = false;
+  
+}
+filtrarProductos(): void {
+  const filtro = this.filtroDescripcion.toLowerCase();
+  if(this.productos)
+  this.productosFiltrados = this.productos.filter(p =>
+    p.descripcion?.toLowerCase().includes(filtro)
+  );
+}
+
 }

@@ -6,6 +6,7 @@ import { HistoricoPrecioService } from '../api/calculaprecio.service';
 import { CommonModule } from '@angular/common';
 import { Response } from 'express';
 import { CarritoService } from '../api/cart.service';
+import { ItemService } from '../api/item.service';
 
 import { CurrencyPipe } from '@angular/common';
 import localeEs from '@angular/common/locales/es-AR';
@@ -22,11 +23,12 @@ export class ProductCardComponent {
   precio!: number;
   showNotification: boolean = false; 
   mensajeNotificacion: string = ''; 
-
+idProducto!:string
   constructor(
     private historicoprecioService: HistoricoPrecioService,
     private carritoService: CarritoService,
-    private autenticacionService:AutenticacionService
+    private autenticacionService:AutenticacionService,
+    private itemService:ItemService
   ) {}
 
   ngOnInit(): void {
@@ -54,35 +56,16 @@ export class ProductCardComponent {
     );
   }
 
-  agregarAlCarrito(id_Producto: string| undefined) {
+ agregarAlCarrito(idProducto:string ){
+  this.idProducto=idProducto
+  this.carritoService.manejarItemCarrito(this.idProducto)
+}
     
-   let userId
-    const idProducto= id_Producto || ""
-if (!idProducto) return;
-this.autenticacionService.getUserInformation().subscribe({
-  next:(response:any)=>{
-  userId=response.data.id
-  this.carritoService.addItemToCarrito(idProducto, userId);
-  this.mostrarNotificacion(`${this.producto.descripcion} se agregó al carrito.`);
-
-
-
-  },
-  error:(error:any)=>{
-  
-    console.error("No se encontro el usuario",error)
-  }
-
-
-
-
-      
-    })}
-    mostrarNotificacion(mensaje: string) {
+  mostrarNotificacion(mensaje: string) {
       this.mensajeNotificacion = mensaje;
       this.showNotification = true;
   
-      // Ocultar el cartel después de 3 segundos
+     
       setTimeout(() => {
         this.showNotification = false;
       }, 3000);

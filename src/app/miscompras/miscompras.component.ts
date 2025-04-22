@@ -11,12 +11,13 @@ import { HistoricoPrecioService } from '../api/calculaprecio.service';
 
 
 import { Item } from '../models/item.entity';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 @Component({
   selector: 'app-mis-compras',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,ReactiveFormsModule,FormsModule],
   templateUrl: './miscompras.component.html',
   styleUrl: './miscompras.component.css'
 })
@@ -24,6 +25,34 @@ export class MisComprasComponent {
   MisCompras: Compra[] = [];
   personaId!: string;
   mis_productos:Producto[]= [];
+
+  filtroMes: string = '';
+filtroVendedor: string = '';
+soloNoLlegados: boolean = false;
+
+mesesDisponibles = [
+  { value: '01', label: 'Enero' },
+  { value: '02', label: 'Febrero' },
+  { value: '03', label: 'Marzo' },
+  { value: '04', label: 'Abril' },
+  { value: '05', label: 'Mayo' },
+  { value: '06', label: 'Junio' },
+  { value: '07', label: 'Julio' },
+  { value: '08', label: 'Agosto' },
+  { value: '09', label: 'Septiembre' },
+  { value: '10', label: 'Octubre' },
+  { value: '11', label: 'Noviembre' },
+  { value: '12', label: 'Diciembre' },
+];
+compraSeleccionada: Compra | null = null;
+
+abrirDetalles(compra: Compra) {
+  this.compraSeleccionada = compra;
+}
+
+cerrarDetalles() {
+  this.compraSeleccionada = null;
+}
 
 
 
@@ -53,23 +82,8 @@ export class MisComprasComponent {
               return compra.items?.some((item: any) => item.cantidad_producto > 0);
             });
   
-            // Recorremos cada compra y sus items para obtener el precio
-            this.MisCompras.forEach((compra: any) => {
-              if(compra.items)
-              compra.items.forEach((item: any) => {
-                if (item.producto?.id) {
-                  this.historicoPrecioService.getOne(item.producto.id).subscribe({
-                    next: (precioData: any) => {
-                      console.log(`Precio recibido para producto ${item.producto.id}:`, precioData);
-                      item.producto.precio = precioData; // Asignamos el precio unitario
-                    },
-                    error: (error: any) => {
-                      console.error(`Error obteniendo precio para producto ${item.producto.id}:`, error);
-                    }
-                  });
-                }
-              });
-            });
+         
+       
           }
         });
       },
@@ -109,7 +123,42 @@ export class MisComprasComponent {
     }
     return ''; // Retorna un valor predeterminado si no tiene descripción
   }
-
+  getComprasFiltradasPorItem(): Compra[] {
+    return this.MisCompras
+      .map(compra => {
+        const fechaCompra = compra.fecha_hora_compra ? new Date(compra.fecha_hora_compra) : null;
+        const mes = fechaCompra ? fechaCompra.toISOString().slice(5, 7) : '';
+  
+        if (!compra.items) return null; // Comprobamos si 'items' es undefined
+  
+        const itemsFiltrados = compra.items.filter(item => {
+          const coincideMes = !this.filtroMes || this.filtroMes === mes;
+          const coincideVendedor = !this.filtroVendedor || (
+            item.producto?.persona &&
+            (item.producto.persona.nombre + ' ' + item.producto.persona.apellido)
+              .toLowerCase()
+              .includes(this.filtroVendedor.toLowerCase())
+          );
+          const coincideLlegada = !this.soloNoLlegados || item.seguimiento?.estados?.length !== 4;
+  
+          return coincideMes && coincideVendedor && coincideLlegada;
+        });
+  
+        // Solo devolver la compra si hay ítems filtrados
+        if (itemsFiltrados.length > 0) {
+          return {
+            ...compra,
+            items: itemsFiltrados
+          };
+        }
+  
+        return null;
+      })
+      .filter(c => c !== null) as Compra[]; // Filtramos valores null
+  }
+  
+ 
+  
 }
   
 

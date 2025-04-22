@@ -28,6 +28,9 @@ export class CartComponent {
   mensajeNotificacion: string = ''; 
   idUser!:string
   idCliente!:string
+  mostrarModal = false;
+itemSeleccionado!: Item|null ;
+modalConfirmacionEliminacion = false;
   constructor(
     private route: ActivatedRoute,
     private carritoService: CarritoService,
@@ -49,44 +52,31 @@ export class CartComponent {
           // Nos suscribimos al carrito para recibir actualizaciones en tiempo real
           this.carritoService.carritoItems$.subscribe((items) => {
             this.items = items;
-            this.obtenerPreciosHistoricos();
-            this.calcularSubtotal();
+           
+            this.subtotal = this.carritoService.calcularSubtotal(this.items);
           });
         }
       },
       error: (error: any) => {
         console.error("No se encontró información del usuario", error);
       }
-    });
-    
+    });}
 
-
-
-
-}
-
-  incrementarCantidad(idProducto: string | undefined, item: Item) {
+  incrementarCantidad(idProducto: string | undefined, item: Item) { // Llamar al metodo incrementQuantity del service
     if (!idProducto) return;
-    if(item.producto?.stock)
-    if (item.cantidad_producto >= item.producto.stock) {
-      console.warn("❌ No puedes agregar más productos. Stock insuficiente.");
-      return;
-    }
-  
+    
 let idUser=''
 this.autenticacionService.getUserInformation().subscribe({
 next:(response:any)=>{
 idUser=response.data.id
-this.carritoService.addItemToCarrito(idProducto, idUser);
+if(item.id)
+this.carritoService.IncrementQuantity(item.id,idProducto);
 },
 error:(error:any)=>{
 
   console.error("No se encontro el usuario",error)
-}
-
-})
-}
-  decrementarCantidad(idProducto: string | undefined, item: Item) {
+}})}
+  decrementarCantidad(idProducto: string | undefined, item: Item) { 
     if (!idProducto) return;
     if (item.cantidad_producto <= 1) {
       console.warn("❌ No puedes reducir más la cantidad.");
@@ -101,9 +91,8 @@ this.autenticacionService.getUserInformation().subscribe({
   error:(error:any)=>{
   
     console.error("No se encontro el usuario",error)
-  }
-  
-   })}
+  }})}
+
   eliminarItem(itemId: string | undefined) {
     if (!itemId) return;
   
@@ -111,7 +100,15 @@ this.autenticacionService.getUserInformation().subscribe({
     this.carritoService.removeItem(itemId);
     this.cd.detectChanges(); // 🔄 Forzamos que Angular detecte los cambios
   }
-  
+  confirmarCompra() {
+   
+    this.realizarCompra(this.items); 
+
+    
+    this.router.navigate(['/buys']);
+
+    this.mostrarResumenCompra = false;
+  }
 
   realizarCompra(items_compra: Item[]): void {
     this.compraService.setItem(items_compra);
@@ -120,43 +117,38 @@ this.autenticacionService.getUserInformation().subscribe({
       item => !items_compra.some(compraItem => compraItem.id === item.id)
     );
 
-    this.carritoService.actualizarCarrito(carritoActualizado); // 🚀 Actualizar el estado del carrito
+    this.carritoService.actualizarCarrito(carritoActualizado); 
     this.router.navigate(['/buys']);
   }
-
-  calcularSubtotal() {
-    this.subtotal = this.items.reduce((total, item) => {
-      if (!item.producto || !item.producto.hist_precios) return total;
-
-      const preciosConFecha = item.producto.hist_precios.filter((p: any) => p.fechaDesde);
-      const preciosOrdenados = [...preciosConFecha].sort((a: any, b: any) =>
-        new Date(b.fechaDesde ?? 0).getTime() - new Date(a.fechaDesde ?? 0).getTime()
-      );
-
-      const precioActual = preciosOrdenados.length > 0 ? preciosOrdenados[0].valor : 0;
-      return total + precioActual * item.cantidad_producto;
-    }, 0);
+  mostrarModalDeCompra() {
+    this.abrirResumenCompra();
+  }
+  mostrarResumenCompra = false;
+  abrirResumenCompra() {
+    this.mostrarResumenCompra = true;
+    this.cd.detectChanges();
   }
 
-  obtenerPreciosHistoricos() {
-    this.items.forEach((item) => {
-      if (item.producto?.id) {
-        this.historicoPrecioService.getOne(item.producto.id).subscribe({
-          next: (precioData: any) => {
-            if(item.producto)
-              
-            item.producto.precio = precioData; 
-            this.cd.detectChanges();
-            console.log('Precio',item.producto?.precio)
-          },
-          error: (error: any) => {
-            if(item.producto)
-            console.error(`Error obteniendo precio para producto ${item.producto.id}`, error);
-          }
-        });
-      }
-    });
+
+
+
+  confirmarEliminacion(item: Item) {
+    this.itemSeleccionado = item;
+    this.modalConfirmacionEliminacion = true;
   }
   
+  cancelarEliminacion() {
+    this.modalConfirmacionEliminacion = false;
+    this.itemSeleccionado = null;
+  }
 
+  eliminarItemConfirmado() {
+    if (this.itemSeleccionado?.id) {
+      this.eliminarItem(this.itemSeleccionado.id);
+      this.itemSeleccionado = null;
+      this.modalConfirmacionEliminacion = false;
+      
+    }
+  }
+  
 }

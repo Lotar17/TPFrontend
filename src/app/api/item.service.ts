@@ -39,7 +39,12 @@ update(item:Item,cantidad_devuelta:number): Observable<ApiResponse<Item>> {
 
 removeItem(idItem:string): Observable<ApiResponse<Item>>{
   return this.http.delete<ApiResponse<Item>>(`${this.apiUrl}/${idItem}`);
-
-
 }
-  }
+validoExistenciaItem(idProducto:string,idPersona:string):Observable<ApiResponse<Item>>{
+
+  return this.http.get<ApiResponse<Item>>(`${this.apiUrl}/valido/${idProducto}/${idPersona}`)
+}
+getVentasByUser(id:string): Observable<ApiResponse<Item>>{
+  return this.http.get<ApiResponse<Item>>(`http://localhost:3000/api/compras/ventas/${id}`)
+}
+}
