@@ -72,20 +72,6 @@ if(this.item1.producto?.id)
 if(this.idProducto)
   console.log('ID del producto antes de la petición:', this.idProducto);
 
-this.historicoPrecioService.getOne(this.idProducto).subscribe({
-  next: (precioData: any) => {
-    if(this.item1.producto?.id)
-    console.log(`Precio recibido para producto ${this.item1.producto.id}:`, precioData);
-  if(this.item1.producto)
-   this.item1.producto.precio = precioData; // Asignamos el precio unitario
-  },
-  error: (error: any) => {
-    console.error(`Error obteniendo precio para producto ${this.item1}:`, error);
-  }
-  
-
-
-})
 
 },error:(error:any)=>{
   console.error('No se encontro el item',error)
@@ -103,6 +89,7 @@ if(this.item1.id)
   this.solicitudService.createDevolutionRequest(this.item1.id, this.motivo,this.cantidadDevuelta).subscribe({
     next: (response: any) => {
       console.log('Solicitud creada con éxito', response.data);
+      this.mostrarModalExito = true;
 const mailDestinatario= response.data.vendedor.mail
 const asunto= "Devolución Recibida"
 const mensaje= `Usted ${response.data.vendedor.nombre} ${response.data.vendedor.apellido} recibio una solicitud de devolucion por parte de la siguiente persona:
@@ -129,5 +116,35 @@ console.log('Correo enviado con exito a',mailDestinatario)
 
   
   })
-}}
+}
+mostrarModalConfirmacion = false;
+mostrarModalExito = false;
+
+abrirModalConfirmacion() {
+  this.mostrarModalConfirmacion = true;
+}
+
+cerrarModalConfirmacion() {
+  this.mostrarModalConfirmacion = false;
+}
+
+confirmarDevolucion() {
+  this.mostrarModalConfirmacion = false;
+
+  // Validar antes de continuar
+  if (this.publicaForm.valid) {
+    this.onSubmit(); // Aquí se ejecuta tu lógica de devolución
+  } else {
+    this.publicaForm.markAllAsTouched(); // Esto fuerza mostrar errores si faltan campos
+  }
+}
+
+
+cerrarModalExito() {
+  this.mostrarModalExito = false;
+  // Podés redirigir o limpiar el formulario si querés
+}
+
+
+}
 //ACA SOLO CREA LA SOLICITUD DE DEVOLUCION POR EL CLIENTE

@@ -1,31 +1,15 @@
-.item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
+
+@keyframes modalFade {
+  0% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
-.item-details {
-  flex-grow: 1;
-}
-
-.product-description {
-  font-weight: bold;
-}
-
-.product-quantity {
-  color: gray;
-}
-
-.item-actions button {
-  margin: 0 5px;
-  padding: 5px 10px;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.item-actions button:hover {
-  background-color: #ddd;
+.animate-modalFade {
+  animation: modalFade 0.25s ease-out forwards;
 }

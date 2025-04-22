@@ -4,7 +4,7 @@ import { HomeBodyComponent } from './home-body/home-body.component.js';
 import { HomeComponent } from './home/home.component.js';
 import { ProductosComponent } from './producto/producto.component.js';
 import { ProductoDetalleComponent } from './producto-detalle/producto-detalle.component.js';
-
+import { SidebarComponent } from './sidebar/sidebar.component.js';
 import { AdminBodyComponent } from './pages/admin/admin-body/admin-body.component.js';
 import { AdminPersonasComponent } from './pages/admin/personas/admin-personas/admin-personas.component.js';
 import { AdminComponent } from './pages/admin/admin.component.js';
@@ -26,6 +26,8 @@ import { DevolucionCompradorComponent } from './devolucion-comprador/devolucion-
 import { ModificaProductoComponent } from './vendedor-pages/modifica-producto/modifica-producto.component.js';
 import { PanelSeguimientoClienteComponent } from './seguimiento/panel-seguimiento-cliente/panel-seguimiento-cliente.component.js';
 import { PanelEmpleadoSegumientoComponent } from './seguimiento/panel-empleado-segumiento/panel-empleado-segumiento.component.js';
+import { MiCuentaComponent } from './mi-cuenta/mi-cuenta.component.js';
+import { MisventasComponent } from './misventas/misventas.component.js';
 export const routes: Routes = [
   {
     path: 'login',
@@ -111,6 +113,18 @@ export const routes: Routes = [
   {
     path: 'panelSeguimientoEmpleado',
     component: PanelEmpleadoSegumientoComponent,
+  },
+  {
+    path: 'sideBar',
+    component: SidebarComponent,
+  },
+  {
+    path: 'micuenta',
+    component: MiCuentaComponent,
+  },
+  {
+    path: 'misventas',
+    component: MisventasComponent,
   },
   {
     path: 'admin',

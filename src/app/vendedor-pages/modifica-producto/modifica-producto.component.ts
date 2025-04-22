@@ -5,8 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Producto } from '../../models/producto.entity';
 import { FormsModule } from '@angular/forms';
 import { HistoricoPrecioService } from '../../api/calculaprecio.service';
-import { response } from 'express';
-import { error } from 'console';
+
 
 @Component({
   selector: 'app-modifica-producto',
@@ -26,6 +25,9 @@ export class ModificaProductoComponent {
   precioOriginal!:number
 descripcionOriginal!:string
 stockOriginal!:number
+cambioConfirmado= false
+confirmaCambio=false
+
 
 
 constructor(private productoService:ProductosService,
@@ -110,14 +112,23 @@ console.log('Precio creado con exito',response.data)
     
       console.error("No se pudo crear el precio",error)
     }
-    
-    
+     })}
 
-
-  })
-
-}
-
+     confirmarCambio() { // muestra el modal de confirmacion
+      this.confirmaCambio = true;// me activa el metodo realizar cambio
+    }
+    realizarCambio() { // muestro cuando se acepta en el modal
+      this.cerrarModalConfirmacion(); // opcional, si querés cerrar antes
+      this.guardarCambios();
+      this.cambioConfirmado= true; 
+    }
+    cerrarModalConfirmacion() { // si la compra no se acepta en el modal
+      this.confirmaCambio = false;
+    }
+    cerrarModalDetalle() {
+      this.cambioConfirmado = false;
+      
+    }
 }
 
 

@@ -11,6 +11,7 @@ import { AutenticacionService } from '../api/autenticacion.service';
 import { HeaderComponent } from '../header/header.component.js';
 import { response } from 'express';
 import { error } from 'console';
+import { SidebarComponent } from "../sidebar/sidebar.component";
 @Component({
   selector: 'app-productos',
   standalone: true,
@@ -21,7 +22,8 @@ import { error } from 'console';
     CargoProductosComponent,
     HeaderComponent,
     RouterLink,
-  ],
+    SidebarComponent
+],
   templateUrl: './producto.component.html',
   styleUrls: ['./producto.component.css'],
 })
@@ -43,15 +45,15 @@ idUser!:string
 loadProductos(searchTerm: string): void {
   this.autenticacionService.getUserInformation().subscribe({
     next: (userResponse: any) => {
-      const idUser = userResponse.data.id; 
+      this. idUser = userResponse.data.id; 
+      
 
-      this.crudService.getByDescripcion('productos', searchTerm).subscribe({
+
+      this.crudService.getByDescripcion('productos', searchTerm,this.idUser).subscribe({
         next: (response: any) => {
           if (response && Array.isArray(response.data)) {
             
-            this.productos = response.data.filter(
-              (producto:any) => producto.persona.id !== idUser
-            );
+            this.productos = response.data
           } else {
             this.productos = [];
           }
@@ -72,19 +74,10 @@ loadProductos(searchTerm: string): void {
     this.loadProductos(searchTerm);
   }
   verCarrito() {
-    this.autenticacionService.getUserInformation().subscribe({
-next:(response:any)=>{
 
-this.idUser=response.data.id
 this.router.navigate(['/carrito', this.idUser])
-
-},
-error:(error)=>{
-  console.error('Usuario no encontrado',error)
-}
-
-    })
+ }
 
     
   }
-}
+

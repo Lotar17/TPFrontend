@@ -43,6 +43,11 @@ direcciones: Direccion[] = [];
 mostrarNuevaDireccion: boolean = false;
 localidades:Localidad[]=[]
 compradorDestinatario!:string
+muestraDetalle= false
+muestraCompra: Compra|null= null
+confirmaCompra=false
+stockInvalido=false
+
 
   constructor(
     private compraService: ComprasService,
@@ -113,7 +118,7 @@ this. direcciones = this. direcciones.filter((dir, i, self) =>
       
     }
   }
-// aca calcular el precio para el producto
+
 
   getOne(id: string): void { 
     this.productoService.getOne(id).subscribe(
@@ -128,47 +133,46 @@ this. direcciones = this. direcciones.filter((dir, i, self) =>
     
   }
  async  onSubmit() {
-    console.log("✅ Iniciando proceso de compra...");
+    console.log(" Iniciando proceso de compra...");
   
    
     this.direccion_entrega = this.publicaForm.value.direccion || '';
-    this.fecha_hora_compra = new Date().toISOString();
+  
     this.cantidad_producto = this.publicaForm.value.cantidad_producto;
     this.compraExitosa = true;
 
     if (!this.producto) {
-      console.error("❌ Error: El producto no se ha cargado correctamente.");
+      console.error(" Error: El producto no se ha cargado correctamente.");
       return;
     }
     if(this.producto.stock)
     if (this.cantidad_producto <= 0 || this.cantidad_producto > this.producto.stock) {
-      console.error("❌ Error: La cantidad debe ser mayor a 0 y menor o igual al stock disponible.");
-      this.mostrarNotificacion("❌ Cantidad no válida. Stock disponible: " + this.producto.stock);
+      console.error(" Error: La cantidad debe ser mayor a 0 y menor o igual al stock disponible.");
+     
       return;
     }
   
-    console.log("📌 Producto cargado correctamente:", this.producto);
-    console.log("📌 Creando item en el carrito...");
+    console.log(" Producto cargado correctamente:", this.producto);
+    console.log(" Creando item en el carrito...");
   if(this.producto.id)
     
     this.carritoService.createItem(this.producto.id, this.idUser, this.cantidad_producto).subscribe({
       next: (response: any) => {
         if (!response || !response.data) {
-          console.error("❌ Error: La respuesta del servidor no contiene datos del item.");
+          console.error("Error: La respuesta del servidor no contiene datos del item.");
           return;
         }
   
-        console.log("✅ Item creado con éxito:", response.data);
+        console.log(" Item creado con éxito:", response.data);
   
      console.log("Hasta aca anda")
         this.items[0]=response.data
   
-        console.log("📌 Items actuales:", this.items);
+        console.log(" Items actuales:", this.items);
         if (this.mostrarNuevaDireccion) {
           // Se crea con los campos individuales
           this.compra = {
-            personaId: this.idUser,
-            fecha_hora_compra: this.fecha_hora_compra,
+            personaId: this.idUser, 
             items: this.items,
             calle: this.publicaForm.value.calle || '',
             numero: this.publicaForm.value.numero || 0,
@@ -180,114 +184,29 @@ this. direcciones = this. direcciones.filter((dir, i, self) =>
         this.compra = {
           personaId: this.idUser,
           direccionId: this.direccion_entrega,
-          fecha_hora_compra: this.fecha_hora_compra,
           items: this.items
         };
   
-        console.log("📌 Enviando compra al servidor:", this.compra);
+        console.log(" Enviando compra al servidor:", this.compra);
   
-      
-  
-        this.compraService.addCompra(this.compra).pipe(
-          tap((response: any) => {
-            console.log("✅ Compra directa creada:", response);
-            this.mostrarNotificacion(`Compra creada con éxito`);
-          }),
-          switchMap((response: any) => {
-            const compra = response.data;
-            if (!compra || !compra.id || !compra.items || !compra.items[0]) {
-              console.error("❌ Error: Datos incompletos en la compra.");
-              return of(null);
-            }
-        
-            const item = compra.items[0];
-            const localidadId = item.producto.persona.direccion.localidad.id;
-        console.log('Item y localidad',item.id,localidadId)
-            // Primero, actualizar el stock
-            return this.compraService.updateStock(compra.id).pipe(
-              tap(() => console.log("✅ Stock actualizado")),
-              // Luego crear el seguimiento
-              
-              switchMap(() => this.seguimientoService.createSeguimiento(item.id, this.idUser)),
-              switchMap((seguimientoResponse: any) => {
-                const seguimiento = seguimientoResponse.data;
-                const mailVendedor = seguimiento.item.producto.persona.mail;
-                const asuntoVendedor = `Compra del producto ${seguimiento.item.producto.descripcion}`;
-                const mensajeVendedor = `El cliente ${seguimiento.item.producto.persona.nombre} ${seguimiento.item.producto.persona.apellido} realizó la compra del producto ${seguimiento.item.producto.descripcion}
-                en un total de ${seguimiento.item.cantidad_producto} unidades`;
-              
-                const mailComprador = this.compradorDestinatario;
-                const asuntoComprador = 'Código de seguimiento generado';
-                const mensajeComprador = `Hola ${this.cliente.nombre}, se ha generado un nuevo seguimiento para tu producto "${seguimiento.item.producto.descripcion}".
-                Tu código de seguimiento es: ${seguimiento.codigoSeguimiento}.
-                Podés seguir el estado de tu envío desde tu panel de seguimientos.`;
-              
-                return forkJoin([
-                  this.correoService.sendEmail(mailComprador, asuntoComprador, mensajeComprador).pipe(
-                    tap(() => console.log(`📩 Correo enviado al comprador: ${mailComprador}`))
-                  ),
-                  this.correoService.sendEmail(mailVendedor, asuntoVendedor, mensajeVendedor).pipe(
-                    tap(() => console.log(`📩 Correo enviado al vendedor: ${mailVendedor}`))
-                  )
-                ]).pipe(
-                  map(() => seguimiento) // retornás el seguimiento después de que ambos correos se manden
-                );
-              }),
-              
-              switchMap((seguimiento) => {
-                return this.seguimientoService.searchEmployeeLocalidad(localidadId).pipe(
-                  switchMap((empleadoResponse: any) => {
-                    const empleado = empleadoResponse.data;
-                    const mailEmpleado = empleado?.mail;
-              
-                    if (!mailEmpleado || mailEmpleado.trim() === '') {
-                      console.error('❌ Correo del empleado no definido');
-                     
-                    }
-              
-                    const asuntoEmpleado = 'Procedimiento asignado';
-                    const mensajeEmpleado = `Hola ${empleado.nombre}, se te asignó el proceso de clasificación para el producto "${seguimiento.item.producto.descripcion}". 
-              Por favor, ingresá al panel y continuá con el procedimiento correspondiente.`;
-              
-                    // Enviar mail al empleado
-                    return this.correoService.sendEmail(mailEmpleado, asuntoEmpleado, mensajeEmpleado).pipe(
-                      tap(() => console.log(`📩 Correo enviado al empleado: ${mailEmpleado}`)),
-                      
-                      // Luego crear el estado inicial
-                      switchMap(() => {
-                        return this.seguimientoService.createEstado1(seguimiento.id, empleado.id, localidadId).pipe(
-                          tap(() => console.log(`✅ Estado creado para seguimiento ${seguimiento.id}`))
-                        );
-                      })
-                    );
-                  })
-                );
-              })
-              
-            );
-          }),
-          catchError(error => {
-            console.error("❌ Error en el flujo de compra directa:", error);
-            return of(null);
-          })
-        ).subscribe();
+        this.compraService.procesarCompra(this.compra, this.idUser, this.compradorDestinatario)
+        .subscribe({
+          next: () => {
+            console.log("Compra procesada correctamente");
+          },
+          error: (err) => {
+            console.error("Error al procesar la compra:", err);
+          }
+        });
+
         
       },
       error: (error) => {
-        console.error("❌ Error al agregar item al carrito:", error);
+        console.error(" Error al agregar item al carrito:", error);
       }
     });
   }
-  mostrarNotificacion(mensaje: string) {
-    this.mensajeVisible = mensaje;
-    this.compraExitosa= true;
-
-    // Ocultar el cartel después de 3 segundos
-    setTimeout(() => {
-      this.compraExitosa = false;
-   
-    }, 3000);
-  }
+  
 
   cantidadInvalida: boolean = false;
 
@@ -305,5 +224,21 @@ this. direcciones = this. direcciones.filter((dir, i, self) =>
       console.error('No se encontraron localidades',error)
     }})}
 
+    confirmarCompra() { // muestra el modal de confirmacion
+      this.confirmaCompra = true;
+    }
+    confirmarYEnviar() { // muestro cuando se acepta en el modal
+      this.cerrarModalConfirmacion(); // opcional, si querés cerrar antes
+      this.onSubmit();
+      this.muestraDetalle= true; 
+    }
+    cerrarModalConfirmacion() { // si la compra no se acepta en el modal
+      this.confirmaCompra = false;
+    }
+
+    cerrarModalDetalle() {
+      this.muestraDetalle = false;
+      
+    }
 }
 

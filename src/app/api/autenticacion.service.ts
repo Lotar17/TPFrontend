@@ -4,12 +4,14 @@ import { ApiResponse } from '../models/ApiResponse.js';
 import { firstValueFrom } from 'rxjs';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { SesionPersona } from '../models/sesionPersona.entity.js';
+import { Persona } from '../models/persona.entity.js';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AutenticacionService {
   private subject = new BehaviorSubject<SesionPersona | null>(null);
+  usuarioId!:string
   $ = this.subject.asObservable();
   url = 'http://localhost:3000/login/checkPermissions';
 
@@ -36,5 +38,12 @@ export class AutenticacionService {
         withCredentials: true,
       }
     );
+  }
+
+  setUser(user:string){
+    this.usuarioId=user
+  }
+  getUser(){
+    return this.usuarioId
   }
 }

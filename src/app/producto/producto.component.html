@@ -1,81 +1,37 @@
-<div class="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-500 to-purple-600 p-6">
+<div class="min-h-screen bg-gradient-to-tr from-gray-100 via-white to-gray-200">
+
+<div class="min-h-screen bg-gray-100 p-6">
   <div class="w-full max-w-7xl mx-auto">
+    <!-- Header -->
     <app-header class="block mb-8"></app-header>
+
     <div class="flex flex-col md:flex-row gap-6">
-      <!-- Barra Lateral -->
-      <div class="w-full md:w-64 bg-gray-900 text-white p-6 rounded-lg shadow-lg flex-shrink-0">
-        <ul class="flex flex-col space-y-3">
-          <li>
-            <a
-              class="block bg-indigo-600 hover:bg-indigo-700 transition duration-300 rounded-lg px-4 py-2 text-sm font-medium text-center"
-              routerLink="/publicaprod"
-            >
-              Cargar Producto
-            </a>
-          </li>
-          <li>
-            <a
-              class="block bg-indigo-600 hover:bg-indigo-700 transition duration-300 rounded-lg px-4 py-2 text-sm font-medium text-center"
-              routerLink="/compras"
-            >
-              Ver mis compras
-            </a>
-          </li>
-          <li>
-            <a
-              class="block bg-indigo-600 hover:bg-indigo-700 transition duration-300 rounded-lg px-4 py-2 text-sm font-medium text-center"
-              (click)="verCarrito()"
-            >
-              Ver Carrito
-            </a>
-          </li>
-          <li>
-            <a
-              class="block bg-indigo-600 hover:bg-indigo-700 transition duration-300 rounded-lg px-4 py-2 text-sm font-medium text-center"
-              routerLink="/vendedor"
-            >
-              Mis Publicaciones
-            </a>
-          </li>
-          <li>
-            <a
-              class="block bg-indigo-600 hover:bg-indigo-700 transition duration-300 rounded-lg px-4 py-2 text-sm font-medium text-center"
-              routerLink="/devolucionComprador"
-            >
-              Mis Devoluciones
-            </a>
-          </li>
-          <li>
-            <a
-              class="block bg-indigo-600 hover:bg-indigo-700 transition duration-300 rounded-lg px-4 py-2 text-sm font-medium text-center"
-              routerLink="/panelSeguimientoCliente"
-            >
-              Ver seguimientos
-            </a>
-          </li>
-          <li>
-            <a
-              class="block bg-indigo-600 hover:bg-indigo-700 transition duration-300 rounded-lg px-4 py-2 text-sm font-medium text-center"
-              routerLink="/panelSeguimientoEmpleado"
-            >
-              Ver Panel empleado
-            </a>
-          </li>
-        </ul>
-      </div>
+      <!-- Sidebar -->
+      <app-sidebar [personaId]="idUser"></app-sidebar>
 
       <!-- Contenido Principal -->
-      <div class="flex-1 bg-white shadow-2xl rounded-2xl p-6">
+      <div class="flex-1 bg-white shadow-md rounded-2xl p-6 border border-gray-200">
+        <!-- Barra de búsqueda -->
         <app-search-bar
           (searchEvent)="updateSearchTerm($event)"
-          class="mb-8 w-full"
+          class="mb-6 w-full"
         ></app-search-bar>
-        <div class="productos-list grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Título o resumen opcional -->
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Productos disponibles</h2>
+
+        <!-- Lista de productos -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <app-product-card
             *ngFor="let producto of productos"
             [producto]="producto"
-            class="transition-all duration-300"
+            class="transition-transform duration-300 hover:scale-[1.02]"
           ></app-product-card>
+        </div>
+
+        <!-- Si no hay productos -->
+        <div *ngIf="productos.length === 0" class="text-center text-gray-500 mt-10">
+          No se encontraron productos.
         </div>
       </div>
     </div>

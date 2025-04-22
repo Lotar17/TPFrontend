@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { CRUDService } from '../api/crud.service.js';
 import { Producto } from '../models/producto.entity.js';
+import { AutenticacionService } from '../api/autenticacion.service.js';
 
 @Component({
   selector: 'app-search-bar',
@@ -15,15 +16,33 @@ import { Producto } from '../models/producto.entity.js';
 export class SearchBarComponent {
   searchTerm: string = '';
   productos: Producto[] = [];
+  idPersona!:string
 
-  constructor(private http: HttpClient, private crudService: CRUDService<Producto>) {}
+  constructor(private http: HttpClient, private crudService: CRUDService<Producto>,
+    private autenticacionService:AutenticacionService
+  ) {}
+ngOninit(){
+  this.autenticacionService.getUserInformation().subscribe({
+    next:(response:any)=>{
+this.idPersona=response.data.id
+    },
+    error:(error:any)=>{
+    
+      console.error("No se encontro el usuario",error)
+    }
+    
 
+
+
+  })
+}
   // Emite un evento con el término de búsqueda
   @Output() searchEvent = new EventEmitter<string>();
 
+
   onSearch() {
     if (this.searchTerm.trim()) {
-      this.crudService.getByDescripcion('productos', this.searchTerm)
+      this.crudService.getByDescripcion('productos', this.searchTerm,this.idPersona)
         .subscribe((response: Producto[]) => { 
           this.productos = response || []; // Asignar directamente el arreglo de productos
           console.log('Productos filtrados:', this.productos);
@@ -35,7 +54,7 @@ export class SearchBarComponent {
   
   onRestaurar() {
     this.searchTerm = ''; // Limpiar el término de búsqueda
-    this.crudService.getByDescripcion('productos', '')
+    this.crudService.getByDescripcion('productos', '',this.idPersona)
       .subscribe((response: Producto[]) => { // Asegúrate de que `response` es un arreglo de `Producto[]`
         this.productos = response || []; // Asignar directamente el arreglo de productos
         console.log('Productos restaurados:', this.productos);

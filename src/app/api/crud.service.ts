@@ -33,8 +33,10 @@ export class CRUDService<T extends BaseModel> {
     return item;
   }
 
-  getByDescripcion(tabla: string, descripcion: string): Observable<T[]> {
-    return this.http.get<T[]>(`${this.url}/${tabla}?descripcion=${descripcion}`);
+  getByDescripcion(tabla: string, descripcion: string,idPersona:string): Observable<T[]> {
+
+ 
+    return this.http.get<T[]>(`${this.url}/${tabla}/todos/${idPersona}?descripcion=${descripcion}`);
   }
   
 

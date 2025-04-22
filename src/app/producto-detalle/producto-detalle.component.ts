@@ -57,6 +57,7 @@ export class ProductoDetalleComponent implements OnInit {
     this.productosService.getOne(id).subscribe(
       (producto: any) => { // Espera un Producto
         this.producto = producto; // Asigna el producto recuperado
+        console.log('Producto recuperado',this.producto)
       },
       (error) => {
         this.error = 'Error al cargar el producto'; 
@@ -87,24 +88,10 @@ export class ProductoDetalleComponent implements OnInit {
   }
   agregarAlCarrito(id_Producto: string| undefined) {
     
-  
-    const idProducto= id_Producto || ""
-this.autenticacionService.getUserInformation().subscribe({
-next:(response:any)=>{
-this.idUsuario=response.data?.id
-this.carritoService.addItemToCarrito(idProducto, this.idUsuario)
-this.mostrarNotificacion(`${this.producto.descripcion} se agregó al carrito.`);
-},
-error:(error:any)=>
-{
-  console.error("No se encontro el usuario",error)
-}
+    if(id_Producto)
+  this.carritoService.manejarItemCarrito(id_Producto)
 
-
-})
-
-    
-  }
+     }
 
   mostrarNotificacion(mensaje: string) {
     this.mensajeNotificacion = mensaje;

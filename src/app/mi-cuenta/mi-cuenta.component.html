@@ -1,0 +1,111 @@
+<div class="max-w-xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-lg">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Mi Cuenta</h2>
+  
+    <div class="space-y-4">
+      <div>
+        <div *ngIf="usuario">
+        <p class="text-gray-600 font-medium">Nombre completo:</p>
+        <p>{{ usuario?.nombre }} {{usuario.apellido}}</p>
+      </div>
+      <div>
+        <p class="text-gray-600 font-medium">Email:</p>
+        <p>{{ usuario?.mail }}</p>
+      </div>
+      <div>
+        <p class="text-gray-600 font-medium">Nombre de usuario:</p>
+        <p>{{ usuario?.nombre }}</p>
+      </div>
+    </div>
+  </div>
+    <div class="mt-6 flex flex-col gap-3">
+      <button
+        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+        (click)="openModalEditarDatos()"
+      >
+        Editar Información Personal
+      </button>
+      <button
+        class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition"
+        (click)="openModalPassword()"
+      >
+        Cambiar Contraseña
+      </button>
+    </div>
+  </div>
+  
+  <!-- Modal Editar Datos -->
+  <div
+    *ngIf="showModalEditarDatos"
+    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+  >
+    <div class="bg-white rounded-lg p-6 w-96">
+      <h3 class="text-lg font-semibold mb-4">Editar Información Personal</h3>
+  
+      <input
+        type="text"
+        [(ngModel)]="editUsuario.nombre"
+        placeholder="Nombre completo"
+        class="w-full px-4 py-2 border rounded mb-3"
+      />
+      <input
+        type="email"
+        [(ngModel)]="editUsuario.mail"
+        placeholder="Email"
+        class="w-full px-4 py-2 border rounded mb-3"
+      />
+      <input
+        type="text"
+        [(ngModel)]="editUsuario.apellido"
+        placeholder="Nombre de usuario"
+        class="w-full px-4 py-2 border rounded mb-4"
+      />
+  
+      <div class="flex justify-end space-x-3">
+        <button
+          class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded"
+          (click)="closeModal()"
+        >
+          Cancelar
+        </button>
+        <button
+          class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+          (click)="guardarDatos()"
+        >
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Cambiar Contraseña -->
+  <div
+    *ngIf="showModalPassword"
+    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+  >
+    <div class="bg-white rounded-lg p-6 w-96">
+      <h3 class="text-lg font-semibold mb-4">Cambiar Contraseña</h3>
+  
+      <input
+        type="password"
+        [(ngModel)]="nuevaPassword"
+        placeholder="Nueva contraseña"
+        class="w-full px-4 py-2 border rounded mb-4"
+      />
+  
+      <div class="flex justify-end space-x-3">
+        <button
+          class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded"
+          (click)="closeModal()"
+        >
+          Cancelar
+        </button>
+        <button
+          class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+          (click)="guardarPassword()"
+        >
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+  
