@@ -2,19 +2,19 @@ import { Component } from '@angular/core';
 import { LoginService } from '../api/login.service.js';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { response } from 'express';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../api/Auth.service.js';
 
 @Component({
   selector: 'app-inicio-sesion',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule,RouterLink],
   templateUrl: './inicio-sesion.component.html',
   styleUrl: './inicio-sesion.component.css',
 })
 export class InicioSesionComponent {
   loginSuccesful: boolean | undefined;
-
+  
   loginForm = new FormGroup({
     mail: new FormControl(),
     password: new FormControl(),

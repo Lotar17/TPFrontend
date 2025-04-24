@@ -30,6 +30,9 @@ updatePersona(persona:Persona):Observable<ApiResponse<Persona>>{
   }
   return this.http.patch<ApiResponse<Persona>>(`${this.apiUrl}/${persona.id}`,payload)
 }
-  
+getPersonaByEmail(eemail: string){
+  const url = `http://localhost:3000/api/personas/email/${eemail}`;
+  return this.http.get<ApiResponse<Persona>>(url);
+}
   
 }

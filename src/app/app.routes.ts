@@ -29,6 +29,7 @@ import { PanelEmpleadoSegumientoComponent } from './seguimiento/panel-empleado-s
 import { LocalidadesComponent } from './pages/admin/localidades/localidades.component.js';
 import { MiCuentaComponent } from './mi-cuenta/mi-cuenta.component.js';
 import { MisventasComponent } from './misventas/misventas.component.js';
+import { OlvidaPasswordComponent } from './olvida-password/olvida-password.component.js';
 
 export const routes: Routes = [
   {
@@ -41,6 +42,12 @@ export const routes: Routes = [
     path: '',
     component: HomeComponent,
   },
+  
+  {
+    path: 'olvidapassword',
+    component: OlvidaPasswordComponent,
+  },
+  
   {
     path: 'productos',
     component: ProductosComponent,
