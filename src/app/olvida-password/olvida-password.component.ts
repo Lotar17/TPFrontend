@@ -23,15 +23,14 @@ export class OlvidaPasswordComponent {
 
   onSubmit() {
     const mail = this.olvidaForm.value.mail ?? '';
-    try{
-      (this.personaService.getPersonaByEmail(mail)).subscribe((response) => {
-      if(response.data){
+    console.log('📤 Mail del form:', mail); // 👈 ESTE LOG
+    this.personaService.getPersonaByEmail(mail).subscribe((response) => {
+      if (response.data) {
         console.log(response.data);
-      }else{
-        console.log('No se encontro el usuario');
+      } else {
+        console.log('No se encontró el usuario');
       }
-      
     });
-    }catch(error){}
   }
+  
 }
