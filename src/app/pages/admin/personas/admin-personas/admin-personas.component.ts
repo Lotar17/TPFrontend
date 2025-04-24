@@ -71,7 +71,7 @@ export class AdminPersonasComponent {
       this.addForm.controls.apellido.setValue(persona.apellido);
       this.addForm.controls.email.setValue(persona.mail);
       this.addForm.controls.rol.setValue(persona.rol!);
-      this.addForm.controls.localidad.setValue(persona.direccion?.idLocalidad);
+      this.addForm.controls.localidad.setValue(persona.direccion?.localidad);
       this.addForm.controls.calle.setValue(persona.direccion?.calle!);
       this.addForm.controls.numero.setValue(persona.direccion?.numero);
       this.addForm.controls.telefono.setValue(persona.telefono);
