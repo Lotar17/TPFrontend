@@ -1,3 +1,4 @@
+<app-header></app-header>
 <div class="min-h-screen bg-gray-100 p-8">
   <div class="max-w-7xl mx-auto bg-white rounded-xl shadow-lg p-6">
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-6">Mis Compras</h1>
@@ -104,5 +105,9 @@
         Cerrar
       </button>
     </div>
+  </div>
+  <div *ngIf="mensajeDevolucion" class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mt-2 w-fit">
+    <span class="block sm:inline">{{ mensajeDevolucion }}</span>
+    <button (click)="mensajeDevolucion = null" class="absolute top-0 right-1 text-red-700 hover:text-red-900">✕</button>
   </div>
 </div>

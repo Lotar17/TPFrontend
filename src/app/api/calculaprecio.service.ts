@@ -26,16 +26,14 @@ import { Item } from '../models/item.entity';
         );
     }
     
-    createPrecio(valor:number,productoId:string): Observable<any> {
+    createPrecio(valor:number,productoId:string): Observable<ApiResponse<HistoricoPrecio>> {
 const payload={
 valor,
 productoId
 
 }
 
-        return this.http.post(`${this.url2}`,payload);
-    
-    
+        return this.http.post<ApiResponse<HistoricoPrecio>>(`${this.url2}`,payload);
         
       }
     

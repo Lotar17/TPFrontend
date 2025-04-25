@@ -11,7 +11,9 @@
       <p class="text-xl font-semibold text-green-600">{{ producto.precio | currency }}</p>
 
       <!-- Formulario de compra -->
-      <form [formGroup]="publicaForm" class="mt-6 space-y-4">
+      <form [formGroup]="publicaForm" (ngSubmit)="confirmarCompra()" class="mt-6 space-y-4">
+
+
 
         <!-- Dirección existente -->
         <div *ngIf="!mostrarNuevaDireccion">
@@ -70,14 +72,26 @@
         <!-- Cantidad -->
         <div>
           <label for="cantidad_producto" class="text-gray-700 font-semibold">🔢 Cantidad</label>
-          <input id="cantidad_producto" formControlName="cantidad_producto" type="number" min="1" [max]="producto.stock ?? 1"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-            (input)="validarCantidad()" #cantidadInput>
+          <input
+          id="cantidad_producto"
+          formControlName="cantidad_producto"
+          type="number"
+          min="1"
+          [max]="producto.stock ?? 1"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+          (change)="validarCantidad()"
+          #cantidadInput
+        >
 
           <!-- Mensaje de error si la cantidad es inválida -->
-          <p *ngIf="cantidadInvalida" class="text-red-500 font-semibold mt-1">
-            ❌ Cantidad no válida. Stock disponible: {{ producto.stock }}
-          </p>
+          <div *ngIf="cantidadInvalida" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
+            <strong class="font-bold">Error: </strong>
+            <span class="block sm:inline">{{ mensajeError }}</span>
+            <button (click)="cerrarError()" class="absolute top-1 right-2 text-red-500 hover:text-red-700">
+              ✕
+            </button>
+          </div>
+          
         </div>
 
         <!-- Botón de compra -->

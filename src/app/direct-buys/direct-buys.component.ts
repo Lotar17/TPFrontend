@@ -16,7 +16,7 @@ import { SeguimientoService } from '../api/seguimiento.service';
 import { PersonaService } from '../api/per.service';
 import { Persona } from '../models/persona.entity';
 import { CorreoService } from '../api/correo.service';
-import { map,forkJoin } from 'rxjs';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-direct-buys',
   standalone: true,
@@ -49,6 +49,7 @@ confirmaCompra=false
 stockInvalido=false
 
 
+
   constructor(
     private compraService: ComprasService,
    
@@ -58,7 +59,7 @@ stockInvalido=false
     private carritoService:CarritoService,
     private seguimientoService:SeguimientoService,
     private personaService:PersonaService,
-    private correoService:CorreoService
+    private router:Router
   ) {}
 
   publicaForm = new FormGroup({
@@ -193,6 +194,11 @@ this. direcciones = this. direcciones.filter((dir, i, self) =>
         .subscribe({
           next: () => {
             console.log("Compra procesada correctamente");
+            setTimeout(() => {
+              console.log('Llega aca')
+              this.router.navigate(['/productos']);
+            }, 500);
+    
           },
           error: (err) => {
             console.error("Error al procesar la compra:", err);
@@ -208,13 +214,7 @@ this. direcciones = this. direcciones.filter((dir, i, self) =>
   }
   
 
-  cantidadInvalida: boolean = false;
-
-  validarCantidad() {
-    const cantidad = this.publicaForm.value.cantidad_producto;
-    if(this.producto.stock)
-    this.cantidadInvalida = cantidad <= 0 || cantidad > this.producto.stock;
-  }
+ 
   
   loadLocalidades(){
     this.seguimientoService.getLocalidades().subscribe({
@@ -224,21 +224,67 @@ this. direcciones = this. direcciones.filter((dir, i, self) =>
       console.error('No se encontraron localidades',error)
     }})}
 
-    confirmarCompra() { // muestra el modal de confirmacion
-      this.confirmaCompra = true;
+  
+    
+    confirmarCompra() { 
+      // Solo muestra el modal si la cantidad es válida
+      if (!this.cantidadInvalida) {
+        this.confirmaCompra = true;
+      }
     }
-    confirmarYEnviar() { // muestro cuando se acepta en el modal
-      this.cerrarModalConfirmacion(); // opcional, si querés cerrar antes
+    
+    confirmarYEnviar() { 
+      // Muestra cuando se acepta en el modal
+      this.cerrarModalConfirmacion(); // Opcional, si quieres cerrar antes
       this.onSubmit();
-      this.muestraDetalle= true; 
+      this.muestraDetalle = true; 
     }
-    cerrarModalConfirmacion() { // si la compra no se acepta en el modal
+    
+    cerrarModalConfirmacion() {
+      // Si la compra no se acepta en el modal
       this.confirmaCompra = false;
     }
-
+    
     cerrarModalDetalle() {
       this.muestraDetalle = false;
-      
     }
-}
-
+    
+    mensajeError: string | null = null;
+    cantidadInvalida: boolean = false;
+    
+    validarCantidad() {
+      const cantidad = this.publicaForm.value.cantidad_producto;
+      
+      if (this.producto.stock) {
+        this.cantidadInvalida = cantidad <= 0 || cantidad > this.producto.stock;
+    
+        if (this.cantidadInvalida) {
+          if (cantidad <= 0) {
+            this.mostrarError('La cantidad debe ser mayor a cero.');
+          } else {
+            this.mostrarError(`La cantidad no puede superar el stock disponible (${this.producto.stock}).`);
+          }
+        } else {
+          this.cerrarError(); // Si la cantidad es válida, ocultamos el error
+        }
+      }
+    }
+    
+    // Llamar esto cuando ocurra un error
+    mostrarError(mensaje: string) {
+      this.mensajeError = mensaje;
+    }
+    
+    cerrarError() {
+      this.mensajeError = null;
+    }
+    
+    // Aquí adaptamos tu lógica para integrar la validación de cantidades y la confirmación de la compra
+    validarYConfirmar() {
+      this.validarCantidad(); // Primero valida la cantidad
+      
+      if (!this.cantidadInvalida) {
+        this.confirmarCompra(); // Si la cantidad es válida, muestra el modal de confirmación
+      }
+    }
+  }    

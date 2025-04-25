@@ -23,7 +23,7 @@ import { CorreoService } from '../api/correo.service';
 })
 export class DevolucionVendedorComponent {
 idVendedor!:string
-solicitudes:Devolucion[]=[];
+
 idSolicitud!:string;
 estadoSolicitud!:string;
 item1!:Item
@@ -43,6 +43,18 @@ mostrarProductoLlego: boolean = false; // Controla visibilidad de "Llegó el pro
   solicitudSeleccionadaId: string | null = null; // Almacena el ID de la solicitud activa
   mostrarCierre: boolean = false; // Controla visibilidad del formulario de cierre
   mensajeCierre: string = ''; // Almacena el mensaje de cierre
+  filtroCliente: string = '';
+  filtroProducto: string = '';
+  solicitudesOriginal: Devolucion[] = [];
+  solicitudes: Devolucion[] = [];
+
+  
+mostrarConfirmacion: boolean = false;
+mostrarExito: boolean = false;
+mensajeExito: string = '';
+accionSeleccionada: 'Aprobada' | 'Rechazada' | null = null;
+solicitudSeleccionada: Devolucion|null = null;
+
 
 
 constructor(
@@ -64,7 +76,8 @@ if(this.idVendedor)
  this.solicitudService.getSolicitudesVendedor(this.idVendedor);
 this.solicitudService.solicitudesVendedor$.subscribe({
 next:(solicitudes:any)=>{
-this.solicitudes=solicitudes
+this.solicitudesOriginal=solicitudes
+this.filtrarSolicitudes();
 },
 error:(error:any)=>{
   console.error('No se devolvieron solicitudes',error)
@@ -80,93 +93,48 @@ error:(error:any)=>{
   console.error("salmflfd",error)
  }
 })}
-requestDecission(solicitud: Devolucion, decision: string, item: Item) {
-  console.log('Entro aca al metodo',solicitud,decision,item)
+requestDecision(solicitud: Devolucion, decision: string, item: Item) {
   if (!solicitud.id || !item.producto?.id || !item.compra?.id) return;
-  console.log('Llega bien el item')
-  this.solicitud = solicitud;
-  this.item1 = item;
-  this.cantidadDevuelta = this.solicitud.cantidad_devuelta ?? 0;
-  const idProducto = this.item1.producto?.id;
-  if (!idProducto) {
-    console.error("ID del producto no definido");
-    return;
-  }
+
+  const idProducto = item.producto.id;
+  const cantidadDevuelta = solicitud.cantidad_devuelta ?? 0;
 
   if (decision === 'Aprobada') {
-    solicitud.estado='Aprobada'
+    solicitud.estado = 'Aprobada';
     this.solicitudService.Decission(solicitud.id, decision).pipe(
-      switchMap(() => this.historicoPrecioService.getOne(idProducto)),
-      filter((valor: any): valor is number => valor !== undefined),
-      map((valor: number) => {
-        this.totalAnterior = this.item1.compra?.total_compra ?? 0;
-        this.subTotal = this.cantidadDevuelta * valor;
-        this.valorCompra = this.totalAnterior - this.subTotal;
-
-        if (this.item1.compra) {
-          this.compraActualizada = {
-            id: this.item1.compra.id,
-            direccionId: this.item1.compra.direccionId,
-            persona: this.item1.compra.persona,
-            fecha_hora_compra: this.item1.compra.fecha_hora_compra,
-            total_compra: this.valorCompra
-          };
-        }
-
-        return this.compraActualizada;
-      }),
-      switchMap(compra => this.compraService.update(compra)),
-      map(response => response.data),
-      switchMap(compraActual => {
-        if (compraActual) this.compra = compraActual;
-        return this.itemService.update(this.item1, this.cantidadDevuelta);
-      }),
-      map(response => response.data),
-      switchMap(itemActualizado => {
-        if (itemActualizado) this.item1 = itemActualizado;
-
-        const destinatario = this.solicitud.comprador?.mail || 'destino@correo.com'; // asegurate que tenga email
+      switchMap(() =>
+        this.solicitudService.updateCompraBydevolution(item, cantidadDevuelta)
+      ),
+      switchMap(() =>
+        this.itemService.update(item, cantidadDevuelta)
+      ),
+      switchMap(() => {
+        const destinatario = solicitud.comprador?.mail || '';
         const asunto = 'Devolución aprobada ✅';
-        const mensaje = `Tu solicitud de devolución fue *aprobada*. Se descontó un total de $${this.subTotal.toFixed(2)} de la compra del 
-        producto: ${solicitud.item.producto?.descripcion}.`;
-
-        return this.correoService.sendEmail(
-         
-          destinatario,
-          asunto,
-          mensaje
-        );
+        const mensaje = `Tu solicitud de devolución fue *aprobada*. Se descontó un total de $${(item.precioUnitario! * cantidadDevuelta).toFixed(2)} de la compra del producto: ${item.producto?.descripcion}.`;
+        return this.correoService.sendEmail(destinatario, asunto, mensaje);
       }),
-      tap(() => {
-        console.log("Proceso completo con mail enviado ✅");
-      })
+      tap(() => console.log('Devolución aprobada: todo procesado y mail enviado.'))
     ).subscribe({
       error: err => console.error("Error en el proceso de devolución", err)
     });
 
   } else if (decision === 'Rechazada') {
-    solicitud.estado='Rechazada'
+    solicitud.estado = 'Rechazada';
     this.solicitudService.Decission(solicitud.id, decision).pipe(
       switchMap(() => {
-        const destinatario = this.solicitud.comprador?.mail || '';
+        const destinatario = solicitud.comprador?.mail || '';
         const asunto = 'Devolución rechazada ❌';
         const mensaje = `Tu solicitud de devolución fue *rechazada*. Para más detalles podés revisar el panel de devoluciones.`;
-
-        return this.correoService.sendEmail(
-         
-          destinatario,
-          asunto,
-          mensaje
-        );
+        return this.correoService.sendEmail(destinatario, asunto, mensaje);
       }),
-      tap(() => {
-        console.log("Solicitud rechazada y mail enviado.");
-      })
+      tap(() => console.log('Devolución rechazada: mail enviado.'))
     ).subscribe({
       error: err => console.error("Error en rechazo de devolución o en el envío de mail", err)
     });
   }
 }
+
 
 actualizarStock(item:Item,solicitud:Devolucion) {
 
@@ -199,48 +167,72 @@ console.log('Stock actualizado con exito ',response.data)
   this.solicitudSeleccionadaId = null;
 }
 cerrarDevolucion(solicitud: Devolucion) {
-  solicitud.fechaCierre=new Date().toISOString();
-  this.mostrarCierre=false
-  this.mostrarProductoLlego=false
-  console.log('Entro')
-  if (!this.mensajeCierre.trim()) {
-    alert('Por favor, ingresa un mensaje de cierre.');
-   return;
-  }
-  solicitud.estado='Cerrado'
+  this.mostrarCierre = false;
+  this.mostrarProductoLlego = false;
 
-  const fechaCierre: string = new Date().toISOString();
-  const estado = "Cerrado";
-
-  if (solicitud.id) {
-    const destinatario=solicitud.comprador?.mail
-    const asunto='Producto recibido'
-    const mensaje= `El producto ${solicitud.item.producto?.descripcion} ha sido devuelto con exito`
-    this.solicitudService.updateDevolucion(solicitud.id, estado, fechaCierre, this.mensajeCierre)
-      .subscribe({
-        next: () => {
-          console.log("✅ Devolución cerrada correctamente.");
-          if(destinatario)
-          this.correoService.sendEmail(destinatario,asunto,mensaje).subscribe({
-            next:(response:any)=>{
-console.log('Correo enviado con exito')
-            },
-            error:(error:any)=>{
-            
-              console.error("No se envio el coreo",error)
-            }
-            
-        
-          })
-        },
-        error: (err) => {
-          console.error("❌ Error al cerrar la devolución:", err);
-        }
-      });
-  }
+  this.solicitudService.cerrarDevolucion(solicitud, this.mensajeCierre)
+    .subscribe({
+      next: () => {
+        console.log(" Devolución cerrada correctamente.");
+      },
+      error: (err) => {
+        alert(err.message || "Ocurrió un error al cerrar la devolución.");
+        console.error(" Error:", err);
+      }
+    });
 }
 
 
+filtrarSolicitudes() {
+  this.solicitudes = this.solicitudesOriginal.filter((s) => {
+    const cliente = s.item?.persona?.apellido?.toLowerCase() || '';
+    const producto = s.item?.producto?.descripcion?.toLowerCase() || '';
+    return (
+      cliente.includes(this.filtroCliente.toLowerCase()) &&
+      producto.includes(this.filtroProducto.toLowerCase())
+    );
+  });
+}
+
+abrirConfirmacion(solicitud: Devolucion, accion: 'Aprobada' | 'Rechazada') {
+  this.solicitudSeleccionada = solicitud;
+  this.accionSeleccionada = accion;
+  this.mostrarConfirmacion = true;
+}
+
+
+
+confirmarAccion() {
+  if (this.solicitudSeleccionada && this.accionSeleccionada) {
+    this.requestDecision(this.solicitudSeleccionada, this.accionSeleccionada, this.solicitudSeleccionada.item);
+    this.mostrarConfirmacion = false;
+    this.mensajeExito = `Solicitud ${this.accionSeleccionada === 'Aprobada' ? 'aprobada' : 'rechazada'} con éxito.`;
+    this.mostrarExito = true;
+
+    setTimeout(() => {
+      this.mostrarExito = false;
+    }, 3000);
+  }
+}
+
+cancelarAccion() {
+  this.mostrarConfirmacion = false;
+  this.solicitudSeleccionada = null;
+  this.accionSeleccionada = null;
+}
+
+modalConfirmacionCierreAbierto: boolean = false;
+solicitudACerrar!: Devolucion;
+
+abrirConfirmacionCierre(solicitud: Devolucion) {
+  this.solicitudACerrar = solicitud;
+  this.modalConfirmacionCierreAbierto = true;
+}
+
+confirmarCierre() {
+  this.modalConfirmacionCierreAbierto = false;
+  this.cerrarDevolucion(this.solicitudACerrar);
+}
 }
 
 

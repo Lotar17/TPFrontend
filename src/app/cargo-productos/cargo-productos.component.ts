@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CRUDService } from '../api/crud.service.js';
 import { Producto } from '../models/producto.entity.js';
-import { AuthService } from '../api/Auth.service.js';
+
 import { CategoriaService } from '../api/categoria.service.js';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { AutenticacionService } from '../api/autenticacion.service.js';
@@ -19,6 +19,9 @@ export class CargoProductosComponent {
   cantidadInvalida: boolean = false;
   cargaExitosa:boolean=false
   mensajeVisible!:string
+errorStock:string|null=null
+errorPrecio:string|null=null
+precioInvalido = false;
 
   publicaForm = new FormGroup({
     descripcion: new FormControl(),
@@ -28,12 +31,18 @@ export class CargoProductosComponent {
   });
   constructor(
     private crudService: CRUDService<Producto>,
-    private authService: AuthService, // Inyectar AuthService
+
     private categoriaService: CategoriaService,
     private autenticacionService:AutenticacionService
   ) {
     categoriaService.getAll('categorias');
   }
+  
+ngOnInit(){
+  this.validarStock();
+    this.validarPrecio();
+}
+  
   async onSubmit() {
     let userId = ''
 this.cargaExitosa=true
@@ -53,6 +62,7 @@ const producto: Producto = {
   personaId: userId, 
 };
 this.crudService.add('productos', producto);
+this.mostrarNotificacion('Producto cargado con exito!')
       },
       error:(error:any)=>{
       
@@ -65,12 +75,16 @@ this.crudService.add('productos', producto);
 
   
   }
-  validarStock(){
+  validarStock() {
     const cantidad = this.publicaForm.value.stock;
-    
-    this.cantidadInvalida = cantidad <= 0 ;
+    this.cantidadInvalida = cantidad <= 0;
+ 
   }
-  validarPrecio(){
+
+  // Validar Precio
+  validarPrecio() {
+    const precio = this.publicaForm.value.precio;
+    this.precioInvalido = precio <= 0;
 
   }
   mostrarNotificacion(mensaje: string) {

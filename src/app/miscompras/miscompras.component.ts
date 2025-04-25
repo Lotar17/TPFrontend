@@ -12,12 +12,13 @@ import { HistoricoPrecioService } from '../api/calculaprecio.service';
 
 import { Item } from '../models/item.entity';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HeaderComponent } from "../header/header.component";
 
 
 @Component({
   selector: 'app-mis-compras',
   standalone: true,
-  imports: [CommonModule,ReactiveFormsModule,FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, HeaderComponent],
   templateUrl: './miscompras.component.html',
   styleUrl: './miscompras.component.css'
 })
@@ -29,7 +30,7 @@ export class MisComprasComponent {
   filtroMes: string = '';
 filtroVendedor: string = '';
 soloNoLlegados: boolean = false;
-
+mensajeDevolucion:string|null=null
 mesesDisponibles = [
   { value: '01', label: 'Enero' },
   { value: '02', label: 'Febrero' },
@@ -113,7 +114,7 @@ cerrarDetalles() {
     if (diferenciaDias<30) {
       this.router.navigate(['/devolucion', id_compra]);
     } else {
-      alert('No se puede devolver, la compra es de otro mes');
+      this.mensajeDevolucion='La compra fue anterior a los ultimos 30 dias, no se puede devolver ningun producto de la misma'
     }
   }
 

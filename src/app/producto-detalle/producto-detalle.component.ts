@@ -30,6 +30,7 @@ export class ProductoDetalleComponent implements OnInit {
  idUsuario!:string
  showNotification: boolean = false; // Variable para controlar la visibilidad del cartel
  mensajeNotificacion: string = ''; 
+ mensajeStock: string | null = null;
 
 
   constructor(
@@ -86,12 +87,15 @@ export class ProductoDetalleComponent implements OnInit {
     );
     
   }
-  agregarAlCarrito(id_Producto: string| undefined) {
-    
-    if(id_Producto)
-  this.carritoService.manejarItemCarrito(id_Producto)
-
-     }
+  agregarAlCarrito(producto: Producto) {
+   
+  
+    this.carritoService.manejarItemCarrito(producto, (msg: string) => {
+      this.mensajeStock = msg;
+      setTimeout(() => this.mensajeStock = null, 3000); // Opcional: se borra solo
+    });
+  }
+  
 
   mostrarNotificacion(mensaje: string) {
     this.mensajeNotificacion = mensaje;

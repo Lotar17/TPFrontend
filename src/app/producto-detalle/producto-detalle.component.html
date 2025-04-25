@@ -30,7 +30,7 @@
     <!-- Botones de Acción -->
     <div class="space-y-4">
       <button
-        (click)="agregarAlCarrito(producto.id)"
+        (click)="agregarAlCarrito(producto)"
         [disabled]="producto.stock === 0"
         [ngClass]="{ 'opacity-50 cursor-not-allowed': producto.stock === 0 }"
         class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg shadow-md transition-all duration-300 hover:scale-105"
@@ -54,4 +54,9 @@
       {{ mensajeNotificacion }}
     </div>
   </div>
+  <div *ngIf="mensajeStock" class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mt-2 w-fit">
+    <span class="block sm:inline">{{ mensajeStock }}</span>
+    <button (click)="mensajeStock = null" class="absolute top-0 right-1 text-red-700 hover:text-red-900">✕</button>
+  </div>
+  
 </div>

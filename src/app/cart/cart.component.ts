@@ -13,11 +13,15 @@ import { AutenticacionService } from '../api/autenticacion.service';
 import { response } from 'express';
 import { error } from 'console';
 import { HistoricoPrecioService } from '../api/calculaprecio.service';
+import { Producto } from '../models/producto.entity';
+import { SidebarComponent } from "../sidebar/sidebar.component";
+import { HeaderComponent } from "../header/header.component";
+
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SidebarComponent, HeaderComponent],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.css'
 })
@@ -31,6 +35,8 @@ export class CartComponent {
   mostrarModal = false;
 itemSeleccionado!: Item|null ;
 modalConfirmacionEliminacion = false;
+mensajeStock: string | null = null;
+
   constructor(
     private route: ActivatedRoute,
     private carritoService: CarritoService,
@@ -62,20 +68,28 @@ modalConfirmacionEliminacion = false;
       }
     });}
 
-  incrementarCantidad(idProducto: string | undefined, item: Item) { // Llamar al metodo incrementQuantity del service
-    if (!idProducto) return;
+    incrementarCantidad(producto: Producto | undefined, item: Item) {
+      const idProducto = producto?.id;
+      if (!idProducto) return;
     
-let idUser=''
-this.autenticacionService.getUserInformation().subscribe({
-next:(response:any)=>{
-idUser=response.data.id
-if(item.id)
-this.carritoService.IncrementQuantity(item.id,idProducto);
-},
-error:(error:any)=>{
-
-  console.error("No se encontro el usuario",error)
-}})}
+      if (producto.stock && item.cantidad_producto >= producto.stock) {
+        this.mensajeStock = 'No puedes agregar más unidades, alcanzaste el stock disponible.';
+        return;
+      }
+    
+      this.autenticacionService.getUserInformation().subscribe({
+        next: (response: any) => {
+          const idUser = response.data.id;
+          if (item.id) {
+            this.carritoService.IncrementQuantity(item.id, idProducto);
+          }
+        },
+        error: (error: any) => {
+          console.error("No se encontró el usuario", error);
+        }
+      });
+    }
+    
   decrementarCantidad(idProducto: string | undefined, item: Item) { 
     if (!idProducto) return;
     if (item.cantidad_producto <= 1) {

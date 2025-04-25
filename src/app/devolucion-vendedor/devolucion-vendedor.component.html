@@ -1,7 +1,24 @@
 <div class="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-500 to-purple-600 p-6 flex items-center justify-center">
   <div class="w-full max-w-6xl bg-white shadow-2xl rounded-2xl p-8">
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-10">📦 Solicitudes</h1>
-
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <input
+        type="text"
+        placeholder="🔍 Filtrar por cliente..."
+        [(ngModel)]="filtroCliente"
+        (input)="filtrarSolicitudes()"
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+      />
+    
+      <input
+        type="text"
+        placeholder="🔍 Filtrar por producto..."
+        [(ngModel)]="filtroProducto"
+        (input)="filtrarSolicitudes()"
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+      />
+    </div>
+    
     <div *ngIf="solicitudes && solicitudes.length > 0; else noSolicitudes">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div
@@ -63,22 +80,22 @@
 
           <!-- Botones Aceptar/Rechazar (existentes) -->
           <div
-            class="mt-6 flex justify-end space-x-2"
-            *ngIf="solicitud.id && solicitud.estado === 'pendiente'"
-          >
-            <button
-              (click)="requestDecission(solicitud, 'Aprobada', solicitud.item)"
-              class="bg-green-600 hover:bg-green-700 text-white font-medium py-1.5 px-3 rounded-lg shadow-sm transition-all duration-300 hover:scale-105"
-            >
-              ✅ Aceptar
-            </button>
-            <button
-              (click)="requestDecission(solicitud, 'Rechazada', solicitud.item)"
-              class="bg-red-600 hover:bg-red-700 text-white font-medium py-1.5 px-3 rounded-lg shadow-sm transition-all duration-300 hover:scale-105"
-            >
-              ❌ Rechazar
-            </button>
-          </div>
+  class="mt-6 flex justify-end space-x-2"
+  *ngIf="solicitud.id && solicitud.estado === 'pendiente'"
+>
+  <button
+    (click)="abrirConfirmacion(solicitud, 'Aprobada')"
+    class="bg-green-600 hover:bg-green-700 text-white font-medium py-1.5 px-3 rounded-lg shadow-sm transition-all duration-300 hover:scale-105"
+  >
+    ✅ Aceptar
+  </button>
+  <button
+    (click)="abrirConfirmacion(solicitud, 'Rechazada')"
+    class="bg-red-600 hover:bg-red-700 text-white font-medium py-1.5 px-3 rounded-lg shadow-sm transition-all duration-300 hover:scale-105"
+  >
+    ❌ Rechazar
+  </button>
+</div>
 
         <!-- Enlace "¿Llegó el producto?" -->
 <div class="mt-4 text-center" *ngIf="solicitud.fechaEnvioCliente && !solicitud.fechaCierre">
@@ -124,7 +141,7 @@
                 rows="4"
               ></textarea>
               <button
-              (click)="cerrarDevolucion(solicitud)"
+              (click)="abrirConfirmacionCierre(solicitud)"
               class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-1.5 px-3 rounded-lg shadow-sm transition-all duration-300 hover:scale-105"
             >
               ✅ Cierre
@@ -135,9 +152,51 @@
         </div>
       </div>
     </div>
+<!-- Modal de confirmación -->
+<div *ngIf="mostrarConfirmacion" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+  <div class="bg-white p-6 rounded-xl shadow-xl w-80 text-center">
+    <h2 class="text-lg font-bold mb-4">¿Confirmar {{ accionSeleccionada === 'Aprobada' ? 'aprobación' : 'rechazo' }}?</h2>
+    <p class="mb-6">Esta acción no se puede deshacer.</p>
+    <div class="flex justify-center gap-4">
+      <button (click)="confirmarAccion()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Confirmar</button>
+      <button (click)="cancelarAccion()" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de éxito -->
+<div *ngIf="mostrarExito" class="fixed top-5 right-5 bg-green-600 text-white px-4 py-2 rounded shadow-lg z-50">
+  {{ mensajeExito }}
+</div>
 
     <ng-template #noSolicitudes>
       <p class="text-center text-gray-600 font-medium text-lg py-10">📭 No hay solicitudes disponibles.</p>
     </ng-template>
   </div>
+  <!-- Modal de confirmación de cierre -->
+<div
+*ngIf="modalConfirmacionCierreAbierto"
+class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+>
+<div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md text-center space-y-4">
+  <h2 class="text-xl font-semibold text-gray-800">¿Confirmar cierre de devolución?</h2>
+  <p class="text-gray-600">Estás por cerrar la solicitud. Se enviará un correo al comprador.</p>
+
+  <div class="flex justify-center gap-4 mt-4">
+    <button
+      (click)="confirmarCierre()"
+      class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-5 rounded-lg shadow-sm transition-all duration-200"
+    >
+      ✅ Confirmar
+    </button>
+    <button
+      (click)="modalConfirmacionCierreAbierto = false"
+      class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-5 rounded-lg transition-all duration-200"
+    >
+      ❌ Cancelar
+    </button>
+  </div>
+</div>
+</div>
+
 </div>

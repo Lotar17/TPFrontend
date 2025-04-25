@@ -36,6 +36,7 @@ productoActualizado!:Producto
 precioActual!:number
 totalAnterior!:number
 subTotal!:number
+mensajeError:string|null=null
     constructor(
       private compraService: ComprasService,
       private productoService: ProductosService,
@@ -75,9 +76,11 @@ subTotal!:number
       
       }
       RealizarDevolucion(item: Item) {
-        console.log('Estados seguimiento',item.seguimiento?.estados)
+        console.log('Estados seguimiento long',item.seguimiento?.estados.length)
 if(item.seguimiento?.estados.length!==4){
-  return 
+ 
+  this.mensajeError='No puede devolver ningun producto que aun no le haya llegado a su destino'
+  return
 }
 
         this.itemService.setItem(item)

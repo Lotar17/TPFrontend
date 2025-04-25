@@ -26,10 +26,20 @@ updatePersona(persona:Persona):Observable<ApiResponse<Persona>>{
   const payload={
     nombre: persona.nombre,
     mail:persona.mail,
-    apelllido:persona.apellido
+    apellido:persona.apellido
   }
   return this.http.patch<ApiResponse<Persona>>(`${this.apiUrl}/${persona.id}`,payload)
-}
+
   
+}
+  updatePassword(mail:string,passwordAnterior:string,passwordNueva:string):Observable<any>{
+
+    const payload={
+      mail,
+      passwordAnterior,
+      passwordNueva
+    }
+    return this.http.patch(`${this.apiUrl}/updatePassword`,payload)
+  }
   
 }

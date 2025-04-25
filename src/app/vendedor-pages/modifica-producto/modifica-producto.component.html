@@ -90,4 +90,12 @@
       </div>
     </div>
   </div>
+  <div *ngIf="errorStock" class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mt-2 w-fit">
+    <span class="block sm:inline">{{ errorStock }}</span>
+    <button (click)="errorStock = null" class="absolute top-0 right-1 text-red-700 hover:text-red-900">✕</button>
+  </div>
+  <div *ngIf="errorPrecio" class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mt-2 w-fit">
+    <span class="block sm:inline">{{ errorPrecio }}</span>
+    <button (click)="errorPrecio = null" class="absolute top-0 right-1 text-red-700 hover:text-red-900">✕</button>
+  </div>
 </div>

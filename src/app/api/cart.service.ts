@@ -6,6 +6,7 @@ import { Item } from '../models/item.entity';
 import { ApiResponse } from '../models/ApiResponse';
 import { ItemService } from './item.service';
 import { AutenticacionService } from './autenticacion.service';
+import { Producto } from '../models/producto.entity';
 
 @Injectable({
   providedIn: 'root'
@@ -126,7 +127,8 @@ IncrementQuantity(itemId:string,idProducto:string): void {
       error: (error) => console.error('Error al incrementar item:', error)
     });
 }
-manejarItemCarrito(idProducto: string): void {
+manejarItemCarrito(producto: Producto,mostrarMensajeStock: (msg: string) => void): void {
+ const idProducto=producto.id
   if (!idProducto) return;
 
   this.autenticacionService.getUserInformation().subscribe({
@@ -139,6 +141,10 @@ manejarItemCarrito(idProducto: string): void {
           const item = response.data;
 
           if (item && item.id) {
+            if (producto.stock !== undefined && item.cantidad_producto >= producto.stock) {
+              mostrarMensajeStock('No puedes agregar más, alcanzaste el stock disponible.');
+              return;
+            }
             this.IncrementQuantity(item.id, idProducto);
           } else {
             this.addToCart1(userId, idProducto).subscribe({

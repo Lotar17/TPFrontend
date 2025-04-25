@@ -12,6 +12,7 @@ import { Persona } from '../models/persona.entity';
 import { Seguimiento } from '../models/seguimiento.entity';
 import { Direccion } from '../models/direccion.entity';
 import { Localidad } from '../models/localidad.entity';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-buys',
   standalone: true,
@@ -58,7 +59,7 @@ localidades:Localidad[]=[]
     private autenticacionService:AutenticacionService,
     private seguimientoService:SeguimientoService,
     private personaService:PersonaService,
-
+    private router:Router
   ) {}
 
   ngOnInit() {
@@ -105,7 +106,7 @@ this.mailDestino=response.data?.mail
 
 
 
-  async onSubmit() {
+   onSubmit() {
     this.direccion_entrega = this.publicaForm.value.direccion || '';
    
   
@@ -132,7 +133,13 @@ this.mailDestino=response.data?.mail
     this.compraService.procesarCompra(this.compra, this.idPersona, this.mailDestino)
     .subscribe({
       next: () => {
+       
         console.log("Compra procesada correctamente");
+        setTimeout(() => {
+          console.log('Llega aca')
+          this.router.navigate(['/productos']);
+        }, 500);
+
       },
       error: (err) => {
         console.error("Error al procesar la compra:", err);
@@ -165,6 +172,6 @@ cerrarModalConfirmacion() {
 
 cerrarModalDetalle() {
   this.showDetailModal = false;
-  this.compraRealizada = null;
+ 
 }
 }    

@@ -97,7 +97,7 @@ procesarCierreEstado(estado: EstadoSeguimiento, localidad: string): Observable<a
     }),
     concatMap((response: any) => {
       const estadoCerrado = response.data;
-      return this.searchEmployeeLocalidad(localidad).pipe(
+      return this.searchEmployeeLocalidad(localidad).pipe( 
         map((empleadoResponse) => ({ estadoCerrado, empleado: empleadoResponse.data }))
       );
     }),

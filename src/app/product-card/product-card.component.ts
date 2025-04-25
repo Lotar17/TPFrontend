@@ -24,6 +24,8 @@ export class ProductCardComponent {
   showNotification: boolean = false; 
   mensajeNotificacion: string = ''; 
 idProducto!:string
+mensajeStock: string | null = null;
+
   constructor(
     private historicoprecioService: HistoricoPrecioService,
     private carritoService: CarritoService,
@@ -56,10 +58,15 @@ idProducto!:string
     );
   }
 
- agregarAlCarrito(idProducto:string ){
-  this.idProducto=idProducto
-  this.carritoService.manejarItemCarrito(this.idProducto)
-}
+  agregarAlCarrito(producto: Producto) {
+    
+  
+    this.carritoService.manejarItemCarrito(producto, (msg: string) => {
+      this.mensajeStock = msg;
+      setTimeout(() => this.mensajeStock = null, 3000); 
+    });
+  }
+  
     
   mostrarNotificacion(mensaje: string) {
       this.mensajeNotificacion = mensaje;
