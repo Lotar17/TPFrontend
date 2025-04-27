@@ -100,48 +100,56 @@ l37 18 29 -34 c38 -46 36 -66 -9 -88 -58 -29 -91 -34 -150 -22 -135 28 -211
       (sesionPersona.data?.rol === 'Administrador') {
       <li>
         <a
-          class="hover:bg-gaucho-buy-inicio transition duration-300 rounded-xl p-2"
+          class="select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
           routerLink="/admin"
           >Panel de administrador</a
         >
       </li>
       <li>
         <a
-          class="hover:bg-gaucho-buy-inicio transition duration-300 rounded-xl p-2"
+          class="select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
           routerLink="/productos"
           >Tienda</a
         >
       </li>
       <li>
         <a
-          class="hover:bg-gaucho-buy-inicio transition duration-300 rounded-xl p-2"
+          class="select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
           >{{ sesionPersona.data?.nombre }}</a
         >
       </li>
       } @else if (sesionPersona.data?.rol === 'Usuario') {
       <li>
         <a
-          class="hover:bg-gaucho-buy-inicio transition duration-300 rounded-xl p-2"
+          class="select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
           routerLink="/productos"
           >Tienda</a
         >
       </li>
       <li>
-        <select
-          class="hover:bg-gaucho-buy-inicio transition duration-300 rounded-xl p-2"
+        <a
+          class="select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
+          >{{ sesionPersona.data?.nombre }}</a
         >
-          <option value="dog">Dog</option>
-          <option value="cat">Cat</option>
-          <option value="hamster">Hamster</option>
-          <option value="parrot">Parrot</option>
-          <option value="spider">Spider</option>
-        </select>
+      </li>
+      }@else if (sesionPersona.data?.rol === 'Empleado') {
+      <li>
+        <a
+          class="select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
+          routerLink="/panelSeguimientoEmpleado"
+          >Panel Empleado</a
+        >
+      </li>
+      <li>
+        <a
+          class="select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
+          >{{ sesionPersona.data?.nombre }}</a
         >
       </li>
       } @else {
       <li>
         <a
-          class="hover:bg-gaucho-buy-inicio transition duration-300 rounded-xl p-2"
+          class="select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
           routerLink="/login"
         >
           Iniciar Sesion
@@ -149,7 +157,7 @@ l37 18 29 -34 c38 -46 36 -66 -9 -88 -58 -29 -91 -34 -150 -22 -135 28 -211
       </li>
       <li>
         <a
-          class="hover:bg-gaucho-buy-inicio transition duration-300 rounded-xl p-2"
+          class="select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
           routerLink="register"
         >
           Registrarse
@@ -158,7 +166,7 @@ l37 18 29 -34 c38 -46 36 -66 -9 -88 -58 -29 -91 -34 -150 -22 -135 28 -211
 
       <li>
         <a
-          class="hover:bg-gaucho-buy-inicio transition duration-300 rounded-xl p-2"
+          class="select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
           routerLink="/productos"
           >Tienda</a
         >
@@ -166,7 +174,7 @@ l37 18 29 -34 c38 -46 36 -66 -9 -88 -58 -29 -91 -34 -150 -22 -135 28 -211
       } } @else {
       <li>
         <a
-          class="hover:bg-gaucho-buy-inicio transition duration-300 rounded-xl p-2"
+          class="select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
           routerLink="/login"
         >
           Iniciar Sesion
@@ -174,7 +182,7 @@ l37 18 29 -34 c38 -46 36 -66 -9 -88 -58 -29 -91 -34 -150 -22 -135 28 -211
       </li>
       <li>
         <a
-          class="hover:bg-gaucho-buy-inicio transition duration-300 rounded-xl p-2"
+          class="select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
           routerLink="register"
         >
           Registrarse
@@ -183,7 +191,7 @@ l37 18 29 -34 c38 -46 36 -66 -9 -88 -58 -29 -91 -34 -150 -22 -135 28 -211
 
       <li>
         <a
-          class="hover:bg-gaucho-buy-inicio transition duration-300 rounded-xl p-2"
+          class="select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
           routerLink="/productos"
           >Tienda</a
         >
