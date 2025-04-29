@@ -2,7 +2,12 @@
   rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
 />
-<app-persona-add (click)="OpenAddDialog()"></app-persona-add>
+<div class="flex justify-end">
+  <app-persona-add
+    (click)="OpenAddDialog()"
+    class="inline-block"
+  ></app-persona-add>
+</div>
 <ul role="list" class="divide-y divide-gray-100 p-3">
   @for (producto of productos$ |async; track producto.id) {
 
@@ -13,7 +18,7 @@
         <p class="text-sm font-semibold leading-6 text-gray-900">
           {{ producto.descripcion }}
         </p>
-      
+
         <p class="mt-1 truncate text-xs leading-5 text-gray-500">
           Stock: {{ producto.stock }}
         </p>
@@ -21,13 +26,11 @@
     </div>
     <div class="hidden shrink-0 sm:flex sm:flex-row sm:items-center gap-5">
       <div>
-      
         <p class="text-sm leading-6 text-gray-900">
           ${{
             producto.hist_precios?.at(producto.hist_precios!.length - 1)?.valor
           }}
         </p>
-       
       </div>
       <div class="flex gap-2">
         <button (click)="OpenAddDialog(producto)">
@@ -158,17 +161,17 @@
 
             <div class="sm:col-span-3">
               <label
-                for="personaid"
+                for="personaMail"
                 class="block text-sm font-medium leading-6 text-gray-900"
-                >Persona ID</label
+                >Email de la Persona:</label
               >
               <div class="mt-2">
                 <input
-                  type="text"
-                  name="personaid"
-                  id="personaid"
-                  autocomplete="personaid"
-                  formControlName="personaId"
+                  type="email"
+                  name="personaMail"
+                  id="personaMail"
+                  autocomplete="personaMail"
+                  formControlName="personaMail"
                   required
                   class="block required:border-red-500 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
