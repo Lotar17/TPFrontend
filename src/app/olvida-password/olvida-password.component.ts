@@ -5,6 +5,7 @@ import { response } from 'express';
 import { Router,RouterLink} from '@angular/router';
 import { AuthService } from '../api/Auth.service.js';
 import { PersonaService } from '../api/per.service.js';
+import * as jwt from 'jsonwebtoken'
 
 @Component({
   selector: 'app-olvida-password',
@@ -23,7 +24,7 @@ export class OlvidaPasswordComponent {
 
   onSubmit() {
     const mail = this.olvidaForm.value.mail ?? '';
-    console.log('📤 Mail del form:', mail); // 👈 ESTE LOG
+    console.log('Mail del form:', mail); // chekeo
     this.personaService.getPersonaByEmail(mail).subscribe((response) => {
       if (response.data) {
         console.log(response.data);

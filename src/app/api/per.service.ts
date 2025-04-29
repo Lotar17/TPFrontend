@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { ApiResponse } from '../models/ApiResponse';
 import { Persona } from '../models/persona.entity';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -26,7 +27,8 @@ updatePersona(persona:Persona):Observable<ApiResponse<Persona>>{
   const payload={
     nombre: persona.nombre,
     mail:persona.mail,
-    apelllido:persona.apellido
+    apelllido:persona.apellido,
+    password: persona.password
   }
   return this.http.patch<ApiResponse<Persona>>(`${this.apiUrl}/${persona.id}`,payload)
 }
