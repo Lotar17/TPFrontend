@@ -16,7 +16,7 @@ import { ApiResponse } from '../models/ApiResponse'; // También este modelo
 })
 export class RestablecerContrasenaComponent implements OnInit {
   passwordForm = new FormGroup({
-    nuevaPassword: new FormControl('', [Validators.required, Validators.minLength(6)])
+    nuevaPassword: new FormControl()
   });
 
   token: string = '';
@@ -31,6 +31,7 @@ export class RestablecerContrasenaComponent implements OnInit {
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       this.token = params['token'] ?? '';
+      console.log('TOKEN:', this.token); // chekeo que llegue bien
       try {
         const payload: any = jwtDecode(this.token);
         const ahora = Math.floor(Date.now() / 1000);
@@ -42,7 +43,7 @@ export class RestablecerContrasenaComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.passwordForm.invalid || !this.tokenValido) {
+    if (!this.tokenValido) {
       alert('Token inválido o formulario incompleto');
       return;
     }
