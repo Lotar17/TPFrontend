@@ -1,0 +1,39 @@
+<div class="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-600 via-purple-500 to-pink-500 p-6">
+    <div class="w-full max-w-md bg-white shadow-2xl rounded-2xl p-8">
+      <ng-container *ngIf="tokenValido; else tokenError">
+        <div class="text-center mb-8">
+          <h2 class="text-3xl font-bold text-gray-800">Restablecer contraseña</h2>
+          <p class="text-gray-500 mt-2">Ingresá tu nueva contraseña</p>
+        </div>
+  
+        <form [formGroup]="passwordForm" (ngSubmit)="onSubmit()" class="space-y-6">
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700">Nueva contraseña</label>
+            <input
+              type="password"
+              id="password"
+              formControlName="nuevaPassword"
+              placeholder="******"
+              class="mt-1 w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition duration-200"
+            />
+          </div>
+  
+          <button
+            type="submit"
+            class="w-full py-3 px-4 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-200"
+          >
+            Restablecer contraseña
+          </button>
+        </form>
+      </ng-container>
+  
+      <ng-template #tokenError>
+        <div class="flex flex-col items-center justify-center text-center">
+          <img src="assets/images/expired.png" alt="Token expirado" class="w-32 h-32 mb-4" />
+          <h2 class="text-2xl font-bold text-red-600">TOKEN EXPIRADO</h2>
+          <p class="text-gray-700 mt-2">Por favor, solicitá un nuevo enlace de recuperación.</p>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+

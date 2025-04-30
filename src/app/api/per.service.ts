@@ -6,6 +6,7 @@ import { ApiResponse } from '../models/ApiResponse';
 import { Persona } from '../models/persona.entity';
 import { Direccion } from '../models/direccion.entity';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -27,8 +28,13 @@ updatePersona(persona:Persona):Observable<ApiResponse<Persona>>{
   const payload={
     nombre: persona.nombre,
     mail:persona.mail,
+
     apellido:persona.apellido,
     telefono:persona.telefono
+
+    apelllido:persona.apellido,
+    password: persona.password
+
   }
   return this.http.patch<ApiResponse<Persona>>(`${this.apiUrl}/${persona.id}`,payload)
 
@@ -73,6 +79,12 @@ this.updateDireccion(direccion,usuario.id).subscribe({
 console.log('Direccion Actualizada con exito',response.data)
   },
   error:(error:any)=>{
+
+getPersonaByEmail(email: string){
+  const url = `http://localhost:3000/api/personas/email/${email}`;
+  return this.http.get<ApiResponse<Persona>>(url);
+}
+
   
     console.error("No se encontro el usuario",error)
   }

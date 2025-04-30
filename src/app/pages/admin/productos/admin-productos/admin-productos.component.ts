@@ -44,7 +44,7 @@ export class AdminProductosComponent {
     descripcion: new FormControl('', { nonNullable: true }),
     stock: new FormControl(0, { nonNullable: true }),
     categoriaId: new FormControl('', { nonNullable: true }),
-    personaId: new FormControl('', { nonNullable: true }),
+    personaMail: new FormControl(),
     precio: new FormControl(0, { nonNullable: true }),
   });
 
@@ -62,7 +62,7 @@ export class AdminProductosComponent {
       this.idEdited = producto.id;
       this.addForm.controls.descripcion.setValue(producto.descripcion ?? '');
       this.addForm.controls.stock.setValue(producto.stock ?? 0);
-      this.addForm.controls.personaId.setValue(producto.persona?.id ?? '');
+      this.addForm.controls.personaMail.setValue(producto.persona?.mail);
       this.addForm.controls.categoriaId.setValue(producto.categoria?.id ?? '');
       this.addForm.controls.precio.setValue(
         producto.hist_precios?.at(producto.hist_precios!.length - 1)?.valor!
@@ -86,7 +86,7 @@ export class AdminProductosComponent {
       descripcion: this.addForm.value.descripcion ?? '',
       stock: this.addForm.value.stock ?? 0,
       categoriaId: this.addForm.value.categoriaId ?? '',
-      personaId: this.addForm.value.personaId ?? '',
+      personaMail: this.addForm.value.personaMail ?? '',
       precio: this.addForm.value.precio ?? 0,
     };
     if (this.isUpdating === false) {
