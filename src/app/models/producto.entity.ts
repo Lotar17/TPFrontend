@@ -7,6 +7,7 @@ export type Producto = {
   descripcion?: string;
   persona?: Persona;
   personaId?: string;
+  personaMail?: string;
   stock?: number;
   precio?: number;
   categoria?: Categoria;

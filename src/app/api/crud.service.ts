@@ -33,12 +33,15 @@ export class CRUDService<T extends BaseModel> {
     return item;
   }
 
-  getByDescripcion(tabla: string, descripcion: string,idPersona:string): Observable<T[]> {
-
- 
-    return this.http.get<T[]>(`${this.url}/${tabla}/todos/${idPersona}?descripcion=${descripcion}`);
+  getByDescripcion(
+    tabla: string,
+    descripcion: string,
+    idPersona: string
+  ): Observable<T[]> {
+    return this.http.get<T[]>(
+      `${this.url}/${tabla}/todos/${idPersona}?descripcion=${descripcion}`
+    );
   }
-  
 
   deleteOne(tabla: string, t: T): Observable<ApiResponse<T>> {
     return this.http
@@ -54,22 +57,24 @@ export class CRUDService<T extends BaseModel> {
   }
 
   add(tabla: string, t: T) {
-    return this.http.post<ApiResponse<T>>(`${this.url}/${tabla}/`, t).subscribe({
-      next: (response) => {
-        t.id = response.data?.id;
-        this.subject.getValue().push(t);
-        const listaActualizada = this.subject.getValue();
-        this.subject.next(listaActualizada);
-        console.log(`Producto creado con éxito`);
-      },
-      error: (err) => {
-        console.error('Error al crear el producto:', err.message);
-      },
-    });
+    console.log(t);
+    return this.http
+      .post<ApiResponse<T>>(`${this.url}/${tabla}/`, t)
+      .subscribe({
+        next: (response) => {
+          t.id = response.data?.id;
+          this.subject.getValue().push(t);
+          const listaActualizada = this.subject.getValue();
+          this.subject.next(listaActualizada);
+          console.log(`Producto creado con éxito`);
+        },
+        error: (err) => {
+          console.error('Error al crear la entidad:', err.message);
+        },
+      });
   }
-  
 
- update(tabla: string, t: T) {
+  update(tabla: string, t: T) {
     return this.http
       .put<ApiResponse<T>>(`${this.url}/${tabla}/${t.id}`, t)
       .subscribe((response) => {
@@ -79,6 +84,5 @@ export class CRUDService<T extends BaseModel> {
         );
         this.subject.next(listaActualizada);
       });
-  } 
-  
+  }
 }

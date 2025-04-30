@@ -1,7 +1,7 @@
-import { Direccion } from "./direccion.entity";
-import { Compra } from "./compra.entity";
-import { Producto } from "./producto.entity";
-import { EstadoSeguimiento } from "./estado_seguimiento.entity";
+import { Direccion } from './direccion.entity';
+import { Compra } from './compra.entity';
+import { Producto } from './producto.entity';
+import { EstadoSeguimiento } from './estado_seguimiento.entity';
 
 export type Persona = {
   id?: string;
@@ -11,9 +11,11 @@ export type Persona = {
   mail: string;
   password?: string;
   rol?: string;
-  direccion?:Direccion
+  direccion?: Direccion;
   prods_publicados?: Producto[];
-  estados_empleados?:EstadoSeguimiento[];
-  compras?: Compra[]
-
+  estados_empleados?: EstadoSeguimiento[];
+  compras?: Compra[];
+  calle?: string;
+  numero?: number;
+  localidadId?: string;
 };
