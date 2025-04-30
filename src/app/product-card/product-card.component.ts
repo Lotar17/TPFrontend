@@ -4,13 +4,9 @@ import { Producto } from '../models/producto.entity';
 import { RouterLink } from '@angular/router';
 import { HistoricoPrecioService } from '../api/calculaprecio.service';
 import { CommonModule } from '@angular/common';
-import { Response } from 'express';
 import { CarritoService } from '../api/cart.service';
-import { ItemService } from '../api/item.service';
-
 import { CurrencyPipe } from '@angular/common';
-import localeEs from '@angular/common/locales/es-AR';
-import { AutenticacionService } from '../api/autenticacion.service';
+import { ChangeDetectorRef } from '@angular/core';
 @Component({
   selector: 'app-product-card',
   standalone: true,
@@ -29,8 +25,7 @@ mensajeStock: string | null = null;
   constructor(
     private historicoprecioService: HistoricoPrecioService,
     private carritoService: CarritoService,
-    private autenticacionService:AutenticacionService,
-    private itemService:ItemService
+   private cdr:ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -60,23 +55,30 @@ mensajeStock: string | null = null;
 
   agregarAlCarrito(producto: Producto) {
     
-  
-    this.carritoService.manejarItemCarrito(producto, (msg: string) => {
-      this.mensajeStock = msg;
-      setTimeout(() => this.mensajeStock = null, 3000); 
-    });
+    this.carritoService.manejarItemCarrito(
+      producto,
+      (msg: string) => {
+        this.mensajeStock = msg;
+        setTimeout(() => this.mensajeStock = null, 3000);
+      },
+      () => {
+        this.mostrarNotificacion('Producto agregado al carrito.');
+      }
+    );
   }
   
     
   mostrarNotificacion(mensaje: string) {
-      this.mensajeNotificacion = mensaje;
-      this.showNotification = true;
+    this.mensajeNotificacion = mensaje;
+    this.showNotification = true;
+    this.cdr.detectChanges();
+    // Ocultar el cartel después de 3 segundos
+    setTimeout(() => {
+      this.showNotification = false;
+      this.cdr.detectChanges();
+    }, 3000);}  
   
-     
-      setTimeout(() => {
-        this.showNotification = false;
-      }, 3000);
-    }
+
   }
 
 

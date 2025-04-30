@@ -6,7 +6,8 @@ import { PersonaService } from '../api/per.service';
 import { CommonModule } from '@angular/common';
 import { SidebarComponent } from "../sidebar/sidebar.component";
 import { HeaderComponent } from "../header/header.component";
-
+import { SeguimientoService } from '../api/seguimiento.service';
+import { Localidad } from '../models/localidad.entity';
 
 @Component({
   selector: 'app-mi-cuenta',
@@ -23,17 +24,24 @@ export class MiCuentaComponent {
   nuevaPassword: string = '';
   mailUser!:string
   successMessage: string = '';
-
+  localidades:Localidad[]=[]
+  mostrarFormularioDireccion: boolean = false;
+  showModalConfirmacion: boolean = false;
+  nuevaCalle: string = '';
+  nuevoNumero: number | null = null;
+  nuevaLocalidad: string = '';
   constructor(private autenticacionService:AutenticacionService,
     private personaService:PersonaService,
-    
+    private seguimientoService:SeguimientoService
   ){}
 
 ngOnInit(){
+  this.loadLocalidades()
 
   this.autenticacionService.getUserInformation().subscribe({
     next:(response:any)=>{
     this.usuarioId=response.data.id
+    if (this.usuarioId)
     this.personaService.getOne(this.usuarioId).subscribe({
       next:(response:any)=>{
 this.usuario=response.data
@@ -106,7 +114,13 @@ this.closeModal();
 })
 
   }
-  
+  loadLocalidades(){
+    this.seguimientoService.getLocalidades().subscribe({
+    next:(response:any)=>{
+    this.localidades=response.data
+    },error:(error:any)=>{
+      console.error('No se encontraron localidades',error)
+    }})}
 
 
   openModalEditarDatos() {
@@ -134,7 +148,7 @@ this.closeModal();
     if (!this.passwordActual || !this.nuevaPassword) {
       this.errorMessage = 'Ambos campos son obligatorios';
       setTimeout(() => {
-        this.errorMessage = ''; // El mensaje de error desaparecerá después de 5 segundos
+        this.errorMessage = ''; 
       }, 5000);
       return;
     }
@@ -148,4 +162,60 @@ closeModal(){
   this.showModalEditarDatos = false;
   this.showModalPassword = false;
 }
+
+confirmarCambioDireccion() {
+  this.showModalConfirmacion = true;
 }
+
+cancelarCambioDireccion() {
+  this.mostrarFormularioDireccion = false;
+  this.nuevaCalle = '';
+  this.nuevoNumero = null;
+  this.nuevaLocalidad = '';
+}
+cancelarConfirmacion() {
+  this.showModalConfirmacion = false;
+}
+guardarNuevaDireccion() {
+  if (!this.nuevaCalle || !this.nuevoNumero || !this.nuevaLocalidad) {
+    alert('Todos los campos de la dirección son obligatorios');
+    return;
+  }
+
+  this.personaService.actualizaDireccion(
+    this.nuevaCalle,
+    this.nuevoNumero!,
+    this.nuevaLocalidad,
+    this.usuario 
+  )
+   
+      
+      this.successMessage = 'Dirección actualizada correctamente';
+      this.showModalConfirmacion = false;
+      this.mostrarFormularioDireccion = false;
+  
+      
+      this.errorMessage = 'Error al actualizar dirección';
+      this.showModalConfirmacion = false;
+    }
+    datosValidos(): boolean {
+      return !!this.editUsuario.nombre && 
+             !!this.editUsuario.apellido && 
+             !!this.editUsuario.mail && 
+             !!this.editUsuario.telefono && 
+             /^\d+$/.test(this.editUsuario.telefono);  // Solo números en teléfono
+    }
+ 
+validarDireccion(): boolean {
+  return (
+    !!this.nuevaCalle &&                    
+    !!this.nuevoNumero &&                     
+    !isNaN(this.nuevoNumero) &&               
+    this.nuevoNumero > 0 &&                   
+    !!this.nuevaLocalidad                     
+  );
+}
+
+  };
+
+

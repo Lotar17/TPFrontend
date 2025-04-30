@@ -13,7 +13,7 @@ import { HistoricoPrecioService } from '../api/calculaprecio.service';
 import { CRUDService } from '../api/crud.service';
 import { AutenticacionService } from '../api/autenticacion.service';
 import { CarritoService } from '../api/cart.service';
-import e, { response } from 'express';
+import { ChangeDetectorRef } from '@angular/core';
 
 
 @Component({
@@ -37,8 +37,7 @@ export class ProductoDetalleComponent implements OnInit {
     private route: ActivatedRoute, 
     private productosService: ProductosService,
     private historicoprecioService: HistoricoPrecioService,
-    private crudService: CRUDService<Producto>, 
-    private autenticacionService:AutenticacionService,
+private cdr:ChangeDetectorRef,
     private carritoService:CarritoService
   ) {}
 
@@ -88,25 +87,26 @@ export class ProductoDetalleComponent implements OnInit {
     
   }
   agregarAlCarrito(producto: Producto) {
-   
-  
-    this.carritoService.manejarItemCarrito(producto, (msg: string) => {
-      this.mensajeStock = msg;
-      setTimeout(() => this.mensajeStock = null, 3000); // Opcional: se borra solo
-    });
+    this.carritoService.manejarItemCarrito(
+      producto,
+      (msg: string) => {
+        this.mensajeStock = msg;
+        setTimeout(() => this.mensajeStock = null, 3000);
+      },
+      () => {
+        this.mostrarNotificacion('Producto agregado al carrito.');
+      }
+    );
   }
-  
-
   mostrarNotificacion(mensaje: string) {
     this.mensajeNotificacion = mensaje;
     this.showNotification = true;
-
+    this.cdr.detectChanges();
     // Ocultar el cartel después de 3 segundos
     setTimeout(() => {
       this.showNotification = false;
-    }, 3000);
-  }
-
+      this.cdr.detectChanges();
+    }, 3000);}  
   
 
  

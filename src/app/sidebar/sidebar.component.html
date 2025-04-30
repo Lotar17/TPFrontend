@@ -72,7 +72,7 @@
         Ver seguimientos
       </a>
     </li>
-    <li>
+    <li *ngIf="user.rol === 'Empleado'">
       <a
         class="block bg-indigo-600 hover:bg-indigo-700 transition duration-300 rounded-lg px-4 py-2 text-sm font-medium text-center"
         routerLink="/panelSeguimientoEmpleado"
@@ -96,5 +96,14 @@
         Mis Ventas
       </a>
     </li>
+    <li>
+      <a
+        (click)="cerrarSesion()"
+        class="block bg-indigo-600 hover:bg-indigo-700 transition duration-300 rounded-lg px-4 py-2 text-sm font-medium text-center cursor-pointer"
+      >
+        Cerrar Sesión
+      </a>
+    </li>
+    
   </ul>
 </div>

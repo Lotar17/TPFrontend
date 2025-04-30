@@ -47,13 +47,21 @@ mostrarProductoLlego: boolean = false; // Controla visibilidad de "Llegó el pro
   filtroProducto: string = '';
   solicitudesOriginal: Devolucion[] = [];
   solicitudes: Devolucion[] = [];
-
+ cantidadAactualizar:number=0
   
 mostrarConfirmacion: boolean = false;
 mostrarExito: boolean = false;
 mensajeExito: string = '';
 accionSeleccionada: 'Aprobada' | 'Rechazada' | null = null;
 solicitudSeleccionada: Devolucion|null = null;
+mostrarModalStock: boolean = false;
+cantidadAActualizar: number = 0;
+itemSeleccionado: Item|null = null;
+
+mensajeStock: string = '';
+tipoMensajeStock: 'exito' | 'error' | '' = '';
+stockActualizando: boolean = false;
+
 
 
 
@@ -61,7 +69,6 @@ constructor(
 private autenticacionService:AutenticacionService,
 private solicitudService:SolicitudService,
 private productoService:ProductosService,
-private historicoPrecioService:HistoricoPrecioService,
 private compraService:ComprasService,
 private itemService:ItemService,
 private correoService:CorreoService
@@ -136,37 +143,59 @@ requestDecision(solicitud: Devolucion, decision: string, item: Item) {
 }
 
 
-actualizarStock(item:Item,solicitud:Devolucion) {
+actualizarStock(item: Item, solicitud: Devolucion) { // Para actualizar stock
+  const cantidad_devuelta = solicitud.cantidad_devuelta;
+  const cantidadAActualizar = this.cantidadAActualizar;
+  console.log('Cantidad a actualizar',cantidadAActualizar)
 
- 
- const cantidad_devuelta= solicitud.cantidad_devuelta
- let stockNuevo
- if(solicitud.item.producto?.stock)
- stockNuevo= cantidad_devuelta+solicitud.item.producto?.stock
+  this.solicitudService.validoCantidad(cantidad_devuelta, cantidadAActualizar).subscribe({
+    next: (res: any) => {
+      if (res.data === true) {
+        const stockNuevo = cantidadAActualizar + (solicitud.item.producto?.stock || 0);
 
- this.productoActualizado = {
-  ...item.producto,
-  stock: this.stockNuevo
-};
-if(item.producto?.id)
-this.productoService.actualizarProducto(item.producto?.id,this.productoActualizado).subscribe({
-  next:(response:any)=>{
-console.log('Stock actualizado con exito ',response.data)
-  },
-  error:(error:any)=>{
-  
-    console.error("No se actualizo el stock",error)
-  }
-  
+        this.productoActualizado = {
+          ...item.producto,
+          stock: stockNuevo
+        };
 
-
-})
-
-
-  this.mostrarProductoLlego = false;
-  this.solicitudSeleccionadaId = null;
+        if (item.producto?.id) {
+          this.productoService.actualizarProducto(item.producto.id, this.productoActualizado).subscribe({
+            next: (response: any) => {
+              this.tipoMensajeStock = 'exito';
+              this.mensajeStock = 'Stock actualizado correctamente.';
+              this.stockActualizando = true;
+              this.mostrarModalStock = false;
+              this.mostrarProductoLlego = false;
+              this.solicitudSeleccionadaId = null;
+            },
+            error: (error: any) => {
+              if(error.status===400)   this.mensajeStock = error.error?.message || 'Error de validación.';
+              this.tipoMensajeStock = 'error';
+              this.mensajeStock = 'Error al actualizar el stock.';
+              this.mostrarModalStock = false;
+            }
+          });
+        }
+      } else {
+        this.tipoMensajeStock = 'error';
+        this.mensajeStock = 'Cantidad inválida para devolver.';
+        this.mostrarModalStock = false;
+      }
+    },
+    error: (error: any) => {
+      this.tipoMensajeStock = 'error';
+      if (error.status === 400) {
+        this.mensajeStock = error.error?.message || 'Error de validación.';
+      } else {
+        this.mensajeStock = 'Error inesperado en la validación.';
+      }
+      this.mostrarModalStock = false;
+    }
+  });
 }
-cerrarDevolucion(solicitud: Devolucion) {
+
+
+cerrarDevolucion(solicitud: Devolucion) {// Cierre 
   this.mostrarCierre = false;
   this.mostrarProductoLlego = false;
 
@@ -194,7 +223,7 @@ filtrarSolicitudes() {
   });
 }
 
-abrirConfirmacion(solicitud: Devolucion, accion: 'Aprobada' | 'Rechazada') {
+abrirConfirmacion(solicitud: Devolucion, accion: 'Aprobada' | 'Rechazada') { /// Modal de aceptar o rechazar
   this.solicitudSeleccionada = solicitud;
   this.accionSeleccionada = accion;
   this.mostrarConfirmacion = true;
@@ -202,7 +231,7 @@ abrirConfirmacion(solicitud: Devolucion, accion: 'Aprobada' | 'Rechazada') {
 
 
 
-confirmarAccion() {
+confirmarAccion() { // confirmo la solicitud o sea apruebo o rechazo
   if (this.solicitudSeleccionada && this.accionSeleccionada) {
     this.requestDecision(this.solicitudSeleccionada, this.accionSeleccionada, this.solicitudSeleccionada.item);
     this.mostrarConfirmacion = false;
@@ -215,7 +244,7 @@ confirmarAccion() {
   }
 }
 
-cancelarAccion() {
+cancelarAccion() { // si cancelo en el caso que apruebe o recha
   this.mostrarConfirmacion = false;
   this.solicitudSeleccionada = null;
   this.accionSeleccionada = null;
@@ -225,14 +254,36 @@ modalConfirmacionCierreAbierto: boolean = false;
 solicitudACerrar!: Devolucion;
 
 abrirConfirmacionCierre(solicitud: Devolucion) {
+  if (this.mensajeCierre.trim() === '') {
+    // Validación adicional (si el mensaje está vacío)
+    alert('Por favor ingresa un mensaje de cierre.');
+    return;}
   this.solicitudACerrar = solicitud;
   this.modalConfirmacionCierreAbierto = true;
 }
 
-confirmarCierre() {
+confirmarCierre() { // para el cierre
   this.modalConfirmacionCierreAbierto = false;
   this.cerrarDevolucion(this.solicitudACerrar);
 }
+
+abrirModalStock(solicitud:Devolucion){ // Para stock
+  this.itemSeleccionado = solicitud.item;
+  this.solicitudSeleccionada = solicitud;
+  this.cantidadAActualizar = 0; // el usuario lo completa
+  this.mostrarModalStock = true;
+  this.mensajeStock = '';
+  this.tipoMensajeStock = '';
+
+}
+confirmarActualizarStock() { // para stock
+  if (this.itemSeleccionado && this.solicitudSeleccionada) {
+    this.actualizarStock(this.itemSeleccionado, this.solicitudSeleccionada);
+  }
+}
+
+
+
 }
 
 

@@ -17,6 +17,9 @@
           class="text-blue-500 hover:text-blue-700 flex items-center">
           ✏️ Editar
         </button>
+        <div *ngIf="!producto.descripcion && editandoDescripcion" class="text-red-500 text-sm">
+          La descripción no puede estar vacía
+        </div>
       </div>
 
       <!-- 💲 Precio -->
@@ -31,6 +34,10 @@
           class="text-blue-500 hover:text-blue-700 flex items-center">
           ✏️ Editar
         </button>
+        <div *ngIf="(producto.precio??0) <= 0 && editandoPrecio" class="text-red-500 text-sm">
+          El precio debe ser mayor que 0
+        </div>
+        
       </div>
 
       <!-- 📦 Stock -->
@@ -45,16 +52,19 @@
           class="text-blue-500 hover:text-blue-700 flex items-center">
           ✏️ Editar
         </button>
+        <div *ngIf="(producto.stock??0) <= 0 && editandoStock" class="text-red-500 text-sm">
+          El stock debe ser mayor que 0
+        </div>
       </div>
 
-      
-      <!-- 🔥 Botón Guardar Cambios -->
-      <button (click)="confirmarCambio()" 
-        class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 mt-4">
-        💾 Guardar Cambios
-      </button>
+    
     </div>
-
+ 
+    <button (click)="confirmarCambio()" 
+    class="..." 
+    [disabled]="!producto.descripcion || (producto.precio??0) <= 0 || (producto.stock??0) <= 0">
+    💾 Guardar Cambios
+  </button>
     <p *ngIf="!producto" class="text-center text-red-500 font-semibold mt-6">⏳ Cargando producto...</p>
   </div>
   <div *ngIf="confirmaCambio" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
@@ -98,4 +108,9 @@
     <span class="block sm:inline">{{ errorPrecio }}</span>
     <button (click)="errorPrecio = null" class="absolute top-0 right-1 text-red-700 hover:text-red-900">✕</button>
   </div>
+
+  
+  
+
+  
 </div>

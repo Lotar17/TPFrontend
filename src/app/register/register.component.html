@@ -1,134 +1,147 @@
-<div class="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-500 to-purple-600 p-6 flex items-center justify-center">
-    <div class="w-full max-w-lg bg-white shadow-2xl rounded-2xl p-8">
-      <div class="text-center mb-8">
-        <h2 class="text-3xl font-bold text-gray-800">Crear Cuenta</h2>
-        <p class="text-gray-500 mt-2">Regístrate para comenzar</p>
+<div class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+  <div class="w-full max-w-md bg-white p-8 rounded-xl shadow-md">
+    <div class="text-center mb-6">
+      <h2 class="text-2xl font-bold text-gray-800">Crear Cuenta</h2>
+      <p class="text-sm text-gray-500">Regístrate para comenzar</p>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-5">
+      <!-- Nombre -->
+      <div>
+        <label for="name" class="block text-sm font-medium text-gray-700">Nombre</label>
+        <input
+          id="name"
+          type="text"
+          formControlName="name"
+          class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+        />
+        <div *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">
+          <small class="text-red-600">El nombre es obligatorio.</small>
+        </div>
       </div>
-  
-      <form [formGroup]="registerForm" (submit)="onSubmit()" class="space-y-6">
-        <!-- Nombre -->
-        <div>
-          <label for="name" class="block text-sm font-medium text-gray-700">Nombre</label>
-          <input
-            type="text"
-            formControlName="name"
-            id="name"
-            placeholder="John"
-            class="mt-1 w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition duration-200"
-          />
+
+      <!-- Apellido -->
+      <div>
+        <label for="surname" class="block text-sm font-medium text-gray-700">Apellido</label>
+        <input
+          id="surname"
+          type="text"
+          formControlName="surname"
+          class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+        />
+        <div *ngIf="registerForm.get('surname')?.invalid && registerForm.get('surname')?.touched">
+          <small class="text-red-600">El apellido es obligatorio.</small>
         </div>
-  
-        <!-- Apellido -->
-        <div>
-          <label for="surname" class="block text-sm font-medium text-gray-700">Apellido</label>
-          <input
-            type="text"
-            formControlName="surname"
-            id="surname"
-            placeholder="Doe"
-            class="mt-1 w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition duration-200"
-          />
-        </div>
-  
-        <!-- Rol -->
-        <div>
-          <label for="rol" class="block text-sm font-medium text-gray-700">Rol</label>
-          <input
-            type="text"
-            formControlName="rol"
-            id="rol"
-            placeholder="user"
-            class="mt-1 w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition duration-200"
-          />
-        </div>
-  
-        <!-- Email -->
-    <!-- Email -->
-    <div>
+      </div>
+
+      <!-- Email -->
+      <div>
         <label for="mail" class="block text-sm font-medium text-gray-700">Correo Electrónico</label>
         <input
-          type="email" 
-          formControlName="mail"
           id="mail"
-          placeholder="johndoe@email.com"
-          class="mt-1 w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition duration-200"
+          type="email"
+          formControlName="mail"
+          class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
         />
+        <div *ngIf="registerForm.get('mail')?.invalid && registerForm.get('mail')?.touched">
+          <small class="text-red-600">El correo electrónico es obligatorio.</small>
+        </div>
       </div>
-  
-        <!-- Teléfono -->
-        <div>
-          <label for="phone" class="block text-sm font-medium text-gray-700">Teléfono</label>
-          <input
-            type="text"
-            formControlName="phone"
-            id="phone"
-            placeholder="123-456-7890"
-            class="mt-1 w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition duration-200"
-          />
+
+      <!-- Teléfono -->
+      <div>
+        <label for="phone" class="block text-sm font-medium text-gray-700">Teléfono</label>
+        <input
+          id="phone"
+          type="text"
+          formControlName="phone"
+          class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+        />
+        <div *ngIf="registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched">
+          <small *ngIf="registerForm.get('phone')?.errors?.['required']" class="text-red-600">El teléfono es obligatorio.</small>
+          <small *ngIf="registerForm.get('phone')?.errors?.['pattern']" class="text-red-600">Solo se permiten números.</small>
         </div>
-  
-        <!-- Localidad -->
-        <div>
-          <label for="localidad" class="block text-sm font-medium text-gray-700">📍 Localidad</label>
-          <select
-            formControlName="localidad"
-            id="localidad"
-            class="mt-1 w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition duration-200"
-          >
-            <option *ngFor="let localidad of localidades" [value]="localidad.id">
-              {{ localidad.nombre }}
-            </option>
-          </select>
-        </div>
-  
-        <!-- Calle -->
-        <div>
-          <label for="calle" class="block text-sm font-medium text-gray-700">Calle</label>
-          <input
-            type="text"
-            formControlName="calle"
-            id="calle"
-            placeholder="Av Siempre Viva"
-            class="mt-1 w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition duration-200"
-          />
-        </div>
-  
-        <!-- Número -->
-        <div>
-          <label for="numero" class="block text-sm font-medium text-gray-700">Número</label>
-          <input
-            type="number"
-            formControlName="numero"
-            id="numero"
-            placeholder="174"
-            class="mt-1 w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition duration-200"
-          />
-        </div>
-  
-        <!-- Contraseña -->
-        <div>
-          <label for="password" class="block text-sm font-medium text-gray-700">Contraseña</label>
-          <input
-            type="password"
-            formControlName="password"
-            id="password"
-            placeholder="••••••••"
-            class="mt-1 w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition duration-200"
-          />
-        </div>
-  
-        <!-- Botón de Registro -->
-        <button
-          type="submit"
-          class="w-full py-3 px-4 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-200"
+      </div>
+
+      <!-- Localidad -->
+      <div>
+        <label for="localidad" class="block text-sm font-medium text-gray-700">Localidad</label>
+        <select
+          formControlName="localidad"
+          id="localidad"
+          class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
         >
-          Registrarse
-        </button>
-      </form>
-  
-      <p class="mt-6 text-center text-sm text-gray-600">
-        ¿Ya tienes una cuenta?
-        <a href="#" class="text-indigo-600 hover:text-indigo-800 font-medium">Inicia sesión</a> 
-      </p>
-    </div>
+          <option value="" disabled selected>Seleccione una localidad</option>
+          <option *ngFor="let localidad of localidades" [value]="localidad.id">
+            {{ localidad.nombre }}
+          </option>
+        </select>
+        <div *ngIf="registerForm.get('localidad')?.invalid && registerForm.get('localidad')?.touched">
+          <small class="text-red-600">La localidad es obligatoria.</small>
+        </div>
+      </div>
+
+      <!-- Calle -->
+      <div>
+        <label for="calle" class="block text-sm font-medium text-gray-700">Calle</label>
+        <input
+          id="calle"
+          type="text"
+          formControlName="calle"
+          class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+        />
+        <div *ngIf="registerForm.get('calle')?.invalid && registerForm.get('calle')?.touched">
+          <small class="text-red-600">La calle es obligatoria.</small>
+        </div>
+      </div>
+
+      <!-- Número -->
+      <div>
+        <label for="numero" class="block text-sm font-medium text-gray-700">Número</label>
+        <input
+          id="numero"
+          type="number"
+          formControlName="numero"
+          class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+        />
+        <div *ngIf="registerForm.get('numero')?.invalid && registerForm.get('numero')?.touched">
+          <small *ngIf="registerForm.get('numero')?.errors?.['required']" class="text-red-600">El número es obligatorio.</small>
+          <small *ngIf="registerForm.get('numero')?.errors?.['pattern']" class="text-red-600">Debe ser un número válido.</small>
+        </div>
+      </div>
+
+      <!-- Contraseña -->
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700">Contraseña</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+        />
+        <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+          <small class="text-red-600">La contraseña es obligatoria.</small>
+        </div>
+      </div>
+
+      <!-- Botón -->
+      <button
+        type="submit"
+        [disabled]="registerForm.invalid"
+        class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+      >
+        Registrarse
+      </button>
+    </form>
+
+    <p class="mt-6 text-center text-sm text-gray-600">
+      ¿Ya tienes una cuenta?
+      <a routerLink="/login" class="text-indigo-600 hover:text-indigo-800 font-medium">Inicia sesión</a>
+    </p>
   </div>
+</div>
+<div *ngIf="registroExitoso">
+<div class="p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400" role="alert">
+  <span class="font-medium">Info alert!</span> Change a few things up and try submitting again.
+</div>
+</div>

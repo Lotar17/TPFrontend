@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ApiResponse } from '../models/ApiResponse';
 import { Persona } from '../models/persona.entity';
+import { Direccion } from '../models/direccion.entity';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +27,8 @@ updatePersona(persona:Persona):Observable<ApiResponse<Persona>>{
   const payload={
     nombre: persona.nombre,
     mail:persona.mail,
-    apellido:persona.apellido
+    apellido:persona.apellido,
+    telefono:persona.telefono
   }
   return this.http.patch<ApiResponse<Persona>>(`${this.apiUrl}/${persona.id}`,payload)
 
@@ -41,5 +43,46 @@ updatePersona(persona:Persona):Observable<ApiResponse<Persona>>{
     }
     return this.http.patch(`${this.apiUrl}/updatePassword`,payload)
   }
+  updateDireccion(direccion:string,id:string):Observable<ApiResponse<Persona>>{
+    const payload={
+      direccion
+    }
+    return this.http.patch<ApiResponse<Persona>>(`${this.apiUrl}/${id}`,payload)
+
+  }
+  createDireccion(calle:string,numero:number,localidad:string):Observable<ApiResponse<Direccion>>{
+    const payload={
+      calle,
+      numero,
+      localidad
+
+    }
+return this.http.post<ApiResponse<Direccion>>('http://localhost:3000/api/direccion',payload)
+  }
+  actualizaDireccion(calle:string,numero:number,localidad:string,usuario:Persona){
+this.createDireccion(calle,numero,localidad).subscribe({
+  next:(response:any)=>{
+console.log('Direccion creada con exito',response.data)
+usuario.direccion=response.data
+const direccion=response.data.id
+console.log('Usuario Id',usuario.id)
+if(usuario.id)
   
+this.updateDireccion(direccion,usuario.id).subscribe({
+  next:(response:any)=>{
+console.log('Direccion Actualizada con exito',response.data)
+  },
+  error:(error:any)=>{
+  
+    console.error("No se encontro el usuario",error)
+  }
+})
+  },
+  error:(error:any)=>{
+  
+    console.error("No se encontro el usuario",error)
+  }
+})
+
+  }
 }

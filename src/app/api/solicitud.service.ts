@@ -139,7 +139,20 @@ cerrarDevolucion(solicitud: Devolucion, mensajeCierre: string):Observable<Devolu
   );
 
 }
+validoCantidad(cantidad_devuelta:number,cantidadAactualizar:number):Observable<ApiResponse<boolean>>{
+const payload={
+  cantidad_devuelta,
+  cantidadAactualizar
+}
+return this.http.post<ApiResponse<boolean>>(`${this.apiUrl}/valido/`,payload)
+}
+validaPendientes(itemId:string):Observable<ApiResponse<boolean>>{
+const payload={
+  itemId
+}
+return this.http.post<ApiResponse<boolean>>(`${this.apiUrl}/pendiente/`,payload)
 
+}
   }
 
   

@@ -7,7 +7,7 @@ import { ItemService } from '../api/item.service';
 import { CommonModule } from '@angular/common';
 import { Item } from '../models/item.entity';
 import { CarritoService } from '../api/cart.service';
-
+import { SolicitudService } from '../api/solicitud.service';
 import { Producto } from '../models/producto.entity';
 
 import { HistoricoPrecioService } from '../api/calculaprecio.service';
@@ -39,12 +39,10 @@ subTotal!:number
 mensajeError:string|null=null
     constructor(
       private compraService: ComprasService,
-      private productoService: ProductosService,
+      private solicitudService:SolicitudService,
       private route:ActivatedRoute,
-     private cartService:CarritoService,
-     private historicoPrecioService:HistoricoPrecioService,
-     private router:Router,
-     private itemService:ItemService
+      private router:Router,
+      private itemService:ItemService
     ) {}
 
     ngOnInit(): void {
@@ -76,14 +74,35 @@ mensajeError:string|null=null
       
       }
       RealizarDevolucion(item: Item) {
-        console.log('Estados seguimiento long',item.seguimiento?.estados.length)
-if(item.seguimiento?.estados.length!==4){
- 
-  this.mensajeError='No puede devolver ningun producto que aun no le haya llegado a su destino'
-  return
-}
-
-        this.itemService.setItem(item)
-        this.router.navigate(['/solicitud'])
+        console.log('Estados seguimiento long', item.seguimiento?.estados.length);
+      
+        if (item.seguimiento?.estados.length !== 4) {
+          this.mensajeError = 'No puede devolver ningún producto que aún no haya llegado a su destino';
+          return;
+        }
+      
+        if (item.id) {
+          this.solicitudService.validaPendientes(item.id).subscribe({
+            next: (response: any) => {
+              console.log('Respuesta', response.data);
+      
+              if (response.data === true) { 
+                this.itemService.setItem(item);
+                this.router.navigate(['/solicitud']);
+              } else {
+                this.mensajeError = 'No se pudo validar la devolución.';
+              }
+            },
+            error: (error: any) => {
+              if (error.status === 400) {
+                this.mensajeError = error.error?.message || 'Error de validación de devolución.';
+                return;
+              }
+              console.error('No se pudo realizar validación de item con solicitud pendiente', error);
+              this.mensajeError = 'Ocurrió un error inesperado al validar la devolución.';
+            }
+          });
+        }
       }
+      
     }

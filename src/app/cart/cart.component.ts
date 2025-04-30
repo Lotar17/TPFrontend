@@ -3,15 +3,10 @@ import { CarritoService } from '../api/cart.service';
 import { ActivatedRoute, Route } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Item } from '../models/item.entity';
-import { AuthService } from '../api/Auth.service';
-import { RouterLink } from '@angular/router';
 import { ComprasService } from '../api/compra.service';
 import { Router } from '@angular/router';
-import { HistoricoPrecio } from '../models/historicoprecio.entity';
 import { ChangeDetectorRef } from '@angular/core';
 import { AutenticacionService } from '../api/autenticacion.service';
-import { response } from 'express';
-import { error } from 'console';
 import { HistoricoPrecioService } from '../api/calculaprecio.service';
 import { Producto } from '../models/producto.entity';
 import { SidebarComponent } from "../sidebar/sidebar.component";
@@ -50,23 +45,29 @@ mensajeStock: string | null = null;
   ngOnInit() {
     this.autenticacionService.getUserInformation().subscribe({
       next: (response: any) => {
-        this.idUser = response.data.id;
-    
-        if (this.idUser) {
+        console.log('Usuario encontrado:', response); // Verifica la respuesta
+        if (response && response.data && response.data.id) {
+          this.idUser = response.data.id;
+          console.log('idUser:', this.idUser); // Asegúrate de que el idUser esté correctamente asignado
+  
+          // Si el idUser es válido, obtenemos el carrito
           this.carritoService.getCarrito(this.idUser);
           
           // Nos suscribimos al carrito para recibir actualizaciones en tiempo real
           this.carritoService.carritoItems$.subscribe((items) => {
             this.items = items;
-           
             this.subtotal = this.carritoService.calcularSubtotal(this.items);
           });
+        } else {
+          console.error('No se encontró la información del usuario.');
         }
       },
       error: (error: any) => {
-        console.error("No se encontró información del usuario", error);
-      }
-    });}
+        console.error('Error al obtener la información del usuario', error);
+      },
+    });
+  }
+  
 
     incrementarCantidad(producto: Producto | undefined, item: Item) {
       const idProducto = producto?.id;
@@ -76,18 +77,10 @@ mensajeStock: string | null = null;
         this.mensajeStock = 'No puedes agregar más unidades, alcanzaste el stock disponible.';
         return;
       }
-    
-      this.autenticacionService.getUserInformation().subscribe({
-        next: (response: any) => {
-          const idUser = response.data.id;
           if (item.id) {
             this.carritoService.IncrementQuantity(item.id, idProducto);
           }
-        },
-        error: (error: any) => {
-          console.error("No se encontró el usuario", error);
-        }
-      });
+      
     }
     
   decrementarCantidad(idProducto: string | undefined, item: Item) { 
@@ -96,16 +89,10 @@ mensajeStock: string | null = null;
       console.warn("❌ No puedes reducir más la cantidad.");
       return;
     }
-let userId
-this.autenticacionService.getUserInformation().subscribe({
-  next:(response:any)=>{
-  userId=response.data.id
-    this.carritoService.DecrementQuantity(idProducto, userId);
-  },
-  error:(error:any)=>{
-  
-    console.error("No se encontro el usuario",error)
-  }})}
+
+    this.carritoService.DecrementQuantity(idProducto, this.idUser);
+  }
+
 
   eliminarItem(itemId: string | undefined) {
     if (!itemId) return;
@@ -115,12 +102,7 @@ this.autenticacionService.getUserInformation().subscribe({
     this.cd.detectChanges(); // 🔄 Forzamos que Angular detecte los cambios
   }
   confirmarCompra() {
-   
     this.realizarCompra(this.items); 
-
-    
-    this.router.navigate(['/buys']);
-
     this.mostrarResumenCompra = false;
   }
 
@@ -131,7 +113,7 @@ this.autenticacionService.getUserInformation().subscribe({
       item => !items_compra.some(compraItem => compraItem.id === item.id)
     );
 
-    this.carritoService.actualizarCarrito(carritoActualizado); 
+    this.carritoService.actualizarCarrito(carritoActualizado); // Que hace esto aca
     this.router.navigate(['/buys']);
   }
   mostrarModalDeCompra() {

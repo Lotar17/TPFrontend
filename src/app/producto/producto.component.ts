@@ -9,8 +9,6 @@ import { RouterLink } from '@angular/router';
 import { Router } from '@angular/router';
 import { AutenticacionService } from '../api/autenticacion.service';
 import { HeaderComponent } from '../header/header.component.js';
-import { response } from 'express';
-import { error } from 'console';
 import { SidebarComponent } from "../sidebar/sidebar.component";
 @Component({
   selector: 'app-productos',
@@ -38,36 +36,43 @@ idUser!:string
   ) {}
 
   ngOnInit(): void {
-    this.loadProductos('');
+    this.autenticacionService.getUserInformation().subscribe({
+      next: (userResponse: any) => {
+        console.log('User Response', userResponse);
+        if (userResponse.data) {
+          this.idUser = userResponse.data.id;
+          this.loadProductos('');
+        } else {
+          console.error('No se encontró información del usuario');
+        }
+      },
+      error: (error) => {
+        console.error('Error al obtener la información del usuario', error);
+      }
+    });
   }
+  
 
   
-loadProductos(searchTerm: string): void {
-  this.autenticacionService.getUserInformation().subscribe({
-    next: (userResponse: any) => {
-      this. idUser = userResponse.data.id; 
-      
-
-
-      this.crudService.getByDescripcion('productos', searchTerm,this.idUser).subscribe({
-        next: (response: any) => {
-          if (response && Array.isArray(response.data)) {
-            
-            this.productos = response.data
-          } else {
-            this.productos = [];
-          }
-        },
-        error: (error) => {
-          console.error("Error al obtener productos", error);
-        }
-      });
-    },
-    error: (error) => {
-      console.error("Error al obtener la información del usuario", error);
+  loadProductos(searchTerm: string): void {
+    if (!this.idUser) {
+      console.error('No hay idUser cargado');
+      return;
     }
-  });
-}
+  
+    this.crudService.getByDescripcion('productos', searchTerm, this.idUser).subscribe({
+      next: (response: any) => {
+        if (response && Array.isArray(response.data)) {
+          this.productos = response.data;
+        } else {
+          this.productos = [];
+        }
+      },
+      error: (error) => {
+        console.error("Error al obtener productos", error);
+      }
+    });
+  }
 
   updateSearchTerm(searchTerm: string) {
     this.searchTerm = searchTerm;

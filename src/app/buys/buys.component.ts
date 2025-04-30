@@ -13,6 +13,7 @@ import { Seguimiento } from '../models/seguimiento.entity';
 import { Direccion } from '../models/direccion.entity';
 import { Localidad } from '../models/localidad.entity';
 import { Router } from '@angular/router';
+import { ChangeDetectorRef } from '@angular/core';
 @Component({
   selector: 'app-buys',
   standalone: true,
@@ -23,29 +24,20 @@ import { Router } from '@angular/router';
 export class BuysComponent {
   idPersona!: string;
   items: Item[] = [];
-  direccion_entrega!: string;
- 
-  compra!:Compra;
-  producto!:string;
-  cantidad_producto!:number;
-  empleado!:Persona
-  seguimiento!:Seguimiento
-itemIds:string[]=[]
-cliente!:Persona
- direcciones: Direccion[] = [];
- direccionSeleccionadaId: string = '';
- showConfirmModal: boolean = false;
-showDetailModal: boolean = false;
-compraRealizada: Compra | null = null;
+  direcciones: Direccion[] = [];
+  direccionSeleccionadaId: string = '';
+  mostrarNuevaDireccion: boolean = false;
+spinnerVisible=false
+  compra!: Compra;
+  cliente!: Persona;
+  mailDestino!: string;
+  localidades: Localidad[] = [];
 
- 
- mailDestino!:string
+  showConfirmModal: boolean = false;
+  showDetailModal: boolean = false;
+  compraRealizada: Compra | null = null;
 
-
-mostrarNuevaDireccion: boolean = false;
-
-
-localidades:Localidad[]=[]
+  mensajeError: string = '';
 
   publicaForm = new FormGroup({
     direccion: new FormControl(),
@@ -56,122 +48,161 @@ localidades:Localidad[]=[]
 
   constructor(
     private compraService: ComprasService,
-    private autenticacionService:AutenticacionService,
-    private seguimientoService:SeguimientoService,
-    private personaService:PersonaService,
-    private router:Router
+    private autenticacionService: AutenticacionService,
+    private seguimientoService: SeguimientoService,
+    private personaService: PersonaService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
-    this.loadLocalidades()
-
+    this.loadLocalidades();
     this.items = this.compraService.getItems();
+    this.obtenerDatosUsuario();
+  }
+
+  obtenerDatosUsuario() {
     this.autenticacionService.getUserInformation().subscribe({
-next:(response:any)=>{
+      next: (response: any) => {
+        this.idPersona = response.data.id;
 
-  this.idPersona=response.data.id
-  if(this.idPersona){
-this.personaService.getOne(this.idPersona).subscribe({
+        if (this.idPersona) {
+          this.personaService.getOne(this.idPersona).subscribe({
+            next: (response) => {
+              if(response.data)
+              this.cliente = response.data;
+              this.mailDestino = this.cliente.mail || '';
 
-  next:(response)=>{
-    console.log('Persona recibida con exito',response.data)
-    if(response.data)
-this.cliente=response.data
-    if(response.data?.mail)
-this.mailDestino=response.data?.mail
+              if (this.cliente.direccion) {
+                this.direcciones.push(this.cliente.direccion);
+              }
 
-    if (this.cliente.direccion) {
-      this.direcciones.push(this.cliente.direccion);
-    }
-    console.log('Array direcciones',this.direcciones)
-    if(this.cliente.compras)
-    this.cliente.compras.forEach(compra => {
-      if (compra.direccion) {
-        this.direcciones.push(compra.direccion);
+              if (this.cliente.compras) {
+                this.cliente.compras.forEach(compra => {
+                  if (compra.direccion) {
+                    this.direcciones.push(compra.direccion);
+                  }
+                });
+              }
+
+              // Eliminar direcciones duplicadas
+              this.direcciones = this.direcciones.filter((dir, i, self) =>
+                i === self.findIndex(d => d.calle === dir.calle && d.numero === dir.numero)
+              );
+            }
+          });
+        }
+      },
+      error: (error) => {
+        console.error('Error obteniendo información del usuario', error);
       }
     });
-   this. direcciones = this. direcciones.filter((dir, i, self) =>
-      i === self.findIndex(d => d.calle === dir.calle && d.numero === d.numero)
-    );
-  }});
-  console.log('Array direcciones2',this.direcciones)
-}
-  },
-  error:(error)=>{
-
-  }
-})
-
   }
 
+  loadLocalidades() {
+    this.seguimientoService.getLocalidades().subscribe({
+      next: (response: any) => {
+        this.localidades = response.data;
+      },
+      error: (error) => {
+        console.error('No se pudieron cargar las localidades', error);
+      }
+    });
+  }
+
+  abrirNuevaDireccion() {
+    this.mostrarNuevaDireccion = true;
+    this.cdr.detectChanges();
+  }
+
+  onCancel(): void { 
+    this.mostrarNuevaDireccion=false// si cancelo la compra nueva reseteo todos los campos a nulos
+    this.publicaForm.get('calle')?.setErrors(null);
+    this.publicaForm.get('numero')?.setErrors(null);
+    this.publicaForm.get('localidad')?.setErrors(null);
+  }
 
 
-   onSubmit() {
-    this.direccion_entrega = this.publicaForm.value.direccion || '';
-   
-  
+  confirmarCompra() { // Abre modal para confirmar la compra
+    this.showConfirmModal = true;
+  }
+
+  cerrarModalConfirmacion() {
+    this.showConfirmModal = false;
+  }
+
+  cerrarModalDetalle() {
+    this.showDetailModal = false;
+  }
+
+  confirmarYEnviar() { // se confirma la compra aca
+    if (this.publicaForm.invalid) {
+      this.publicaForm.markAllAsTouched();
+      return;
+    }
+    this.cerrarModalConfirmacion();
+    this.onSubmit();
+  }
+
+  onSubmit() {
+    if (this.publicaForm.invalid) {
+      this.mostrarError('Por favor complete todos los campos requeridos');
+      return;
+    }
+
     if (this.mostrarNuevaDireccion) {
-    
+      if (!this.publicaForm.value.calle || !this.publicaForm.value.numero || !this.publicaForm.value.localidad) {
+        this.mostrarError('Por favor, complete todos los campos de la nueva dirección.');
+        return;
+      }
+
       this.compra = {
         personaId: this.idPersona,
-     
         items: this.items,
         calle: this.publicaForm.value.calle || '',
         numero: this.publicaForm.value.numero || 0,
         localidadId: this.publicaForm.value.localidad || '',
       };
     } else {
-    
+      if (!this.publicaForm.value.direccion) {
+        this.mostrarError('Por favor, seleccione una dirección.');
+        return;
+      }
+
       this.compra = {
         personaId: this.idPersona,
-        direccionId: this.direccion_entrega,
+        direccionId: this.publicaForm.value.direccion || '',
         items: this.items
       };
     }
-  
-    console.log(this.compra);
+
+    console.log('Compra a procesar:', this.compra);
+    this.showDetailModal = true;
+    setTimeout(() => {
+      this.showDetailModal = false;
+      this.spinnerVisible = false;
+      this.router.navigate(['/productos']);
+    }, 1000);
     this.compraService.procesarCompra(this.compra, this.idPersona, this.mailDestino)
-    .subscribe({
-      next: () => {
-       
-        console.log("Compra procesada correctamente");
-        setTimeout(() => {
-          console.log('Llega aca')
-          this.router.navigate(['/productos']);
-        }, 500);
+      .subscribe({
+        next: () => {
+          console.log("Compra procesada correctamente");
+         
 
-      },
-      error: (err) => {
-        console.error("Error al procesar la compra:", err);
-      }
-    });
-  
-   
+        
+        },
+        error: (err) => {
+          console.error("Error al procesar la compra:", err);
+        }
+      });
   }
-  
-loadLocalidades(){
-this.seguimientoService.getLocalidades().subscribe({
-next:(response:any)=>{
-this.localidades=response.data
-},error:(error:any)=>{
-  console.error('No se encontraron localidades',error)
-}})}
 
-confirmarCompra() {
-  this.showConfirmModal = true;
-}
-confirmarYEnviar() {
-  this.cerrarModalConfirmacion(); // opcional, si querés cerrar antes
-  this.onSubmit();
-  this.showDetailModal = true; 
-}
-cerrarModalConfirmacion() {
-  this.showConfirmModal = false;
+  mostrarError(mensaje: string) {
+    this.mensajeError = mensaje;
+    setTimeout(() => {
+      this.cdr.detectChanges();
+      this.mensajeError = '';
+    }, 3000);
+  }
 }
 
-
-cerrarModalDetalle() {
-  this.showDetailModal = false;
- 
-}
-}    

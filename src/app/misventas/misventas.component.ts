@@ -4,11 +4,13 @@ import { Item } from '../models/item.entity';
 import { AutenticacionService } from '../api/autenticacion.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { HeaderComponent } from "../header/header.component";
+import { SidebarComponent } from "../sidebar/sidebar.component";
 
 @Component({
   selector: 'app-misventas',
   standalone: true,
-  imports: [FormsModule,CommonModule],
+  imports: [FormsModule, CommonModule, HeaderComponent, SidebarComponent],
   templateUrl: './misventas.component.html',
   styleUrl: './misventas.component.css'
 })
@@ -18,6 +20,7 @@ export class MisventasComponent {
   filtroMes: string = '';
   filtroVendedor: string = '';
   filtroNoEntregado: boolean = false;
+  idUser!:string
 
 
   // Filtros
@@ -49,8 +52,8 @@ export class MisventasComponent {
   cargarMisVentas(): void {
     this.autenticacionService.getUserInformation().subscribe({
       next: (response: any) => {
-        const idUser = response.data.id;
-        this.itemService.getVentasByUser(idUser).subscribe({
+        this. idUser = response.data.id;
+        this.itemService.getVentasByUser(this.idUser).subscribe({
           next: (response: any) => {
             this.misVentas = response.data;
           
