@@ -1,12 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { ApiResponse } from '../../models/ApiResponse.js';
+import { ApiResponse } from '../models/ApiResponse.js';
 import { Producto } from '../models/producto.entity.js';
-import { map } from 'rxjs/operators';
+import { map,concatMap } from 'rxjs/operators';
 import { Devolucion } from '../models/solicitudDevolucion.entity.js';
 import { Item } from '../models/item.entity.js';
-
+import { ComprasService } from './compra.service.js';
+import { Compra } from '../models/compra.entity.js';
+import { throwError } from 'rxjs';
+import { of } from 'rxjs';
+import { CorreoService } from './correo.service.js';
 
 @Injectable({
     providedIn: 'root',
@@ -17,7 +21,8 @@ import { Item } from '../models/item.entity.js';
  private apiUrl='http://localhost:3000/api/devolucion';
  private apiUrl2='http://localhost:3000/api/devolucion/comprador';
     constructor(private http: HttpClient,
-       
+       private compraService:ComprasService,
+       private correoService:CorreoService
     ) {}
 
     createDevolutionRequest(itemId: string, motivo: string,cantidad_devuelta:number): Observable<any> {
@@ -74,7 +79,7 @@ return this.http.get<ApiResponse<Devolucion>>(`${this.apiUrl}/${idVendedor}`)
                 const payload = { estado };
                 return this.http.put(`${this.apiUrl}/${idSolicitud}`, payload).pipe(
                   tap(() => {
-                    // Lógica de actualización local (sin subscribe)
+                    
                     const solicitudesActuales = this.solicitudesVendedor.getValue();
                     const solicitudExistente = solicitudesActuales.find(s => s.id === idSolicitud);
               
@@ -82,15 +87,72 @@ return this.http.get<ApiResponse<Devolucion>>(`${this.apiUrl}/${idVendedor}`)
                       solicitudExistente.estado = estado;
                       solicitudExistente.fechaConfirmacion = new Date().toISOString();
                     }
-              
+
                     this.solicitudesVendedor.next([...solicitudesActuales]);
                   })
                 );
               }
+              updateCompraBydevolution(item: Item, cantidad_devuelta: number): Observable<ApiResponse<Compra>> {
+                const totalAnterior = item.compra?.total_compra;
+                const precioUnitario = item.precioUnitario;
               
-            
+                if (!item.compra || !totalAnterior || !precioUnitario) {
+                  return throwError(() => new Error('Faltan datos para actualizar la compra'));
+                }
+              
+                const subTotal = precioUnitario * cantidad_devuelta;
+                const valorCompra = totalAnterior - subTotal;
+              
+                const compraActualizada: Compra = {
+                  id: item.compra.id,
+                  direccionId: item.compra.direccionId,
+                  persona: item.compra.persona,
+                  fecha_hora_compra: item.compra.fecha_hora_compra,
+                  total_compra: valorCompra
+                };
+              
+                return this.compraService.update(compraActualizada);
+              }
+              
+updateStockByDevolution(){
 
 
+}
+cerrarDevolucion(solicitud: Devolucion, mensajeCierre: string):Observable<Devolucion>{
+  const fechaCierre = new Date().toISOString();
+  const estado = "Cerrado";
+  solicitud.estado = estado;
+  solicitud.fechaCierre = fechaCierre;
+
+  const destinatario = solicitud.comprador?.mail;
+  const asunto = 'Producto recibido';
+  const mensaje = `El producto ${solicitud.item.producto?.descripcion} ha sido devuelto con éxito.`;
+
+  return this.updateDevolucion(solicitud.id!, estado, fechaCierre, mensajeCierre).pipe(
+    concatMap(() => {
+      if (destinatario) {
+        return this.correoService.sendEmail(destinatario, asunto, mensaje);
+      } else {
+        return of(null); // no hay destinatario, no se envía correo
+      }
+    })
+  );
+
+}
+validoCantidad(cantidad_devuelta:number,cantidadAactualizar:number):Observable<ApiResponse<boolean>>{
+const payload={
+  cantidad_devuelta,
+  cantidadAactualizar
+}
+return this.http.post<ApiResponse<boolean>>(`${this.apiUrl}/valido/`,payload)
+}
+validaPendientes(itemId:string):Observable<ApiResponse<boolean>>{
+const payload={
+  itemId
+}
+return this.http.post<ApiResponse<boolean>>(`${this.apiUrl}/pendiente/`,payload)
+
+}
   }
 
   

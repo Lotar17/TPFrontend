@@ -6,10 +6,12 @@ import { response } from 'express';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CorreoService } from '../api/correo.service';
+import { HeaderComponent } from "../header/header.component";
+import { SidebarComponent } from '../sidebar/sidebar.component';
 @Component({
   selector: 'app-devolucion-comprador',
   standalone: true,
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule, FormsModule, HeaderComponent, SidebarComponent],
   templateUrl: './devolucion-comprador.component.html',
   styleUrl: './devolucion-comprador.component.css'
 })
@@ -20,6 +22,9 @@ export class DevolucionCompradorComponent {
   destinatario!:string
   asunto!:string
   mensaje!:string
+  confirmarEnvio:boolean=false
+  solicitudSeleccionada!:Devolucion|null
+  mostrarExito:boolean=false
  
   solicitudesFiltradas: Devolucion[] = [];
   solicitudesOriginal: any[] = []; 
@@ -29,36 +34,31 @@ private solicitudService:SolicitudService,
 private correoService:CorreoService
  ){}
 
-ngOnInit(){
-
-this.autenticacionService.getUserInformation().subscribe({
-next:(response:any)=>{
-  this.idComprador=response.data.id
-  if(this.idComprador)
-    this.solicitudService.getCompradorRequest(this.idComprador).subscribe({
-  next:(response:any)=>{
-this.solicitudesComprador=response.data
-this.solicitudesOriginal=response.data
-this.filtrarSolicitudes(); 
-  }
-  
-    })
-
-},
-error:(error:any)=>{
-  console.error('Usuario no encontrado',error)
+ ngOnInit() {
+  this.autenticacionService.getUserInformation().subscribe({
+    next: (response: any) => {
+      this.idComprador = response.data.id;
+      if (this.idComprador)
+        this.solicitudService.getCompradorRequest(this.idComprador).subscribe({
+          next: (response: any) => {
+            this.solicitudesComprador = response.data;
+            this.solicitudesFiltradas = this.solicitudesComprador; 
+          },
+        });
+    },
+    error: (error: any) => {
+      console.error('Usuario no encontrado', error);
+    },
+  });
 }
 
-
-})
-
-}
 filtrarSolicitudes() {
-  const filtro = this.filtroEstado.trim().toLowerCase();
-  this.solicitudesFiltradas = this.solicitudesComprador.filter((s) =>
+  const filtro = this.filtroEstado?.trim().toLowerCase();
+  this.solicitudesFiltradas = this.solicitudesComprador.filter((s: any) =>
     s.estado.toLowerCase().includes(filtro)
   );
 }
+
 envioRealizado(solicitud:Devolucion){
  if(solicitud.vendedor)
    this. destinatario= solicitud.vendedor.mail
@@ -87,4 +87,31 @@ console.log('Fecha de envio del cliente asignada con exito',response.data)
     error:(error:any)=>{
 console.error('La fecha de envio no se asigno',error)
     }})
-}}
+}
+
+abrirAccion(solicitud:Devolucion){
+this.solicitudSeleccionada=solicitud
+this.confirmarEnvio=true
+
+}
+
+
+confirmarAccion() {
+  if(this.solicitudSeleccionada)
+    this.envioRealizado(this.solicitudSeleccionada)
+  this.confirmarEnvio=false
+  this.mostrarExito=true
+    setTimeout(() => {
+      this.mostrarExito = false;
+    }, 3000);
+  }
+  cancelarAccion(){
+this.confirmarEnvio=false
+this.solicitudSeleccionada=null
+this.mostrarExito=false
+
+  }
+}
+
+
+

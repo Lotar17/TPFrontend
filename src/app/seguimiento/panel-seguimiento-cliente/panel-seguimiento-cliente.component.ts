@@ -4,11 +4,13 @@ import { SeguimientoService } from '../../api/seguimiento.service';
 import { Seguimiento } from '../../models/seguimiento.entity';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HeaderComponent } from "../../header/header.component";
+import { SidebarComponent } from "../../sidebar/sidebar.component";
 
 @Component({
   selector: 'app-panel-seguimiento-cliente',
   standalone: true,
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule, FormsModule, HeaderComponent, SidebarComponent],
   templateUrl: './panel-seguimiento-cliente.component.html',
   styleUrl: './panel-seguimiento-cliente.component.css'
 })

@@ -1,57 +1,74 @@
 <div class="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-500 to-purple-600 p-6 flex items-center justify-center">
-  <div *ngIf="producto" class="w-full max-w-md bg-white shadow-2xl rounded-2xl p-8 transition duration-300 ease-in-out hover:shadow-xl">
-    <!-- Descripción del Producto -->
-    <div class="mb-6">
-      <h2 class="text-2xl font-bold text-gray-800 mb-3">📝 Descripción</h2>
-      <p class="text-gray-600 leading-relaxed">{{ producto.descripcion }}</p>
+  <div *ngIf="producto" class="rounded-lg border shadow-sm overflow-hidden bg-white border-stone-200 shadow-stone-950/5 flex h-full w-full max-w-[48rem] flex-col md:flex-row">
+    
+    <!-- Imagen del producto -->
+    <div class="rounded m-0 w-full md:w-2/5 shrink-0 rounded-b-none md:rounded-b-none md:rounded-r-none">
+      <img 
+        src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1471&q=80" 
+        alt="Imagen del producto" 
+        class="h-64 md:h-full w-full object-cover" 
+      />
     </div>
 
-    <!-- Stock disponible -->
-    <div class="mb-6">
-      <h3 class="text-lg font-semibold text-gray-700 mb-2">📦 Stock disponible</h3>
-      <p class="text-2xl font-bold text-gray-900">{{ producto.stock }}</p>
-    </div>
+    <!-- Información del producto -->
+    <div class="w-full p-6 flex flex-col justify-between">
+      <div>
+        <!-- Descripción -->
+        <h2 class="font-sans antialiased text-2xl font-bold text-gray-800 mb-4">📝 Descripción</h2>
+        <p class="font-sans antialiased text-base text-gray-600 mb-6 leading-relaxed">{{ producto.descripcion }}</p>
 
-    <!-- Precio -->
-    <div class="mb-6">
-      <h3 class="text-lg font-semibold text-gray-700 mb-2">💲 Precio</h3>
-      <p class="text-3xl font-bold text-green-600">$ {{ precio }}</p>
-    </div>
-    <div class="mb-6">
-      <h3 class="text-lg font-semibold text-gray-700 mb-2">Nombre del vendedor</h3>
-      <p class="text-3xl font-bold text-green-600">{{ producto.persona?.nombre }} {{producto.persona?.apellido}}</p>
-    </div>
+        <!-- Stock -->
+        <h3 class="font-sans antialiased text-lg font-semibold text-gray-700 mb-2">📦 Stock disponible</h3>
+        <p class="font-sans antialiased text-2xl font-bold text-gray-900 mb-6">{{ producto.stock }}</p>
 
-    <div class="mb-6">
-      <h1 class="text-lg font-semibold text-gray-700 mb-2">Correo electronico Vendedor:</h1>
-      <p class="text-2xl font-bold text-green-200">$ {{ producto.persona?.mail }}</p>
-    </div>
+        <!-- Precio -->
+        <h3 class="font-sans antialiased text-lg font-semibold text-gray-700 mb-2">💲 Precio</h3>
+        <p class="font-sans antialiased text-3xl font-bold text-green-600 mb-6">$ {{ precio }}</p>
 
-    <!-- Botones de Acción -->
-    <div class="space-y-4">
-      <button
-        (click)="agregarAlCarrito(producto.id)"
-        [disabled]="producto.stock === 0"
-        [ngClass]="{ 'opacity-50 cursor-not-allowed': producto.stock === 0 }"
-        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg shadow-md transition-all duration-300 hover:scale-105"
-      >
-        🛒 Agregar al carrito
-      </button>
+        <!-- Nombre del vendedor -->
+        <h3 class="font-sans antialiased text-lg font-semibold text-gray-700 mb-2">Nombre del vendedor</h3>
+        <p class="font-sans antialiased text-2xl font-bold text-green-600 mb-6">{{ producto.persona?.nombre }} {{ producto.persona?.apellido }}</p>
 
-      <div class="text-center">
-        <a
-          class="text-indigo-600 hover:text-indigo-800 font-semibold text-lg"
-          [routerLink]="(producto.stock ?? 0) > 0 ? ['/comprasincart', producto.id] : null"
-          [ngClass]="{ 'opacity-50 pointer-events-none': (producto.stock ?? 0) === 0 }"
+        <!-- Correo del vendedor -->
+        <h3 class="font-sans antialiased text-lg font-semibold text-gray-700 mb-2">Correo electrónico del vendedor:</h3>
+        <p class="font-sans antialiased text-xl font-bold text-green-400 mb-6">{{ producto.persona?.mail }}</p>
+      </div>
+
+      <!-- Botones -->
+      <div class="flex flex-col space-y-4">
+        <button
+          (click)="agregarAlCarrito(producto)"
+          [disabled]="producto.stock === 0"
+          [ngClass]="{ 'opacity-50 cursor-not-allowed': producto.stock === 0 }"
+          class="justify-center border align-middle select-none font-sans font-medium text-center duration-300 ease-in-out disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed focus:shadow-none text-sm py-3 px-6 shadow-sm hover:shadow-md bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition antialiased flex w-full items-center gap-2"
         >
-          Comprar ahora
-        </a>
+          🛒 Agregar al carrito
+        </button>
+
+        <div class="text-center">
+          <a
+            class="justify-center border align-middle select-none font-sans font-medium text-center duration-300 ease-in-out disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed focus:shadow-none text-sm py-2 px-4 shadow-sm hover:shadow-md bg-stone-800 hover:bg-stone-700 relative bg-gradient-to-b from-stone-700 to-stone-800 border-stone-900 text-stone-50 rounded-lg hover:bg-gradient-to-b hover:from-stone-800 hover:to-stone-800 hover:border-stone-900 after:absolute after:inset-0 after:rounded-[inherit] after:box-shadow after:shadow-[inset_0_1px_0px_rgba(255,255,255,0.25),inset_0_-2px_0px_rgba(0,0,0,0.35)] after:pointer-events-none transition antialiased flex w-fit mx-auto items-center gap-2"
+            [routerLink]="(producto.stock ?? 0) > 0 ? ['/comprasincart', producto.id] : null"
+            [ngClass]="{ 'opacity-50 pointer-events-none': (producto.stock ?? 0) === 0 }"
+          >
+            Comprar ahora
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="h-4 w-4">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Notificación -->
+      <div *ngIf="showNotification" class="mt-4 text-center text-sm text-gray-600">
+        {{ mensajeNotificacion }}
       </div>
     </div>
+  </div>
 
-    <!-- Notificación -->
-    <div *ngIf="showNotification" class="mt-4 text-center text-sm text-gray-600">
-      {{ mensajeNotificacion }}
-    </div>
+  <!-- Mensaje de stock -->
+  <div *ngIf="mensajeStock" class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mt-4 w-fit mx-auto">
+    <span class="block sm:inline">{{ mensajeStock }}</span>
+    <button (click)="mensajeStock = null" class="absolute top-0 right-1 text-red-700 hover:text-red-900">✕</button>
   </div>
 </div>

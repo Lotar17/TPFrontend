@@ -6,6 +6,7 @@ import { Item } from '../models/item.entity';
 import { ApiResponse } from '../models/ApiResponse';
 import { ItemService } from './item.service';
 import { AutenticacionService } from './autenticacion.service';
+import { Producto } from '../models/producto.entity';
 
 @Injectable({
   providedIn: 'root'
@@ -25,8 +26,10 @@ export class CarritoService {
 
 
   getCarrito(idPersona: string): void {
+    console.log('id',idPersona)
     this.http.get<{ data: Item[] }>(`${this.Url2}/${idPersona}`).subscribe({
       next: (response) => {
+        console.log('')
         this.carritoItems.next(response.data); // Emitimos los datos actualizados
       },
       error: (error) => console.error('Error al obtener carrito:', error)
@@ -126,7 +129,12 @@ IncrementQuantity(itemId:string,idProducto:string): void {
       error: (error) => console.error('Error al incrementar item:', error)
     });
 }
-manejarItemCarrito(idProducto: string): void {
+manejarItemCarrito(
+  producto: Producto,
+  mostrarMensajeStock: (msg: string) => void,
+  mostrarNotificacion?: () => void
+): void {
+  const idProducto = producto.id;
   if (!idProducto) return;
 
   this.autenticacionService.getUserInformation().subscribe({
@@ -139,19 +147,24 @@ manejarItemCarrito(idProducto: string): void {
           const item = response.data;
 
           if (item && item.id) {
+            if ((producto.stock !== undefined && item.cantidad_producto >= producto.stock) || (producto.stock !== undefined && producto.stock===0) ) {
+              mostrarMensajeStock('No puedes agregar más, alcanzaste el stock disponible.');
+              return;
+            }
+
             this.IncrementQuantity(item.id, idProducto);
+            if (mostrarNotificacion) mostrarNotificacion(); 
           } else {
             this.addToCart1(userId, idProducto).subscribe({
               next: (resp) => {
                 console.log('Item creado con éxito', resp.data);
+                if (mostrarNotificacion) mostrarNotificacion(); 
               },
               error: (error: any) => {
                 console.error("No se creó el item", error);
               }
             });
           }
-
-   
         },
         error: (error: any) => {
           console.error("No se pudo validar existencia del item", error);
@@ -163,7 +176,6 @@ manejarItemCarrito(idProducto: string): void {
     }
   });
 }
-
 calcularSubtotal(items: Item[]): number {
   return items.reduce((total, item) => {
     if (!item.producto || !item.producto.hist_precios) return total;

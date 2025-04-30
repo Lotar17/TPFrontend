@@ -1,8 +1,11 @@
+<app-header></app-header>
+
 <div class="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-500 to-purple-600 p-6 flex items-center justify-center">
   <div class="w-full max-w-6xl bg-white shadow-2xl rounded-2xl p-8">
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">
       📦 Solicitudes de Devolución
     </h1>
+    <app-sidebar [personaId]="idComprador"></app-sidebar>
 
     <div class="mb-6 text-center">
       <input
@@ -13,68 +16,71 @@
         (input)="filtrarSolicitudes()"
       />
     </div>
-    
-    
 
     <ng-container *ngIf="solicitudesComprador.length > 0; else noSolicitudes">
-      <div class="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        <div
-          *ngFor="let solicitud of solicitudesComprador"
-          class="bg-gray-50 shadow-md rounded-lg p-6 border-l-4 border-indigo-500 transition-all duration-300 hover:shadow-lg hover:scale-[1.02]"
-        >
-          <!-- Encabezado -->
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-semibold text-gray-800">📦 Solicitud</h2>
-            <span
-              class="text-xs font-medium px-3 py-1 rounded-full"
-              [ngClass]="{
-                'bg-yellow-100 text-yellow-800': solicitud.estado === 'pendiente',
-                'bg-green-100 text-green-800': solicitud.estado === 'aprobada',
-                'bg-red-100 text-red-800': solicitud.estado === 'rechazada'
-              }"
-            >
-              {{ solicitud.estado | titlecase }}
-            </span>
-          </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Código</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad a Devolver</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Solicitud</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Confirmación</th>
+              <th class="px-6 py-3"></th> <!-- Botón Enviar Confirmación -->
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr *ngFor="let solicitud of solicitudesFiltradas" class="hover:bg-gray-100 transition">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span
+                  class="text-xs font-medium px-3 py-1 rounded-full"
+                  [ngClass]="{
+                    'bg-yellow-100 text-yellow-800': solicitud.estado === 'pendiente',
+                    'bg-green-100 text-green-800': solicitud.estado === 'aprobada',
+                    'bg-red-100 text-red-800': solicitud.estado === 'rechazada'
+                  }"
+                >
+                  {{ solicitud.estado | titlecase }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ solicitud.codigoConfirmacion }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ solicitud.comprador?.nombre }} {{ solicitud.comprador?.apellido }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ solicitud.item.producto?.descripcion }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ solicitud.cantidad_devuelta }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ solicitud.fechaSolicitud | date:'dd/MM/yyyy' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ solicitud.fechaConfirmacion | date:'dd/MM/yyyy' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <div *ngIf="solicitud.codigoConfirmacion!==0 && !solicitud.fechaEnvioCliente">
+                  <button
+                    (click)="abrirAccion(solicitud)"
+                    class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg shadow transition duration-300"
+                  >
+                    📧 Enviar Confirmación
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-          <!-- Detalles -->
-          <div class="space-y-2 text-sm text-gray-700">
-            <div class="flex">
-              <span class="font-medium text-gray-800 w-32">🔑 Código:</span>
-              <span>{{ solicitud.codigoConfirmacion }}</span>
-            </div>
-            <div class="flex">
-              <span class="font-medium text-gray-800 w-32">🙍 Cliente:</span>
-              <span>{{ solicitud.comprador?.nombre }} {{ solicitud.comprador?.apellido }}</span>
-            </div>
-            <div class="flex">
-              <span class="font-medium text-gray-800 w-32">🛒 Producto:</span>
-              <span>{{ solicitud.item.producto?.descripcion }}</span>
-            </div>
-            <div class="flex">
-              <span class="font-medium text-gray-800 w-32">🔢 Cantidad a devolver:</span>
-              <span>{{ solicitud.cantidad_devuelta }}</span>
-            </div>
-            <div class="flex">
-              <span class="font-medium text-gray-800 w-32">📅 Fecha Solicitud:</span>
-              <span>{{ solicitud.fechaSolicitud | date:'dd/MM/yyyy' }}</span>
-            </div>
-            <div class="flex">
-              <span class="font-medium text-gray-800 w-32">✅ Fecha Confirmación:</span>
-              <span>{{ solicitud.fechaConfirmacion | date:'dd/MM/yyyy' }}</span>
-            </div>
-            <!-- Botón si tiene fechaConfirmacion -->
-<div *ngIf="solicitud.codigoConfirmacion!==0 && !solicitud.fechaEnvioCliente" class="mt-4 text-right">
-  <button
-    (click)="envioRealizado(solicitud)"
-    class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg shadow transition duration-300"
-  >
-    📧 Enviar Confirmación
-  </button>
-</div>
-
+      <!-- Modal Confirmación -->
+      <div *ngIf="confirmarEnvio" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div class="bg-white p-6 rounded-xl shadow-xl w-80 text-center">
+          <p class="mb-6">Esta acción no se puede deshacer.</p>
+          <div class="flex justify-center gap-4">
+            <button (click)="confirmarAccion()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Confirmar</button>
+            <button (click)="cancelarAccion()" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">Cancelar</button>
           </div>
         </div>
+      </div>
+
+      <!-- Modal de éxito -->
+      <div *ngIf="mostrarExito" class="fixed top-5 right-5 bg-green-600 text-white px-4 py-2 rounded shadow-lg z-50">
+        Envío Confirmado con éxito
       </div>
     </ng-container>
 

@@ -16,4 +16,13 @@ export class LoginService {
       withCredentials: true,
     });
   }
+
+
+  logout(): Observable<any> {
+    return this.http.post('http://localhost:3000/login/logout', {}, {
+      withCredentials: true
+    });
+  }
+  
 }
+

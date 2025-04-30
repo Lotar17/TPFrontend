@@ -19,11 +19,13 @@ export class PanelEmpleadoSegumientoComponent {
   idEmpleado!:string
   localidades!:Localidad[]
   empleado!:Persona
+  estadoSeguimiento:EstadoSeguimiento|null=null
   estadosClasificacion: EstadoSeguimiento[] = [];
   estadosDistribucion: EstadoSeguimiento[] = [];
   estadosEnCamino: EstadoSeguimiento[] = [];
   estadosCerrados: EstadoSeguimiento[] = [];
-
+  mostrarModalConfirmacion:boolean=false
+mostrarExito:boolean=false
   meses = [
     { nombre: 'Enero', valor: '01' },
     { nombre: 'Febrero', valor: '02' },
@@ -80,9 +82,10 @@ filtroForm = new FormGroup({
 
 cerrarProceso(estado: EstadoSeguimiento) {
   let localidad: string | null = null;
-
+console.log('Estado',estado)
   if (estado.estado === 'En camino') {
-    localidad = estado.seguimiento?.cliente?.direccion?.localidad?.id ?? null;
+    localidad = estado.seguimiento?.item.compra?.direccion?.localidad?.id ?? null;
+    console.log('Localidad Id',localidad) // Aca debo pasar la localidad asignada en la compra
   } else {
     localidad = this.localidadForm.value.localidad;
   }
@@ -157,7 +160,27 @@ aplicarFiltros() {
   this.estadosEnCamino = filtrados.filter(e => e.estado === 'En camino');
   this.estadosCerrados = filtrados.filter(e => e.estado === 'Cerrado');
 }
+confirmaProceso(estado:EstadoSeguimiento){
+  this.mostrarModalConfirmacion= true
+  this. estadoSeguimiento=estado
 
+}
+confirmarCierreEstado() {
+  if(this.estadoSeguimiento)
+  this.cerrarProceso(this.estadoSeguimiento)
+this.mostrarModalConfirmacion=false
+  this.mostrarExito=true
+  setTimeout(() => {
+    this.mostrarExito = false;
+  }, 3000);
+
+}
+
+cancelarCierre() {
+  this.mostrarModalConfirmacion = false;
+  this.estadoSeguimiento=null
+  this.mostrarExito=false
+}
 
 }
 

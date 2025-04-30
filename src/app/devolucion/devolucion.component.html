@@ -1,9 +1,9 @@
-<div class="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-500 to-purple-600 p-6 flex items-center justify-center">
+<div class="min-h-screen bg-gray-800 p-6 flex items-center justify-center">
   <div class="w-full max-w-4xl bg-white shadow-2xl rounded-2xl p-8">
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-10">📦 Devoluciones</h1>
 
     <div class="bg-gray-50 shadow-lg rounded-lg p-6">
-      <!-- Encabezado de la compra -->
+      <div *ngIf="compra">
       <div class="mb-6 space-y-2">
         <h3 class="text-lg font-semibold text-gray-800">
           💰 Total: <span class="text-green-600">${{ compra.total_compra }}</span>
@@ -17,37 +17,78 @@
           {{ compra.direccion?.localidad?.provincia }}
         </h3>
       </div>
+      </div>
 
-      <!-- Lista de ítems -->
-      <div class="space-y-4">
-        <div
-          *ngFor="let item of compra.items"
-          class="border-b border-gray-200 py-4 last:border-b-0"
-        >
-          <div *ngIf="item.producto" class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div class="text-sm text-gray-700">
-              <strong>Producto:</strong> {{ item.producto.descripcion }}
-            </div>
-            <div class="text-sm text-gray-600">
-              <strong>Cantidad:</strong> {{ item.cantidad_producto }}
-            </div>
-            <div class="text-sm text-gray-600">
-              <strong>Vendedor:</strong> {{ item.producto.persona?.nombre }} {{ item.producto.persona?.apellido }}
-            </div>
-            <div class="text-sm text-gray-600">
-              <strong>Localidad:</strong> {{ item.producto.persona?.direccion?.localidad?.nombre }}
-            </div>
-            <div>
-              <button
-                (click)="RealizarDevolucion(item)"
-                class="bg-red-600 hover:bg-red-700 text-white font-medium py-1.5 px-3 rounded-lg shadow-sm transition-all duration-300 hover:scale-105"
-              >
-                🔄 Devolución
-              </button>
-            </div>
-          </div>
+      <!-- Tabla de ítems -->
+      <div data-datatable class="overflow-x-auto">
+        <table class="min-w-full divide-y-2 divide-gray-200">
+          <thead class="sticky top-0 bg-gray-200">
+            <tr class="text-gray-900 font-medium">
+              <th scope="col">
+                Producto
+                <span class="icon-[tabler--chevron-up] datatable-ordering-asc:block hidden"></span>
+                <span class="icon-[tabler--chevron-down] datatable-ordering-desc:block hidden"></span>
+              </th>
+              <th scope="col">
+                Cantidad
+                <span class="icon-[tabler--chevron-up] datatable-ordering-asc:block hidden"></span>
+                <span class="icon-[tabler--chevron-down] datatable-ordering-desc:block hidden"></span>
+              </th>
+              <th scope="col">
+                Vendedor
+                <span class="icon-[tabler--chevron-up] datatable-ordering-asc:block hidden"></span>
+                <span class="icon-[tabler--chevron-down] datatable-ordering-desc:block hidden"></span>
+              </th>
+              <th scope="col">
+                Localidad
+                <span class="icon-[tabler--chevron-up] datatable-ordering-asc:block hidden"></span>
+                <span class="icon-[tabler--chevron-down] datatable-ordering-desc:block hidden"></span>
+              </th>
+              <th scope="col" class="--exclude-from-ordering">Acción</th>
+            </tr>
+          </thead>
+        
+          <tbody>
+            <ng-container *ngIf="compra?.items">
+              <tr *ngFor="let item of compra.items" class="text-gray-900">
+                <td class="px-3 py-2 whitespace-nowrap">{{ item.producto?.descripcion }}</td>
+                <td class="px-3 py-2 whitespace-nowrap">{{ item.cantidad_producto }}</td>
+                <td class="px-3 py-2 whitespace-nowrap">{{ item.producto?.persona?.nombre }} {{ item.producto?.persona?.apellido }}</td>
+                <td class="px-3 py-2 whitespace-nowrap">{{ item.producto?.persona?.direccion?.localidad?.nombre }}</td>
+                <td class="px-3 py-2 whitespace-nowrap">
+                  <button
+                    (click)="RealizarDevolucion(item)"
+                    class="bg-red-600 hover:bg-red-700 text-white font-medium py-1.5 px-3 rounded-lg shadow-sm transition-all duration-300 hover:scale-105"
+                  >
+                    🔄 Devolución
+                  </button>
+                </td>
+              </tr>
+            </ng-container>
+        
+            <!-- Si no hay items -->
+            <tr *ngIf="compra?.items?.length === 0" class="text-gray-900">
+              <td colspan="5" class="text-center py-3 text-gray-500">No hay productos para mostrar.</td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <!-- Paginación -->
+        <div style="display: none;" data-datatable-paging class="mt-4">
+          <button type="button" data-datatable-paging-prev class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg">
+            « Anterior
+          </button>
+          <div data-datatable-paging-pages class="inline-block mx-4"></div>
+          <button type="button" data-datatable-paging-next class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg">
+            Siguiente »
+          </button>
         </div>
       </div>
     </div>
+  </div>
+
+  <div *ngIf="mensajeError" class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mt-2 w-fit">
+    <span class="block sm:inline">{{ mensajeError }}</span>
+    <button (click)="mensajeError = null" class="absolute top-0 right-1 text-red-700 hover:text-red-900">✕</button>
   </div>
 </div>

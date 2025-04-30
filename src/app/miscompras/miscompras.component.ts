@@ -8,16 +8,15 @@ import { ProductosService } from '../api/producto.service';
 import { RouterLink } from '@angular/router';
 import { Router } from '@angular/router';
 import { HistoricoPrecioService } from '../api/calculaprecio.service';
-
-
-import { Item } from '../models/item.entity';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HeaderComponent } from "../header/header.component";
+import { SidebarComponent } from "../sidebar/sidebar.component";
 
 
 @Component({
   selector: 'app-mis-compras',
   standalone: true,
-  imports: [CommonModule,ReactiveFormsModule,FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, HeaderComponent, SidebarComponent],
   templateUrl: './miscompras.component.html',
   styleUrl: './miscompras.component.css'
 })
@@ -25,11 +24,12 @@ export class MisComprasComponent {
   MisCompras: Compra[] = [];
   personaId!: string;
   mis_productos:Producto[]= [];
+  userId!:string
 
   filtroMes: string = '';
 filtroVendedor: string = '';
 soloNoLlegados: boolean = false;
-
+mensajeDevolucion:string|null=null
 mesesDisponibles = [
   { value: '01', label: 'Enero' },
   { value: '02', label: 'Febrero' },
@@ -59,9 +59,8 @@ cerrarDetalles() {
   constructor(
     private compraService: ComprasService,
     private autenticacionService:AutenticacionService,
-    private productoService: ProductosService,
     private router:Router,
-    private historicoPrecioService:HistoricoPrecioService
+  
   ) {}
 
   ngOnInit(): void {
@@ -71,9 +70,9 @@ cerrarDetalles() {
   loadMisCompras(): void {
     this.autenticacionService.getUserInformation().subscribe({
       next: (response: any) => {
-        const userId = response.data.id;
+        this. userId = response.data.id;
   
-        this.compraService.getcomprasByUser(userId).subscribe((response: any) => {
+        this.compraService.getcomprasByUser(this.userId).subscribe((response: any) => {
           if (response && Array.isArray(response.data)) {
             const todasLasCompras = response.data;
   
@@ -113,7 +112,7 @@ cerrarDetalles() {
     if (diferenciaDias<30) {
       this.router.navigate(['/devolucion', id_compra]);
     } else {
-      alert('No se puede devolver, la compra es de otro mes');
+      this.mensajeDevolucion='La compra fue anterior a los ultimos 30 dias, no se puede devolver ningun producto de la misma'
     }
   }
 

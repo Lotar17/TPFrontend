@@ -3,64 +3,54 @@
 
     <!-- Mostrar producto -->
     <div *ngIf="producto" class="max-w-lg mx-auto bg-white shadow-lg rounded-xl p-6 border border-gray-200 mt-10">
-
-      <!-- Nombre del Producto -->
       <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ producto.descripcion }}</h2>
-
-      <!-- Precio -->
       <p class="text-xl font-semibold text-green-600">{{ producto.precio | currency }}</p>
 
-      <!-- Formulario de compra -->
-      <form [formGroup]="publicaForm" class="mt-6 space-y-4">
+      <form [formGroup]="publicaForm" (ngSubmit)="confirmarCompra()" class="mt-6 space-y-4">
 
         <!-- Dirección existente -->
         <div *ngIf="!mostrarNuevaDireccion">
           <label for="direccion" class="block text-gray-700 font-semibold mb-1">📍 Seleccioná una Dirección</label>
           <select id="direccion" formControlName="direccion"
             class="w-full p-3 border border-gray-300 rounded-lg shadow focus:ring-2 focus:ring-blue-400 focus:outline-none">
-            <option *ngFor="let dir of direcciones" [value]="dir.id">
-              {{ dir.calle }} {{ dir.numero }}
-            </option>
+            <option *ngFor="let dir of direcciones" [value]="dir.id">{{ dir.calle }} {{ dir.numero }}</option>
           </select>
-
           <div class="text-center mt-2">
             <button type="button" (click)="mostrarNuevaDireccion = true"
               class="text-blue-600 hover:underline font-semibold">
               ¿Querés ingresar una nueva dirección?
             </button>
           </div>
+          <div *ngIf="!mostrarNuevaDireccion && publicaForm.get('direccion')?.touched && !publicaForm.value.direccion" class="text-red-500 text-sm">
+            Debes seleccionar una dirección existente.
+          </div>
+          
         </div>
 
         <!-- Nueva dirección -->
         <div *ngIf="mostrarNuevaDireccion" class="space-y-4 bg-gray-50 p-4 rounded-lg border border-gray-300">
-
           <div>
             <label class="block text-gray-700 font-semibold">Calle</label>
             <input type="text" formControlName="calle"
-              class="w-full mt-1 p-3 border border-gray-300 rounded-lg shadow focus:ring-2 focus:ring-blue-400 focus:outline-none"
-              required />
+              class="w-full mt-1 p-3 border border-gray-300 rounded-lg shadow focus:ring-2 focus:ring-blue-400 focus:outline-none" />
           </div>
 
           <div>
             <label class="block text-gray-700 font-semibold">Número</label>
             <input type="number" formControlName="numero"
-              class="w-full mt-1 p-3 border border-gray-300 rounded-lg shadow focus:ring-2 focus:ring-blue-400 focus:outline-none"
-              required />
+              class="w-full mt-1 p-3 border border-gray-300 rounded-lg shadow focus:ring-2 focus:ring-blue-400 focus:outline-none" />
           </div>
 
           <div>
             <label class="block text-gray-700 font-semibold">Localidad</label>
             <select formControlName="localidad"
-              class="w-full p-3 border border-gray-300 rounded-lg shadow focus:ring-2 focus:ring-blue-400 focus:outline-none"
-              required>
-              <option *ngFor="let loc of localidades" [value]="loc.id">
-                {{ loc.nombre }}
-              </option>
+              class="w-full p-3 border border-gray-300 rounded-lg shadow focus:ring-2 focus:ring-blue-400 focus:outline-none">
+              <option *ngFor="let loc of localidades" [value]="loc.id">{{ loc.nombre }}</option>
             </select>
           </div>
 
           <div class="text-center">
-            <button type="button" (click)="mostrarNuevaDireccion = false"
+            <button type="button" (click)="onCancel()"
               class="text-red-600 hover:underline font-semibold">
               Cancelar nueva dirección
             </button>
@@ -70,54 +60,57 @@
         <!-- Cantidad -->
         <div>
           <label for="cantidad_producto" class="text-gray-700 font-semibold">🔢 Cantidad</label>
-          <input id="cantidad_producto" formControlName="cantidad_producto" type="number" min="1" [max]="producto.stock ?? 1"
+          <input id="cantidad_producto" formControlName="cantidad_producto" type="number" min="1"
+            [max]="producto.stock ?? 1"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-            (input)="validarCantidad()" #cantidadInput>
+            (change)="validarCantidad()">
+          
+          <!-- Mensaje de error si cantidad inválida -->
+          <div *ngIf="cantidadInvalida" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
+            <strong class="font-bold">Error: </strong>
+            <span class="block sm:inline">{{ mensajeError }}</span>
+            <button (click)="cerrarError()" class="absolute top-1 right-2 text-red-500 hover:text-red-700">✕</button>
+          
+          </div>
 
-          <!-- Mensaje de error si la cantidad es inválida -->
-          <p *ngIf="cantidadInvalida" class="text-red-500 font-semibold mt-1">
-            ❌ Cantidad no válida. Stock disponible: {{ producto.stock }}
-          </p>
+          <!-- Mensaje si form inválido -->
+          <div *ngIf="formInvalido" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
+            <strong class="font-bold">Error: </strong>
+            <span class="block sm:inline">Todos los campos deben ser completados.</span>
+          </div>
         </div>
 
         <!-- Botón de compra -->
-        <button type="submit" [disabled]="cantidadInvalida"
-          class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-          (click)="confirmarCompra()">
-          
-          🛒 Comprar
-        </button>
+        <button type="submit" [disabled]="cantidadInvalida || formInvalido || !validarCampos()"
+        class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
+        🛒 Comprar
+      </button>
+      
       </form>
     </div>
 
-    <!-- Mensaje visible -->
     <div *ngIf="mensajeVisible" class="notification mt-4 text-center text-green-700 font-semibold">
       {{ mensajeVisible }}
     </div>
 
-    <!-- Mensaje de carga -->
     <p *ngIf="!producto" class="text-center text-red-500 font-semibold mt-6">⏳ Cargando producto...</p>
 
   </div>
+
+  <!-- Modal de confirmación -->
   <div *ngIf="confirmaCompra" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
     <div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md text-center">
       <h2 class="text-lg font-semibold mb-4 text-gray-800">¿Estás seguro de finalizar la compra?</h2>
       <div class="flex justify-center gap-4">
-        <button
-          class="px-3 py-1.5 text-sm bg-gray-500 text-white rounded-md hover:bg-gray-600 transition"
-          (click)="cerrarModalConfirmacion()"
-        >
-          Cancelar
-        </button>
-        <button
-          class="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-          (click)="confirmarYEnviar()"
-        >
-          Confirmar
-        </button>
+        <button class="px-3 py-1.5 text-sm bg-gray-500 text-white rounded-md hover:bg-gray-600 transition"
+          (click)="cerrarModalConfirmacion()">Cancelar</button>
+        <button class="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+          (click)="confirmarYEnviar()">Confirmar</button>
       </div>
     </div>
   </div>
+
+  <!-- Modal de detalle de compra -->
   <div *ngIf="muestraDetalle" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
     <div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-2xl">
       <h2 class="text-lg font-semibold mb-4 text-gray-800">Compra realizada con éxito</h2>
@@ -130,14 +123,14 @@
         </ul>
       </div>
       <div class="mt-6 text-center">
-        <button
-          class="px-3 py-1.5 text-sm bg-gray-600 text-white rounded-md hover:bg-gray-700 transition"
-          (click)="cerrarModalDetalle()"
-        >
-          Cerrar
-        </button>
+        <button class="px-3 py-1.5 text-sm bg-gray-600 text-white rounded-md hover:bg-gray-700 transition"
+          (click)="cerrarModalDetalle()">Cerrar</button>
       </div>
     </div>
   </div>
-
+  <div *ngIf="formInvalido" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
+    <strong class="font-bold">Error: </strong>
+    <span class="block sm:inline">Todos los campos deben ser completados.</span>
+  </div>
+  
 </div>

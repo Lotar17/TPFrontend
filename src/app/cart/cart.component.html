@@ -1,18 +1,24 @@
+<app-header></app-header>
+
 <div class="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
+  
   <div class="w-full max-w-3xl bg-white rounded-xl shadow-md p-6">
     <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">🛒 Carrito de Compras</h1>
-
+    
+    <app-sidebar *ngIf="idUser" [personaId]="idUser"></app-sidebar>
+    
     <div *ngIf="items.length > 0; else vacio">
-      <div *ngFor="let item of items" class="cart-item border-b py-4 px-2 flex justify-between items-center">
-        <div class="flex items-center space-x-4">
+      <div *ngFor="let item of items" class="cart-item border-b py-4 px-2 flex flex-col sm:flex-row justify-between items-center">
+        <div class="flex items-center space-x-4 mb-4 sm:mb-0">
           <div>
             <h3 class="font-semibold text-gray-800 text-lg">{{ item.producto?.descripcion }}</h3>
             <p class="text-sm text-gray-600">Cantidad: {{ item.cantidad_producto }}</p>
             <p class="text-sm text-gray-600">Precio: ${{ item.precioUnitario }}</p>
           </div>
         </div>
-        <div class="flex items-center space-x-3">
-          <button (click)="incrementarCantidad(item.producto?.id, item)" class="btn-icon-yellow">+</button>
+
+        <div class="flex flex-col sm:flex-row items-center space-x-3">
+          <button (click)="incrementarCantidad(item.producto, item)" class="btn-icon-yellow">+</button>
           <button (click)="decrementarCantidad(item.producto?.id, item)" class="btn-icon-yellow">-</button>
           <button (click)="confirmarEliminacion(item)" class="btn-icon-red">Eliminar</button>
         </div>
@@ -61,5 +67,10 @@
         <button (click)="confirmarCompra()" class="btn-icon-blue px-4 py-2">Confirmar</button>
       </div>
     </div>
+  </div>
+
+  <div *ngIf="mensajeStock" class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mt-2 w-fit">
+    <span class="block sm:inline">{{ mensajeStock }}</span>
+    <button (click)="mensajeStock = null" class="absolute top-0 right-1 text-red-700 hover:text-red-900">✕</button>
   </div>
 </div>

@@ -14,7 +14,6 @@ export class RegisterService {
         mail: string,
         password: string,
         telefono: string,
-        rol:string,
         calle:string,
         numero:number,
         localidadId:string
