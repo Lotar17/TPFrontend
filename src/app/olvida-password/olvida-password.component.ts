@@ -2,23 +2,21 @@ import { Component } from '@angular/core';
 import { LoginService } from '../api/login.service.js';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { response } from 'express';
-import { Router,RouterLink} from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../api/Auth.service.js';
 import { PersonaService } from '../api/per.service.js';
-import * as jwt from 'jsonwebtoken'
 
 @Component({
   selector: 'app-olvida-password',
   standalone: true,
-  imports: [ReactiveFormsModule,RouterLink],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './olvida-password.component.html',
-  styleUrl: './olvida-password.component.css'
+  styleUrl: './olvida-password.component.css',
 })
-
 export class OlvidaPasswordComponent {
   olvidaForm = new FormGroup({
-    mail: new FormControl()
-  })
+    mail: new FormControl(),
+  });
 
   constructor(private personaService: PersonaService) {}
 
@@ -33,5 +31,4 @@ export class OlvidaPasswordComponent {
       }
     });
   }
-  
 }
