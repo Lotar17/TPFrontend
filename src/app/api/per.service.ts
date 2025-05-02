@@ -49,6 +49,15 @@ export class PersonaService {
     };
     return this.http.patch(`${this.apiUrl}/updatePassword`, payload);
   }
+
+  resetPassword(token: string, passwordNueva: string): Observable<any> {
+    const payload = {
+      token,
+      passwordNueva,
+    };
+    return this.http.patch(`${this.apiUrl}/resetPassword`, payload);
+    
+  }
   updateDireccion(
     direccion: string,
     id: string

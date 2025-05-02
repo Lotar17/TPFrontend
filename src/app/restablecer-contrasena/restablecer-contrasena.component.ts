@@ -16,7 +16,7 @@ import { ApiResponse } from '../models/ApiResponse'; // También este modelo
 })
 export class RestablecerContrasenaComponent implements OnInit {
   passwordForm = new FormGroup({
-    nuevaPassword: new FormControl()
+    passwordNueva: new FormControl()
   });
 
   token: string = '';
@@ -48,29 +48,19 @@ export class RestablecerContrasenaComponent implements OnInit {
       return;
     }
 
-    const nuevaPassword = this.passwordForm.value.nuevaPassword ?? '';
-    const payload: any = jwtDecode(this.token);
-    const id = payload.id;
+    const passwordNueva = this.passwordForm.value.passwordNueva ?? '';
 
-    this.personaService.getOne(id).subscribe({
-      next: (res) => {
-        const persona = res.data;
-        if (!persona) {
-          alert('No se encontró al usuario');
-          return;
-        }
-        persona.password = nuevaPassword;
-
-        this.personaService.updatePersona(persona).subscribe({
-          next: () => {
-            alert('Contraseña actualizada correctamente');
-            this.router.navigate(['/login']);
-          },
-          error: () => alert('Error al actualizar la contraseña')
-        });
+    this.personaService.resetPassword(this.token, passwordNueva).subscribe({
+      next: (response: ApiResponse<Persona>) => {
+        console.log('Contraseña cambiada con exito', response.data);
+        this.router.navigate(['/login']);
       },
-      error: () => alert('No se encontró al usuario')
+      error: (error: any) => {
+        console.error('No se pudo cambiar la contraseña', error);
+      }
     });
   }
+
+    
 }
 
