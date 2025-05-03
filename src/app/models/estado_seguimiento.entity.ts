@@ -3,7 +3,7 @@ import { Seguimiento } from "./seguimiento.entity";
 import { Localidad } from "./localidad.entity";
 
 export type EstadoSeguimiento={
-id?:string
+id:string
 condicion:string
 estado:string
 fecha:string
@@ -13,5 +13,6 @@ seguimiento?:Seguimiento
 idSeguimiento?:string
 localidad?:Localidad
 idLocalidad?:string
+botonCierreVisible?:boolean
 
 }

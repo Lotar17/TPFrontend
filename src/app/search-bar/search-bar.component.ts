@@ -24,6 +24,7 @@ export class SearchBarComponent {
 ngOnInit(){
   this.autenticacionService.getUserInformation().subscribe({
     next:(response:any)=>{
+      if(response?.data?.id)
 this.idPersona=response.data.id
     },
     error:(error:any)=>{

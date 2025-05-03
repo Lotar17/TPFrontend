@@ -1,197 +1,163 @@
-<app-header></app-header>
-<div class="max-w-xl mx-auto mt-12 p-6 bg-white rounded-xl shadow-lg">
+
+<!-- Fondo general con gradiente -->
+<div class="min-h-screen bg-gradient-to-tr from-blue-900 via-sky-500 to-white p-6">
+
+  <app-header></app-header>
+
+  <!-- Breadcrumb + Cerrar Sesión -->
+  <div class="max-w-xl mx-auto mt-4 p-4 bg-white rounded-lg shadow-sm">
+    <nav class="flex space-x-2 text-sm items-center">
+      <ng-container *ngIf="usuario && usuario.rol !== 'Empleado'">
+        <a routerLink="/productos" class="text-blue-600 hover:text-blue-800">Inicio</a>
+        <span class="text-gray-600">/</span>
+      </ng-container>
+      <span class="text-gray-600">Mi Cuenta</span>
+      <span class="ml-auto">
+        <button
+          class="ml-4 px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition"
+          (click)="abrirModalCierreSesion()"
+        >
+          Cerrar Sesión
+        </button>
+      </span>
+    </nav>
+  </div>
+
+  <!-- Panel principal -->
+  <div class="max-w-xl mx-auto mt-12 p-6 bg-white rounded-xl shadow-lg">
     <h2 class="text-2xl font-semibold text-gray-800 mb-6">Mi Cuenta</h2>
-    <app-sidebar [personaId]="usuarioId"></app-sidebar>
-    
-    <div class="space-y-4">
+    <app-sidebar *ngIf="rol!=='Empleado'&& usuario" [personaId]="usuarioId"></app-sidebar>
+
+    <div class="space-y-4" *ngIf="usuario">
       <div>
-        <div *ngIf="usuario">
-          <p class="text-gray-600 font-medium">Nombre completo:</p>
-          <p>{{ usuario.nombre }} {{usuario.apellido}}</p>
-       
-        <div>
-          <p class="text-gray-600 font-medium">Email:</p>
-          <p>{{ usuario.mail }}</p>
-        </div>
-        <div>
-          <p class="text-gray-600 font-medium">Nombre de usuario:</p>
-          <p>{{ usuario.nombre }}</p>
-        </div>
-        <div>
-          <p class="text-gray-600 font-medium">Telefono:</p>
-          <p>{{ usuario.telefono }}</p>
-        </div>
-        <div>
-          <p class="text-gray-600 font-medium">Direccion:</p>
-          <p>{{ usuario.direccion?.calle }} {{ usuario.direccion?.numero }}</p>
-        </div>
-        <div>
-          <p class="text-gray-600 font-medium">Localidad:</p>
-          <p>{{ usuario.direccion?.localidad?.nombre }} {{ usuario.direccion?.localidad?.provincia }}</p>
-        </div>
+        <p class="text-gray-600 font-medium">Nombre completo:</p>
+        <p>{{ usuario.nombre }} {{ usuario.apellido }}</p>
+      </div>
+      <div>
+        <p class="text-gray-600 font-medium">Email:</p>
+        <p>{{ usuario.mail }}</p>
+      </div>
+      <div>
+        <p class="text-gray-600 font-medium">Nombre de usuario:</p>
+        <p>{{ usuario.nombre }}</p>
+      </div>
+      <div>
+        <p class="text-gray-600 font-medium">Telefono:</p>
+        <p>{{ usuario.telefono }}</p>
+      </div>
+      <div>
+        <p class="text-gray-600 font-medium">Direccion:</p>
+        <p>{{ usuario.direccion?.calle }} {{ usuario.direccion?.numero }}</p>
+      </div>
+      <div>
+        <p class="text-gray-600 font-medium">Localidad:</p>
+        <p>{{ usuario.direccion?.localidad?.nombre }} {{ usuario.direccion?.localidad?.provincia }}</p>
       </div>
     </div>
-    </div>
-    
+
+    <!-- Acciones -->
     <div class="mt-6 flex flex-col gap-3">
-      <button
-        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-        (click)="openModalEditarDatos()"
-      >
+      <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition" (click)="openModalEditarDatos()">
         Editar Información Personal
       </button>
-      <button
-        class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition"
-        (click)="openModalPassword()"
-      >
+      <button class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition" (click)="openModalPassword()">
         Cambiar Contraseña
       </button>
       <a class="text-blue-600 cursor-pointer text-sm" (click)="mostrarFormularioDireccion = !mostrarFormularioDireccion">
         Cambiar Dirección
       </a>
     </div>
-</div>
+  </div>
 
-<!-- Modal Editar Datos -->
-<div *ngIf="showModalEditarDatos" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-  <div class="bg-white rounded-lg p-6 w-96">
-    <h3 class="text-lg font-semibold mb-4">Editar Información Personal</h3>
-  
-    <input
-      type="text"
-      [(ngModel)]="editUsuario.nombre"
-      placeholder="Nombre completo"
-      class="w-full px-4 py-2 border rounded mb-3"
-    />
-    <input
-      type="email"
-      [(ngModel)]="editUsuario.mail"
-      placeholder="Email"
-      class="w-full px-4 py-2 border rounded mb-3"
-    />
-    <input
-      type="text"
-      [(ngModel)]="editUsuario.apellido"
-      placeholder="Nombre de usuario"
-      class="w-full px-4 py-2 border rounded mb-4"
-    />
-    <input
-      type="text"
-      [(ngModel)]="editUsuario.telefono"
-      placeholder="Telefono"
-      class="w-full px-4 py-2 border rounded mb-4"
-    />
-    
-    <div class="flex justify-end space-x-3">
-      <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded" (click)="closeModal()">Cancelar</button>
-      <button 
-  class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded" 
-  (click)="guardarDatos()"
-  [disabled]="!datosValidos()"
->
-  Guardar
-</button>
-
+  <!-- Modal Editar Datos -->
+  <div *ngIf="showModalEditarDatos" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
+    <div class="bg-white rounded-lg p-6 w-96 shadow-xl">
+      <h3 class="text-lg font-semibold mb-4">Editar Información Personal</h3>
+      <input type="text" [(ngModel)]="editUsuario.nombre" placeholder="Nombre de usuario" class="w-full px-4 py-2 border rounded mb-3" />
+      <input type="email" [(ngModel)]="editUsuario.mail" placeholder="Email" class="w-full px-4 py-2 border rounded mb-3" />
+      <input type="text" [(ngModel)]="editUsuario.apellido" placeholder="Apellido" class="w-full px-4 py-2 border rounded mb-4" />
+      <input type="text" [(ngModel)]="editUsuario.telefono" placeholder="Telefono" class="w-full px-4 py-2 border rounded mb-4" />
+      <div class="flex justify-end space-x-3">
+        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded" (click)="closeModal()">Cancelar</button>
+        <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded" (click)="guardarDatos()" [disabled]="!datosValidos()">Guardar</button>
+      </div>
+      <div *ngIf="!datosValidos()" class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mt-2 w-full">
+        ⚠️ Todos los campos son obligatorios y el teléfono debe ser un número válido.
+      </div>
     </div>
   </div>
-  <div *ngIf="!datosValidos()" class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mt-2 w-full">
-    <span class="block sm:inline">⚠️ Todos los campos son obligatorios y el teléfono debe ser un número válido.</span>
-  </div>
-  
-</div>
 
-<!-- Modal Cambiar Contraseña -->
-<div *ngIf="showModalPassword" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-  <div class="bg-white rounded-lg p-6 w-96">
-    <h3 class="text-lg font-semibold mb-4">Cambiar Contraseña</h3>
-
-    <input
-      type="password"
-      [(ngModel)]="passwordActual"
-      placeholder="Contraseña actual"
-      class="w-full px-4 py-2 border rounded mb-4"
-    />
-
-    <input
-      type="password"
-      [(ngModel)]="nuevaPassword"
-      placeholder="Nueva contraseña"
-      class="w-full px-4 py-2 border rounded mb-4"
-    />
-
-    <div class="flex justify-end space-x-3">
-      <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded" (click)="closeModal()">Cancelar</button>
-      <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded" (click)="guardarPassword()">Guardar</button>
+  <!-- Modal Cambiar Contraseña -->
+  <div *ngIf="showModalPassword" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
+    <div class="bg-white rounded-lg p-6 w-96 shadow-xl">
+      <h3 class="text-lg font-semibold mb-4">Cambiar Contraseña</h3>
+      <input type="password" [(ngModel)]="passwordActual" placeholder="Contraseña actual" class="w-full px-4 py-2 border rounded mb-4" />
+      <input type="password" [(ngModel)]="nuevaPassword" placeholder="Nueva contraseña" class="w-full px-4 py-2 border rounded mb-4" />
+      <div class="flex justify-end space-x-3">
+        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded" (click)="closeModal()">Cancelar</button>
+        <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded" (click)="guardarPassword()">Guardar</button>
+      </div>
     </div>
   </div>
-</div>
 
-<div *ngIf="mostrarFormularioDireccion" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-  <div class="bg-white rounded-lg p-6 w-96">
-    <h3 class="text-lg font-semibold mb-4">Cambiar Dirección</h3>
-
-    <!-- Calle -->
-    <input
-      type="text"
-      [(ngModel)]="nuevaCalle"
-      placeholder="Nueva Calle"
-      class="w-full px-4 py-2 border rounded mb-3"
-    />
-    
-    <!-- Número -->
-    <input
-      type="number"
-      [(ngModel)]="nuevoNumero"
-      placeholder="Nuevo Número"
-      class="w-full px-4 py-2 border rounded mb-3"
-    />
-
-    <!-- Localidad -->
-    <select
-      [(ngModel)]="nuevaLocalidad"
-      class="w-full px-4 py-2 border rounded mb-4"
-    >
-      <option *ngFor="let loc of localidades" [value]="loc.id">{{ loc.nombre }}</option>
-    </select>
-
-    <!-- Mensaje de error si los campos son inválidos -->
-    <div *ngIf=!validarDireccion() class="text-red-500 text-sm mb-3">
-      ⚠️ Todos los campos son obligatorios. El número debe ser mayor a 0.
-    </div>
-
-    <div class="flex justify-end space-x-3">
-      <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded" (click)="cancelarCambioDireccion()">Cancelar</button>
-      <button
-        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-        [disabled]="!validarDireccion()"  
-        (click)="confirmarCambioDireccion()"
-      >
-        Guardar Cambios
-      </button>
+  <!-- Modal Cambiar Dirección -->
+  <div *ngIf="mostrarFormularioDireccion" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
+    <div class="bg-white rounded-lg p-6 w-96 shadow-xl">
+      <h3 class="text-lg font-semibold mb-4">Cambiar Dirección</h3>
+      <input type="text" [(ngModel)]="nuevaCalle" placeholder="Nueva Calle" class="w-full px-4 py-2 border rounded mb-3" />
+      <input type="number" [(ngModel)]="nuevoNumero" placeholder="Nuevo Número" class="w-full px-4 py-2 border rounded mb-3" />
+      <select [(ngModel)]="nuevaLocalidad" class="w-full px-4 py-2 border rounded mb-4">
+        <option *ngFor="let loc of localidades" [value]="loc.id">{{ loc.nombre }}</option>
+      </select>
+      <div *ngIf="!validarDireccion()" class="text-red-500 text-sm mb-3">
+        ⚠️ Todos los campos son obligatorios. El número debe ser mayor a 0.
+      </div>
+      <div class="flex justify-end space-x-3">
+        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded" (click)="cancelarCambioDireccion()">Cancelar</button>
+        <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded" [disabled]="!validarDireccion()" (click)="confirmarCambioDireccion()">Guardar Cambios</button>
+      </div>
     </div>
   </div>
-</div>
 
-
-<!-- Modal de Confirmación para Cambiar Dirección -->
-<div *ngIf="showModalConfirmacion" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-  <div class="bg-white rounded-lg p-6 w-96">
-    <h3 class="text-lg font-semibold mb-4">¿Confirmar Cambio de Dirección?</h3>
-
-    <p class="mb-4">¿Seguro que quieres actualizar tu dirección?</p>
-
-    <div class="flex justify-end space-x-3">
-      <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded" (click)="cancelarConfirmacion()">Cancelar</button>
-      <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded" (click)="guardarNuevaDireccion()">Confirmar</button>
+  <!-- Modal Confirmación Cambio Dirección -->
+  <div *ngIf="showModalConfirmacion" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
+    <div class="bg-white rounded-lg p-6 w-96 shadow-xl">
+      <h3 class="text-lg font-semibold mb-4">¿Confirmar Cambio de Dirección?</h3>
+      <p class="mb-4">¿Seguro que quieres actualizar tu dirección?</p>
+      <div class="flex justify-end space-x-3">
+        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded" (click)="cancelarConfirmacion()">Cancelar</button>
+        <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded" (click)="guardarNuevaDireccion()">Confirmar</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Mensajes de Error y Exito -->
-<div *ngIf="errorMessage" class="fixed top-0 left-0 right-0 bg-red-600 text-white p-4 text-center shadow-lg z-50">
-  <span>{{ errorMessage }}</span>
-</div>
+  <!-- Mensajes flotantes -->
+  <div *ngIf="errorMessage" class="fixed top-0 left-0 right-0 bg-red-600 text-white p-4 text-center shadow-lg z-50">
+    <span>{{ errorMessage }}</span>
+  </div>
 
-<div *ngIf="successMessage" class="fixed top-0 left-0 right-0 bg-green-600 text-white p-4 text-center shadow-lg z-50">
-  <span>{{ successMessage }}</span>
+  <div *ngIf="successMessage" class="fixed top-0 left-0 right-0 bg-green-600 text-white p-4 text-center shadow-lg z-50">
+    <span>{{ successMessage }}</span>
+  </div>
+
+  <!-- Modal de Cierre de Sesión -->
+  <div *ngIf="cierreSesion" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+    <div class="bg-white rounded-lg shadow-md w-full max-w-md p-6">
+      <div class="text-center">
+        <svg class="mx-auto mb-4 text-gray-400 w-12 h-12" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+        <h3 class="mb-5 text-lg font-medium text-gray-700">¿Estás seguro que querés cerrar sesión?</h3>
+        <button (click)="confirmaCierre()" class="text-white bg-red-600 hover:bg-red-800 font-medium rounded-lg text-sm px-5 py-2.5 mr-2">
+          Sí, cerrar sesión
+        </button>
+        <button (click)="cierreSesion = false"
+          class="py-2.5 px-5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-blue-700">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+
 </div>

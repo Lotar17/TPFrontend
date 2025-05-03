@@ -12,12 +12,13 @@ import { Persona } from '../models/persona.entity';
 import { Seguimiento } from '../models/seguimiento.entity';
 import { Direccion } from '../models/direccion.entity';
 import { Localidad } from '../models/localidad.entity';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
+import { HeaderComponent } from '../header/header.component';
 @Component({
   selector: 'app-buys',
   standalone: true,
-  imports: [CommonModule,ReactiveFormsModule,FormsModule],
+  imports: [CommonModule,ReactiveFormsModule,FormsModule,RouterLink,HeaderComponent],
   templateUrl: './buys.component.html',
   styleUrl: './buys.component.css'
 })
@@ -27,12 +28,12 @@ export class BuysComponent {
   direcciones: Direccion[] = [];
   direccionSeleccionadaId: string = '';
   mostrarNuevaDireccion: boolean = false;
-spinnerVisible=false
+
   compra!: Compra;
   cliente!: Persona;
   mailDestino!: string;
   localidades: Localidad[] = [];
-
+spinner=false
   showConfirmModal: boolean = false;
   showDetailModal: boolean = false;
   compraRealizada: Compra | null = null;
@@ -85,7 +86,7 @@ spinnerVisible=false
                 });
               }
 
-              // Eliminar direcciones duplicadas
+
               this.direcciones = this.direcciones.filter((dir, i, self) =>
                 i === self.findIndex(d => d.calle === dir.calle && d.numero === dir.numero)
               );
@@ -146,6 +147,7 @@ spinnerVisible=false
 
   onSubmit() {
     if (this.publicaForm.invalid) {
+      
       this.mostrarError('Por favor complete todos los campos requeridos');
       return;
     }
@@ -177,17 +179,18 @@ spinnerVisible=false
     }
 
     console.log('Compra a procesar:', this.compra);
-    this.showDetailModal = true;
-    setTimeout(() => {
-      this.showDetailModal = false;
-      this.spinnerVisible = false;
-      this.router.navigate(['/productos']);
-    }, 1000);
+   this.spinner=true
     this.compraService.procesarCompra(this.compra, this.idPersona, this.mailDestino)
       .subscribe({
         next: () => {
+          this.spinner=false
           console.log("Compra procesada correctamente");
-         
+          this.showDetailModal = true;
+    setTimeout(() => {
+      this.showDetailModal = false;
+      
+      this.router.navigate(['/productos']);
+    }, 1000);
 
         
         },

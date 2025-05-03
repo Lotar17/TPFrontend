@@ -39,7 +39,7 @@ idUser!:string
     this.autenticacionService.getUserInformation().subscribe({
       next: (userResponse: any) => {
         console.log('User Response', userResponse);
-        if (userResponse.data) {
+        if (userResponse?.data) {
           this.idUser = userResponse.data.id;
           this.loadProductos('');
         } else {

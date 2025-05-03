@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Direccion } from '../models/direccion.entity';
 import { Localidad } from '../models/localidad.entity';
 import { ComprasService } from '../api/compra.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ProductosService } from '../api/producto.service';
 import { Producto } from '../models/producto.entity';
 import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -17,11 +17,12 @@ import { PersonaService } from '../api/per.service';
 import { Persona } from '../models/persona.entity';
 import { Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-
+import { HistoricoPrecioService } from '../api/calculaprecio.service';
+import { HeaderComponent } from '../header/header.component';
 @Component({
   selector: 'app-direct-buys',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule,RouterLink,HeaderComponent],
   templateUrl: './direct-buys.component.html',
   styleUrls: ['./direct-buys.component.css']
 })
@@ -44,7 +45,8 @@ export class DirectBuysComponent {
   cantidadInvalida: boolean = false;
   mensajeVisible: string = '';
   mostrarNuevaDireccion: boolean = false;
-
+  precio!:number
+spinner=false
   publicaForm = new FormGroup({
     direccion: new FormControl(),
     cantidad_producto: new FormControl(),
@@ -61,7 +63,8 @@ export class DirectBuysComponent {
     private carritoService: CarritoService,
     private seguimientoService: SeguimientoService,
     private personaService: PersonaService,
-    private router: Router
+    private router: Router,
+    private historicoPrecioService:HistoricoPrecioService
   ) { }
 
   ngOnInit(): void {
@@ -112,6 +115,18 @@ export class DirectBuysComponent {
     this.productoService.getOne(id).subscribe({
       next: (producto: Producto) => {
         this.producto = producto;
+        if(this.producto.id){
+          this.historicoPrecioService.getOne(this.producto.id).subscribe({
+            next:(response:any)=>{
+this.precio=response
+            },
+            error:(error:any)=>{
+            
+              console.error("No se obtuvo el precio",error)
+            }
+            
+          })
+        }
       },
       error: (error) => {
         console.error('Error al obtener el producto:', error);
@@ -210,14 +225,16 @@ export class DirectBuysComponent {
             items: this.items
           };
         }
-  
-        this.muestraDetalle = true;
+  this.spinner=true
+     this.confirmaCompra=false 
         this.compraService.procesarCompra(this.compra, this.idUser, this.compradorDestinatario)
           .subscribe({
             next: () => {
+              this.spinner=false
              
               this.muestraCompra = this.compra;
-              this.confirmaCompra = false;
+             
+              this.muestraDetalle = true;
             },
             error: (err) => {
               console.error("Error al procesar la compra:", err);
@@ -225,6 +242,7 @@ export class DirectBuysComponent {
           });
       },
       error: (error) => {
+        this.spinner=false
         console.error("Error al crear item en el carrito:", error);
       }
     });

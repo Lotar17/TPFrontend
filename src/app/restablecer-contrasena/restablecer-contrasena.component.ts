@@ -4,8 +4,7 @@ import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import {jwtDecode} from 'jwt-decode';
 import { PersonaService } from '../api/per.service.js';
-import { Persona } from '../models/persona.entity'; // Asegurate de tener este modelo
-import { ApiResponse } from '../models/ApiResponse'; // También este modelo
+
 
 @Component({
   selector: 'app-restablecer-contrasena',
@@ -15,8 +14,14 @@ import { ApiResponse } from '../models/ApiResponse'; // También este modelo
   styleUrl: './restablecer-contrasena.component.css'
 })
 export class RestablecerContrasenaComponent implements OnInit {
+  modalContrasenia=false
+  contraseniaCambiada=false
+  mensajeExito=''
+  mensajeError=''
   passwordForm = new FormGroup({
-    passwordNueva: new FormControl()
+
+    nuevaPassword: new FormControl('', [Validators.required])
+
   });
 
   token: string = '';
@@ -48,19 +53,36 @@ export class RestablecerContrasenaComponent implements OnInit {
       return;
     }
 
-    const passwordNueva = this.passwordForm.value.passwordNueva ?? '';
+    const passwordNueva = this.passwordForm.value.nuevaPassword ?? '';
+
 
     this.personaService.resetPassword(this.token, passwordNueva).subscribe({
       next: (response: ApiResponse<Persona>) => {
+         this.mensajeExito = 'Contraseña cambiada con exito';
+        this.contraseniaCambiada = true;
         console.log('Contraseña cambiada con exito', response.data);
         this.router.navigate(['/login']);
       },
       error: (error: any) => {
+         this.mensajeError = 'Error al actualizar la contraseña.';
+            setTimeout(() => (this.mensajeError = ''), 4000);
+            this.contraseniaCambiada = false;
         console.error('No se pudo cambiar la contraseña', error);
       }
     });
   }
 
-    
+  
+abrirModalContrasenia(){
+  this.modalContrasenia=true
+}
+confirmaContrasenia(){
+  this.modalContrasenia=false
+  this.onSubmit()
+}
+cancelarContrasenia(){
+  this.modalContrasenia=false
+}
+
 }
 

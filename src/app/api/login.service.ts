@@ -23,6 +23,10 @@ export class LoginService {
       withCredentials: true
     });
   }
+  Deslogueo(): Observable<any> {
+    return this.logout();
+  }
+  
   
 }
 

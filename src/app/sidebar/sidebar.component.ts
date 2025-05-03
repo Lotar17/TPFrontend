@@ -17,6 +17,7 @@ export class SidebarComponent {
   @Input() personaId!: string;
   sidebarVisible = false;
 user!:Persona
+cierreSesion=false
 
 
   constructor(
@@ -29,6 +30,7 @@ ngOnInit(){
   this.personaService.getOne(this.personaId).subscribe({
     next:(response:any)=>{
 this.user=response.data
+console.log('Datos del usuario cargados:', this.user); 
     },
     error:(error:any)=>{
     
@@ -46,17 +48,24 @@ this.user=response.data
       this.sidebarVisible = !this.sidebarVisible;
     }
 
-    cerrarSesion(){
-      this.loginService.logout().subscribe({
-        next:(response:any)=>{
-console.log('Cierre de sesion exitoso',response.data)
-this.router.navigate(['/login'])
+    cerrarSesion() {
+      this.loginService.Deslogueo().subscribe({
+        next: (response: any) => {
+          console.log('Usuario deslogueado con éxito', response.data);
+          this.router.navigate(['/login']);
         },
-        error:(error:any)=>{
-        
-          console.error("No se pudo cerrar sesion",error)
+        error: (error: any) => {
+          console.error("No se realizó el deslogueo", error);
+         
         }
-      })
+      });
+    }
+    abrirModalCierreSesion(){
+      this.cierreSesion=true
+    }
+    confirmaCierre(){
+      this.cerrarSesion();
+      this.cierreSesion=false
 
     }
 }

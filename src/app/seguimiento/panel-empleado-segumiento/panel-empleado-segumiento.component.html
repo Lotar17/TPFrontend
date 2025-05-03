@@ -5,6 +5,77 @@
     <h1 class="text-3xl font-bold text-blue-800 mb-8 text-center">
       Estados asignados al empleado
     </h1>
+    <!-- Breadcrumb -->
+<nav
+class="flex px-5 py-3 text-gray-700 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700 mb-6"
+aria-label="Breadcrumb"
+>
+<ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+  <li class="inline-flex items-center">
+    <a
+      routerLink="/micuenta"
+      class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white"
+    >
+      <svg
+        class="w-3 h-3 me-2.5"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+      >
+        <path
+          d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z"
+        />
+      </svg>
+      Mi Cuenta
+    </a>
+  </li>
+  <li class="inline-flex items-center">
+    <button
+    (click)="abrirModalCierreSesion()"
+      class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white"
+    >
+      <svg
+        class="w-3 h-3 me-2.5"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+      >
+        <path
+          d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z"
+        />
+      </svg>
+      Cerrar Sesion
+    </button>
+  </li>
+  <li>
+    <div class="flex items-center">
+      <svg
+        class="rtl:rotate-180 block w-3 h-3 mx-1 text-gray-400"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 6 10"
+      >
+        <path
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="m1 9 4-4-4-4"
+        />
+      </svg>
+      <span
+        class="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400"
+      >
+        Panel de Empleado
+      </span>
+    </div>
+  </li>
+</ol>
+</nav>
+
     <!-- Filtros -->
 <div class="bg-white shadow-md rounded-lg p-6 mb-10">
   <h2 class="text-xl font-semibold text-gray-800 mb-4">Filtros</h2>
@@ -40,115 +111,140 @@
     <div class="mt-16">
       <h2 class="text-2xl font-bold text-gray-700 mb-6 text-center">Panel de Estados por Etapa</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-
+    
         <!-- Columna: En Clasificación -->
         <div>
           <h3 class="text-lg font-semibold text-blue-700 mb-4 text-center">En Clasificación</h3>
           <div *ngFor="let estado of estadosClasificacion" class="bg-white p-4 rounded shadow border-l-4 border-blue-500 mb-4">
             <p class="text-sm text-gray-600"><strong>Código:</strong> {{ estado.seguimiento?.codigoSeguimiento }}</p>
             <p class="text-sm"><strong>Fecha:</strong> {{ estado.fecha }}</p>
-
-            <!-- Mostrar localidad y botón solo si la condición no es "Cerrado" -->
-            <div *ngIf="estado?.condicion !== 'Cerrado'">
-              <form [formGroup]="localidadForm">
+    
+            <div *ngIf="estado.botonCierreVisible && estado?.condicion !== 'Cerrado'">
+              <form [formGroup]="formulariosLocalidad[estado.id]">
                 <div *ngIf="estado?.estado !== 'En camino'">
                   <label class="block text-gray-700 font-semibold mb-1">📍 Localidad siguiente del proceso</label>
                   <select
                     formControlName="localidad"
                     class="w-full border border-gray-300 px-4 py-2 rounded-lg"
                   >
-                    <option [value]="null" disabled selected>Seleccione una localidad</option>
+                    <option [value]="" disabled selected>Seleccione una localidad</option>
                     <option *ngFor="let localidad of localidades" [value]="localidad.id">
                       {{ localidad.nombre }}
                     </option>
                   </select>
                 </div>
               </form>
-
-              <button (click)="confirmaProceso(estado)"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-full transition-all duration-300">
+    
+              <button 
+                *ngIf="estado.botonCierreVisible"
+                [disabled]="estado?.estado !== 'En camino' && !formulariosLocalidad[estado.id].value.localidad"
+                (click)="confirmaProceso(estado)"
+                class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-full transition-all duration-300 disabled:opacity-50"
+              >
                 Cerrar Estado
               </button>
             </div>
+    
+            <button
+              (click)="abrirModalDetalle(estado)"
+              class="bg-indigo-500 hover:bg-indigo-700 text-white font-semibold py-1 px-3 rounded-full text-sm transition duration-300 mt-2"
+            >
+              Ver Detalles
+            </button>
           </div>
         </div>
-
+    
         <!-- Columna: En Centro de Distribución -->
         <div>
           <h3 class="text-lg font-semibold text-green-700 mb-4 text-center">En Centro de Distribución</h3>
           <div *ngFor="let estado of estadosDistribucion" class="bg-white p-4 rounded shadow border-l-4 border-green-500 mb-4">
             <p class="text-sm text-gray-600"><strong>Código:</strong> {{ estado.seguimiento?.codigoSeguimiento }}</p>
             <p class="text-sm"><strong>Fecha:</strong> {{ estado.fecha }}</p>
-
-            <!-- Mostrar localidad y botón solo si la condición no es "Cerrado" -->
-            <div *ngIf="estado?.condicion !== 'Cerrado'">
-              <form [formGroup]="localidadForm">
+    
+            <div *ngIf="estado.botonCierreVisible && estado?.condicion !== 'Cerrado'">
+              <form [formGroup]="formulariosLocalidad[estado.id]">
                 <div *ngIf="estado?.estado !== 'En camino'">
                   <label class="block text-gray-700 font-semibold mb-1">📍 Localidad siguiente del proceso</label>
                   <select
                     formControlName="localidad"
                     class="w-full border border-gray-300 px-4 py-2 rounded-lg"
                   >
-                    <option [value]="null" disabled selected>Seleccione una localidad</option>
+                    <option [value]="" disabled selected>Seleccione una localidad</option>
                     <option *ngFor="let localidad of localidades" [value]="localidad.id">
                       {{ localidad.nombre }}
                     </option>
                   </select>
                 </div>
               </form>
-
-              <button (click)="confirmaProceso(estado)"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-full transition-all duration-300">
+    
+              <button 
+                *ngIf="estado.botonCierreVisible"
+                [disabled]="estado?.estado !== 'En camino' && !formulariosLocalidad[estado.id].value.localidad"
+                (click)="confirmaProceso(estado)"
+                class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-full transition-all duration-300 disabled:opacity-50"
+              >
                 Cerrar Estado
               </button>
             </div>
+    
+            <button
+              (click)="abrirModalDetalle(estado)"
+              class="bg-indigo-500 hover:bg-indigo-700 text-white font-semibold py-1 px-3 rounded-full text-sm transition duration-300 mt-2"
+            >
+              Ver Detalles
+            </button>
           </div>
         </div>
-
+    
         <!-- Columna: En Camino -->
         <div>
           <h3 class="text-lg font-semibold text-yellow-700 mb-4 text-center">En Camino</h3>
           <div *ngFor="let estado of estadosEnCamino" class="bg-white p-4 rounded shadow border-l-4 border-yellow-500 mb-4">
             <p class="text-sm text-gray-600"><strong>Código:</strong> {{ estado.seguimiento?.codigoSeguimiento }}</p>
             <p class="text-sm"><strong>Fecha:</strong> {{ estado.fecha }}</p>
-
-            <!-- Mostrar localidad y botón solo si la condición no es "Cerrado" -->
+    
             <div *ngIf="estado?.condicion !== 'Cerrado'">
-              <form [formGroup]="localidadForm">
-                <div *ngIf="estado?.estado !== 'En camino'">
-                  <label class="block text-gray-700 font-semibold mb-1">📍 Localidad siguiente del proceso</label>
-                  <select
-                    formControlName="localidad"
-                    class="w-full border border-gray-300 px-4 py-2 rounded-lg"
-                  >
-                    <option [value]="null" disabled selected>Seleccione una localidad</option>
-                    <option *ngFor="let localidad of localidades" [value]="localidad.id">
-                      {{ localidad.nombre }}
-                    </option>
-                  </select>
-                </div>
-              </form>
-
-              <button (click)="confirmaProceso(estado)"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-full transition-all duration-300">
+              
+    
+              <button 
+                *ngIf="estado.botonCierreVisible"
+                [disabled]="estado?.estado !== 'En camino' "
+                (click)="confirmaProceso(estado)"
+                class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-full transition-all duration-300 disabled:opacity-50"
+              >
                 Cerrar Estado
               </button>
             </div>
+    
+            <button
+              (click)="abrirModalDetalle(estado)"
+              class="bg-indigo-500 hover:bg-indigo-700 text-white font-semibold py-1 px-3 rounded-full text-sm transition duration-300 mt-2"
+            >
+              Ver Detalles
+            </button>
           </div>
         </div>
-
+    
         <!-- Columna: Cerrado -->
         <div>
           <h3 class="text-lg font-semibold text-gray-700 mb-4 text-center">Cerrado</h3>
           <div *ngFor="let estado of estadosCerrados" class="bg-white p-4 rounded shadow border-l-4 border-gray-500 mb-4">
             <p class="text-sm text-gray-600"><strong>Código:</strong> {{ estado.seguimiento?.codigoSeguimiento }}</p>
             <p class="text-sm"><strong>Fecha:</strong> {{ estado.fecha }}</p>
-            <!-- Sin localidad ni botón cuando está cerrado -->
+    
+            <button
+              (click)="abrirModalDetalle(estado)"
+              class="bg-indigo-500 hover:bg-indigo-700 text-white font-semibold py-1 px-3 rounded-full text-sm transition duration-300 mt-2"
+            >
+              Ver Detalles
+            </button>
           </div>
         </div>
-
+    
       </div>
     </div>
+    
+    
 
     <!-- Mensaje si no hay estados -->
     <ng-template #sinEstados>
@@ -185,5 +281,56 @@ class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-5
 <div *ngIf="mostrarExito" class="fixed top-5 right-5 bg-green-600 text-white px-4 py-2 rounded shadow-lg z-50">
 Estado confirmado con exito!
 </div>
+<!-- Modal Detalle -->
+<div
+  *ngIf="modalDetalle"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+>
+  <div class="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl">
+    <h2 class="text-xl font-bold text-blue-800 mb-4">Detalles del Producto</h2>
+    
+    <div class="space-y-2 text-gray-700 text-sm">
+      <p><strong>Estado:</strong> {{ detalleSeleccionado?.estado }}</p>
+      <p><strong>Datos del cliente:</strong> {{ detalleSeleccionado?.seguimiento?.cliente?.nombre }} {{detalleSeleccionado?.seguimiento?.cliente?.apellido}}</p>
+      <p><strong>Producto:</strong> {{ detalleSeleccionado?.seguimiento?.item?.producto?.descripcion }}</p>
+      <p><strong>Vendedor:</strong> {{ detalleSeleccionado?.seguimiento?.item?.producto?.persona?.nombre }} {{ detalleSeleccionado?.seguimiento?.item?.producto?.persona?.apellido }}</p>
+      <p><strong>Localidad del Vendedor:</strong> {{ detalleSeleccionado?.seguimiento?.item?.producto?.persona?.direccion?.localidad?.nombre }} {{ detalleSeleccionado?.seguimiento?.item?.producto?.persona?.direccion?.localidad?.provincia }}</p>
+      <p><strong>Hora del sistema:</strong> {{ horaDetalle }}</p>
+    </div>
 
+    <div class="flex justify-end mt-6">
+      <button
+        (click)="cerrarModalDetalle()"
+        class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition"
+      >
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>
+<div 
+  *ngIf="cierreSesion"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+>
+  <div class="bg-white rounded-lg shadow-md w-full max-w-md p-6">
+    <div class="text-center">
+      <svg class="mx-auto mb-4 text-gray-400 w-12 h-12" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+      </svg>
+      <h3 class="mb-5 text-lg font-medium text-gray-700">¿Estás seguro que querés cerrar sesión?</h3>
+      <button 
+        (click)="confirmaCierre()"
+        class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 mr-2"
+      >
+        Sí, cerrar sesión
+      </button>
+      <button 
+        (click)="cierreSesion = false"
+        class="py-2.5 px-5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-blue-700"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>
 </div>

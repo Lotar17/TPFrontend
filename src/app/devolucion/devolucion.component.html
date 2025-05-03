@@ -1,22 +1,34 @@
-<div class="min-h-screen bg-gray-800 p-6 flex items-center justify-center">
+
+<div class="flex items-center space-x-2 text-sm text-gray-600 mb-6">
+  <a routerLink="/productos" class="hover:text-blue-600">📦 Ver Tienda</a>
+  <span class="text-gray-400">/</span>
+  <a routerLink="/micuenta" class="hover:text-blue-600">👤 Mi Cuenta</a>
+  <span class="text-gray-400">/</span>
+  <a routerLink="/compras" class="hover:text-blue-600">🧾 Mis Compras</a>
+</div>
+
+<div class="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-500 to-lightblue-600 p-6 flex items-center justify-center">
+ 
   <div class="w-full max-w-4xl bg-white shadow-2xl rounded-2xl p-8">
+    
+
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-10">📦 Devoluciones</h1>
 
     <div class="bg-gray-50 shadow-lg rounded-lg p-6">
       <div *ngIf="compra">
-      <div class="mb-6 space-y-2">
-        <h3 class="text-lg font-semibold text-gray-800">
-          💰 Total: <span class="text-green-600">${{ compra.total_compra }}</span>
-        </h3>
-        <h3 class="text-lg font-semibold text-gray-800">
-          📅 Fecha Compra: {{ compra.fecha_hora_compra }}
-        </h3>
-        <h3 class="text-lg font-semibold text-gray-800">
-          📍 Dirección: {{ compra.direccion?.calle }} {{ compra.direccion?.numero }}
-          {{ compra.direccion?.localidad?.nombre }}
-          {{ compra.direccion?.localidad?.provincia }}
-        </h3>
-      </div>
+        <div class="mb-6 space-y-2">
+          <h3 class="text-lg font-semibold text-gray-800">
+            💰 Total: <span class="text-green-600">${{ compra.total_compra }}</span>
+          </h3>
+          <h3 class="text-lg font-semibold text-gray-800">
+            📅 Fecha Compra: {{ compra.fecha_hora_compra }}
+          </h3>
+          <h3 class="text-lg font-semibold text-gray-800">
+            📍 Dirección: {{ compra.direccion?.calle }} {{ compra.direccion?.numero }}
+            {{ compra.direccion?.localidad?.nombre }}
+            {{ compra.direccion?.localidad?.provincia }}
+          </h3>
+        </div>
       </div>
 
       <!-- Tabla de ítems -->
@@ -24,38 +36,21 @@
         <table class="min-w-full divide-y-2 divide-gray-200">
           <thead class="sticky top-0 bg-gray-200">
             <tr class="text-gray-900 font-medium">
-              <th scope="col">
-                Producto
-                <span class="icon-[tabler--chevron-up] datatable-ordering-asc:block hidden"></span>
-                <span class="icon-[tabler--chevron-down] datatable-ordering-desc:block hidden"></span>
-              </th>
-              <th scope="col">
-                Cantidad
-                <span class="icon-[tabler--chevron-up] datatable-ordering-asc:block hidden"></span>
-                <span class="icon-[tabler--chevron-down] datatable-ordering-desc:block hidden"></span>
-              </th>
-              <th scope="col">
-                Vendedor
-                <span class="icon-[tabler--chevron-up] datatable-ordering-asc:block hidden"></span>
-                <span class="icon-[tabler--chevron-down] datatable-ordering-desc:block hidden"></span>
-              </th>
-              <th scope="col">
-                Localidad
-                <span class="icon-[tabler--chevron-up] datatable-ordering-asc:block hidden"></span>
-                <span class="icon-[tabler--chevron-down] datatable-ordering-desc:block hidden"></span>
-              </th>
-              <th scope="col" class="--exclude-from-ordering">Acción</th>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Vendedor</th>
+              <th>Localidad</th>
+              <th class="--exclude-from-ordering">Acción</th>
             </tr>
           </thead>
-        
           <tbody>
             <ng-container *ngIf="compra?.items">
               <tr *ngFor="let item of compra.items" class="text-gray-900">
-                <td class="px-3 py-2 whitespace-nowrap">{{ item.producto?.descripcion }}</td>
-                <td class="px-3 py-2 whitespace-nowrap">{{ item.cantidad_producto }}</td>
-                <td class="px-3 py-2 whitespace-nowrap">{{ item.producto?.persona?.nombre }} {{ item.producto?.persona?.apellido }}</td>
-                <td class="px-3 py-2 whitespace-nowrap">{{ item.producto?.persona?.direccion?.localidad?.nombre }}</td>
-                <td class="px-3 py-2 whitespace-nowrap">
+                <td class="px-3 py-2">{{ item.producto?.descripcion }}</td>
+                <td class="px-3 py-2">{{ item.cantidad_producto }}</td>
+                <td class="px-3 py-2">{{ item.producto?.persona?.nombre }} {{ item.producto?.persona?.apellido }}</td>
+                <td class="px-3 py-2">{{ item.producto?.persona?.direccion?.localidad?.nombre }}</td>
+                <td class="px-3 py-2">
                   <button
                     (click)="RealizarDevolucion(item)"
                     class="bg-red-600 hover:bg-red-700 text-white font-medium py-1.5 px-3 rounded-lg shadow-sm transition-all duration-300 hover:scale-105"
@@ -65,28 +60,23 @@
                 </td>
               </tr>
             </ng-container>
-        
-            <!-- Si no hay items -->
             <tr *ngIf="compra?.items?.length === 0" class="text-gray-900">
               <td colspan="5" class="text-center py-3 text-gray-500">No hay productos para mostrar.</td>
             </tr>
           </tbody>
         </table>
-        
-        <!-- Paginación -->
+
+        <!-- Paginación (invisible por ahora) -->
         <div style="display: none;" data-datatable-paging class="mt-4">
-          <button type="button" data-datatable-paging-prev class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg">
-            « Anterior
-          </button>
+          <button data-datatable-paging-prev class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg">« Anterior</button>
           <div data-datatable-paging-pages class="inline-block mx-4"></div>
-          <button type="button" data-datatable-paging-next class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg">
-            Siguiente »
-          </button>
+          <button data-datatable-paging-next class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg">Siguiente »</button>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Error mensaje -->
   <div *ngIf="mensajeError" class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mt-2 w-fit">
     <span class="block sm:inline">{{ mensajeError }}</span>
     <button (click)="mensajeError = null" class="absolute top-0 right-1 text-red-700 hover:text-red-900">✕</button>

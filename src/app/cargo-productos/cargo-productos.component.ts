@@ -32,6 +32,7 @@ public publicaForm = new FormGroup({
   categoria: new FormControl('', [Validators.required]),
   precio: new FormControl('', [Validators.required, Validators.min(1)]),
   stock: new FormControl('', [Validators.required, Validators.min(1)]),
+  detalle: new FormControl('', [Validators.required]),
 });
   constructor(
     private crudService: CRUDService<Producto>,
@@ -65,6 +66,7 @@ const producto: Producto = {
   precio: Number(this.publicaForm.value.precio),
   categoriaId: this.publicaForm.value.categoria ?? '', 
   personaId: this.userId, 
+  detalle:this.publicaForm.value.detalle ?? ''
 };
 this.crudService.add('productos', producto);
 this.mostrarNotificacion('Producto cargado con exito!')

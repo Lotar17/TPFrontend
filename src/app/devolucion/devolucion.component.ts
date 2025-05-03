@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ComprasService } from '../api/compra.service';
 import { ProductosService } from '../api/producto.service';
 import { Compra } from '../models/compra.entity';
@@ -9,14 +9,14 @@ import { Item } from '../models/item.entity';
 import { CarritoService } from '../api/cart.service';
 import { SolicitudService } from '../api/solicitud.service';
 import { Producto } from '../models/producto.entity';
-
+import { HeaderComponent } from '../header/header.component';
 import { HistoricoPrecioService } from '../api/calculaprecio.service';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-devolucion',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,RouterLink],
   templateUrl: './devolucion.component.html',
   styleUrl: './devolucion.component.css'
 })
@@ -78,6 +78,10 @@ mensajeError:string|null=null
       
         if (item.seguimiento?.estados.length !== 4) {
           this.mensajeError = 'No puede devolver ningún producto que aún no haya llegado a su destino';
+          return;
+        }
+        if(item.cantidad_producto===0){
+          this.mensajeError = 'No puede devolver ningún producto que ya fue devuelto en su totalidad';
           return;
         }
       

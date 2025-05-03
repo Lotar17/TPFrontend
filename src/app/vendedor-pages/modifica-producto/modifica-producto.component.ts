@@ -1,16 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ProductosService } from '../../api/producto.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Producto } from '../../models/producto.entity';
 import { FormsModule } from '@angular/forms';
 import { HistoricoPrecioService } from '../../api/calculaprecio.service';
+import { HeaderComponent } from '../../header/header.component';
 
 
 @Component({
   selector: 'app-modifica-producto',
   standalone: true,
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule,FormsModule,HeaderComponent,RouterLink],
   templateUrl: './modifica-producto.component.html',
   styleUrl: './modifica-producto.component.css'
 })
