@@ -4,8 +4,7 @@ import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import {jwtDecode} from 'jwt-decode';
 import { PersonaService } from '../api/per.service.js';
-import { Persona } from '../models/persona.entity'; // Asegurate de tener este modelo
-import { ApiResponse } from '../models/ApiResponse'; // También este modelo
+
 
 @Component({
   selector: 'app-restablecer-contrasena',
@@ -15,8 +14,12 @@ import { ApiResponse } from '../models/ApiResponse'; // También este modelo
   styleUrl: './restablecer-contrasena.component.css'
 })
 export class RestablecerContrasenaComponent implements OnInit {
+  modalContrasenia=false
+  contraseniaCambiada=false
+  mensajeExito=''
+  mensajeError=''
   passwordForm = new FormGroup({
-    nuevaPassword: new FormControl()
+    nuevaPassword: new FormControl('', [Validators.required])
   });
 
   token: string = '';
@@ -63,14 +66,33 @@ export class RestablecerContrasenaComponent implements OnInit {
 
         this.personaService.updatePersona(persona).subscribe({
           next: () => {
-            alert('Contraseña actualizada correctamente');
+            this.mensajeExito = 'Contraseña cambiada con exito';
+            this.contraseniaCambiada = true; // variable para mostrar el mensaje de exito
+            this.mensajeError = '';
+            setTimeout(() => (this.contraseniaCambiada = false), 4000);
+    
             this.router.navigate(['/login']);
           },
-          error: () => alert('Error al actualizar la contraseña')
+          error: () =>{ 
+            this.mensajeError = 'Error al actualizar la contraseña.';
+            setTimeout(() => (this.mensajeError = ''), 4000);
+            this.contraseniaCambiada = false;
+          }
         });
       },
       error: () => alert('No se encontró al usuario')
     });
   }
+  
+abrirModalContrasenia(){
+  this.modalContrasenia=true
+}
+confirmaContrasenia(){
+  this.modalContrasenia=false
+  this.onSubmit()
+}
+cancelarContrasenia(){
+  this.modalContrasenia=false
+}
 }
 

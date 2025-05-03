@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CarritoService } from '../api/cart.service';
-import { ActivatedRoute, Route } from '@angular/router';
+import { ActivatedRoute, Route, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Item } from '../models/item.entity';
 import { ComprasService } from '../api/compra.service';
@@ -16,7 +16,7 @@ import { HeaderComponent } from "../header/header.component";
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, SidebarComponent, HeaderComponent],
+  imports: [CommonModule, SidebarComponent, HeaderComponent,RouterLink],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.css'
 })
@@ -35,7 +35,6 @@ mensajeStock: string | null = null;
   constructor(
     private route: ActivatedRoute,
     private carritoService: CarritoService,
-   private historicoPrecioService:HistoricoPrecioService,
     private compraService: ComprasService,
     private router:Router,
     private cd:ChangeDetectorRef,

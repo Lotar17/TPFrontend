@@ -5,7 +5,7 @@ import { SesionPersona } from '../models/sesionPersona.entity.js';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../models/ApiResponse.js';
-
+;
 @Component({
   selector: 'app-header',
   standalone: true,
@@ -14,10 +14,12 @@ import { ApiResponse } from '../models/ApiResponse.js';
   styleUrl: './header.component.css',
 })
 export class HeaderComponent implements OnInit {
+  cierreSesion=false
   sesionPersona$!: Observable<ApiResponse<SesionPersona | undefined>>;
   constructor(
     private route: Router,
-    private autenticacionService: AutenticacionService
+    private autenticacionService: AutenticacionService,
+    private router:Router
   ) {}
 
   ngOnInit() {
@@ -26,4 +28,5 @@ export class HeaderComponent implements OnInit {
   irLogin(path: string): void {
     this.route.navigateByUrl(path);
   }
+
 }

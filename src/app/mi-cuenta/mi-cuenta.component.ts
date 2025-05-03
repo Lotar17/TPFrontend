@@ -8,11 +8,13 @@ import { SidebarComponent } from "../sidebar/sidebar.component";
 import { HeaderComponent } from "../header/header.component";
 import { SeguimientoService } from '../api/seguimiento.service';
 import { Localidad } from '../models/localidad.entity';
-
+import { LoginService } from '../api/login.service';
+import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-mi-cuenta',
   standalone: true,
-  imports: [FormsModule, CommonModule, SidebarComponent, HeaderComponent],
+  imports: [FormsModule, CommonModule, SidebarComponent, HeaderComponent,RouterLink],
   templateUrl: './mi-cuenta.component.html',
   styleUrl: './mi-cuenta.component.css'
 })
@@ -30,9 +32,13 @@ export class MiCuentaComponent {
   nuevaCalle: string = '';
   nuevoNumero: number | null = null;
   nuevaLocalidad: string = '';
+  rol:string=''
+  cierreSesion=false
   constructor(private autenticacionService:AutenticacionService,
     private personaService:PersonaService,
-    private seguimientoService:SeguimientoService
+    private seguimientoService:SeguimientoService,
+    private loginService:LoginService,
+    private router:Router
   ){}
 
 ngOnInit(){
@@ -45,6 +51,7 @@ ngOnInit(){
     this.personaService.getOne(this.usuarioId).subscribe({
       next:(response:any)=>{
 this.usuario=response.data
+if(this.usuario.rol==='Empleado')this.rol='Empleado'
 if(this.usuario){
   this.mailUser=this.usuario.mail
 }
@@ -69,28 +76,35 @@ if(this.usuario){
   editUsuario = { ...this.usuario };
  
 
-
-  updateDatosUsuario(usuario: Persona) {
-    this.personaService.updatePersona(usuario).subscribe({
+  updateDatosUsuario(editado: Persona) {
+    this.personaService.updatePersona(editado).subscribe({
       next: (response: any) => {
         console.log('Datos del usuario actualizado con éxito', response.data);
-        this.successMessage = 'Datos del usuario actualizados con exito';
-       
-      setTimeout(() => {
-        this.successMessage = ''; 
-      }, 5000);
-        this.errorMessage = ''; 
+  
+        this.usuario = { ...editado }; 
+        this.successMessage = 'Datos del usuario actualizados con éxito';
+  
+        setTimeout(() => {
+          this.successMessage = ''; 
+          this.closeModal();
+        }, 5000);
+  
+        this.errorMessage = '';
       },
       error: (error: any) => {
         if (error.status === 400 && error.error && error.error.message) {
           this.errorMessage = 'Ya existe otro usuario con el mail ingresado';
         } else {
-          alert('Ocurrió un error al actualizar los datos del usuario');
+          this.errorMessage = 'Ocurrió un error al actualizar los datos del usuario';
         }
         console.error('No se actualizó el usuario', error);
+  
+        // 🔁 Revertís la edición si falló
+        this.editUsuario = { ...this.usuario };
       }
     });
   }
+  
   updatePassword(mailUser:string,passwordActual:string,passwordNueva:string){
 this.personaService.updatePassword(mailUser,passwordActual,passwordNueva).subscribe({
   next:(response:any)=>{
@@ -125,6 +139,7 @@ this.closeModal();
 
   openModalEditarDatos() {
     this.editUsuario = { ...this.usuario };
+    
     this.showModalEditarDatos = true;
   }
 
@@ -138,10 +153,8 @@ this.closeModal();
 
 
   guardarDatos() {
-    this.usuario = { ...this.editUsuario };
-    this.updateDatosUsuario(this.usuario)
-    this.closeModal();
-  }
+    this.updateDatosUsuario(this.editUsuario); }
+  
   
   guardarPassword() {
 
@@ -199,13 +212,16 @@ guardarNuevaDireccion() {
       this.showModalConfirmacion = false;
     }
     datosValidos(): boolean {
-      return !!this.editUsuario.nombre && 
-             !!this.editUsuario.apellido && 
-             !!this.editUsuario.mail && 
-             !!this.editUsuario.telefono && 
-             /^\d+$/.test(this.editUsuario.telefono);  // Solo números en teléfono
+      const soloLetras = /^[A-Za-zÁÉÍÓÚÑáéíóúñ\s]+$/;   // Acepta letras y espacios (podés quitar \s si querés sin espacios)
+      const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Validación básica de email
+      const soloNumeros = /^\d+$/;
+    
+      return soloLetras.test(this.editUsuario.nombre) &&
+             soloLetras.test(this.editUsuario.apellido) &&
+             emailValido.test(this.editUsuario.mail) &&
+             soloNumeros.test(this.editUsuario.telefono);
     }
- 
+    
 validarDireccion(): boolean {
   return (
     !!this.nuevaCalle &&                    
@@ -216,6 +232,26 @@ validarDireccion(): boolean {
   );
 }
 
+cerrarSesion() {
+  this.loginService.Deslogueo().subscribe({
+    next: (response: any) => {
+      console.log('Usuario deslogueado con éxito', response.data);
+      this.router.navigate(['/login']);
+    },
+    error: (error: any) => {
+      console.error("No se realizó el deslogueo", error);
+     
+    }
+  });
+}
+abrirModalCierreSesion(){
+  this.cierreSesion=true
+}
+confirmaCierre(){
+  this.cerrarSesion();
+  this.cierreSesion=false
+
+}
   };
 
 

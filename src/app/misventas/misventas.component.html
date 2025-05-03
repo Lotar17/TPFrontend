@@ -1,4 +1,7 @@
 <app-header></app-header>
+<div
+  class="min-h-screen bg-gradient-to-tr from-blue-900 via-lightblue-600 to-white-300 p-6 flex flex-col"
+>
 <div class="p-6 max-w-7xl mx-auto">
   <!-- Título -->
   <h1 class="text-3xl font-semibold mb-6 text-center">Mis Ventas</h1>
@@ -15,39 +18,41 @@
   </div>
 
   <!-- Lista de ventas -->
-  <div *ngIf="(ventasFiltradas() || []).length > 0; else sinVentas">
-    <!-- Tabla de ventas -->
-    <div class="overflow-x-auto max-h-46">
-      <table class="min-w-full divide-y-2 divide-gray-200">
-        <thead class="sticky top-0 bg-white ltr:text-left rtl:text-right">
-          <tr class="*:font-medium *:text-gray-900">
-            <th class="px-3 py-2 whitespace-nowrap">Producto</th>
-            <th class="px-3 py-2 whitespace-nowrap">Comprador</th>
-            <th class="px-3 py-2 whitespace-nowrap">Fecha</th>
-            <th class="px-3 py-2 whitespace-nowrap">Cantidad</th>
-            <th class="px-3 py-2 whitespace-nowrap">Ver Detalle</th>
-          </tr>
-        </thead>
+<!-- Lista de ventas -->
+<div *ngIf="(ventasFiltradas() || []).length > 0; else sinVentas">
+  <!-- Tabla de ventas con fondo claro para mejor contraste -->
+  <div class="overflow-x-auto max-h-46 bg-[#f8fafc] rounded-xl shadow-lg p-4">
+    <table class="min-w-full divide-y-2 divide-gray-200">
+      <thead class="sticky top-0 bg-white ltr:text-left rtl:text-right">
+        <tr class="*:font-medium *:text-gray-900">
+          <th class="px-3 py-2 whitespace-nowrap">Producto</th>
+          <th class="px-3 py-2 whitespace-nowrap">Comprador</th>
+          <th class="px-3 py-2 whitespace-nowrap">Fecha</th>
+          <th class="px-3 py-2 whitespace-nowrap">Cantidad</th>
+          <th class="px-3 py-2 whitespace-nowrap">Ver Detalle</th>
+        </tr>
+      </thead>
 
-        <tbody class="divide-y divide-gray-200">
-          <tr *ngFor="let item of ventasFiltradas()" class="*:text-gray-900 *:first:font-medium">
-            <td class="px-3 py-2 whitespace-nowrap">{{ item.producto?.descripcion }}</td>
-            <td class="px-3 py-2 whitespace-nowrap">{{ item.persona?.nombre }} {{ item.persona?.apellido }}</td>
-            <td class="px-3 py-2 whitespace-nowrap">{{ item.compra?.fecha_hora_compra | date:'dd/MM/yyyy' }}</td>
-            <td class="px-3 py-2 whitespace-nowrap">{{ item.cantidad_producto }}</td>
-            <td class="px-3 py-2 whitespace-nowrap">
-              <button
-                class="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
-                (click)="abrirModal(item)"
-              >
-                Ver Detalle
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+      <tbody class="divide-y divide-gray-200">
+        <tr *ngFor="let item of ventasFiltradas()" class="*:text-gray-900 *:first:font-medium">
+          <td class="px-3 py-2 whitespace-nowrap">{{ item.producto?.descripcion }}</td>
+          <td class="px-3 py-2 whitespace-nowrap">{{ item.persona?.nombre }} {{ item.persona?.apellido }}</td>
+          <td class="px-3 py-2 whitespace-nowrap">{{ item.compra?.fecha_hora_compra | date:'dd/MM/yyyy' }}</td>
+          <td class="px-3 py-2 whitespace-nowrap">{{ item.cantidad_producto }}</td>
+          <td class="px-3 py-2 whitespace-nowrap">
+            <button
+              class="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
+              (click)="abrirModal(item)"
+            >
+              Ver Detalle
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
+</div>
+
 
   <!-- Mensaje si no hay ventas -->
   <ng-template #sinVentas>

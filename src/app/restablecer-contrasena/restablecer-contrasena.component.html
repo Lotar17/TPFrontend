@@ -1,12 +1,25 @@
-<div class="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-600 via-purple-500 to-pink-500 p-6">
+<div class="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-600 via-lightblue-500 to-white-500 p-6">
     <div class="w-full max-w-md bg-white shadow-2xl rounded-2xl p-8">
       <ng-container *ngIf="tokenValido; else tokenError">
         <div class="text-center mb-8">
           <h2 class="text-3xl font-bold text-gray-800">Restablecer contraseña</h2>
           <p class="text-gray-500 mt-2">Ingresá tu nueva contraseña</p>
         </div>
-  
-        <form [formGroup]="passwordForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <div
+        *ngIf="contraseniaCambiada"
+        class="flex items-center p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-100"
+        role="alert"
+      >
+        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-4.414l5.293-5.293-1.414-1.414L9 11.172 7.121 9.293 5.707 10.707 9 14z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        {{ mensajeExito }}
+      </div>
+        <form [formGroup]="passwordForm" (ngSubmit)="abrirModalContrasenia()" class="space-y-6">
           <div>
             <label for="password" class="block text-sm font-medium text-gray-700">Nueva contraseña</label>
             <input
@@ -19,11 +32,14 @@
           </div>
   
           <button
-            type="submit"
-            class="w-full py-3 px-4 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-200"
-          >
-            Restablecer contraseña
-          </button>
+          type="submit"
+          [disabled]="passwordForm.invalid"
+          class="w-full py-3 px-4 bg-indigo-600 text-white font-semibold rounded-lg shadow-md 
+                 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 
+                 focus:ring-offset-2 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Restablecer Contraseña
+        </button>
         </form>
       </ng-container>
   
@@ -35,5 +51,29 @@
         </div>
       </ng-template>
     </div>
+    <div
+    tabindex="-1"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+    [class.hidden]="!modalContrasenia"
+  >
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md text-center">
+      <h3 class="text-lg font-medium text-gray-900 mb-4">
+        ¿Enviar correo para restablecer contraseña?
+      </h3>
+
+      <button
+        (click)="confirmaContrasenia()"
+        class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mr-2"
+      >
+        Sí, enviar
+      </button>
+      <button
+        (click)="cancelarContrasenia()"
+        class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
   </div>
 

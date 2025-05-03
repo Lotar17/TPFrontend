@@ -3,21 +3,22 @@ import { SolicitudService } from '../api/solicitud.service';
 import { Devolucion } from '../models/solicitudDevolucion.entity';
 import { AutenticacionService } from '../api/autenticacion.service';
 import { ItemService } from '../api/item.service';
-import { error } from 'console';
+
 import { CommonModule } from '@angular/common';
 import { Item } from '../models/item.entity';
 import { Compra } from '../models/compra.entity';
 import { Producto } from '../models/producto.entity';
 import { ProductosService } from '../api/producto.service';
-import { HistoricoPrecioService } from '../api/calculaprecio.service';
+import { HeaderComponent } from '../header/header.component';
 import { ComprasService } from '../api/compra.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { switchMap,tap,map,of,pipe,filter,every } from 'rxjs';
 import { CorreoService } from '../api/correo.service';
+import { SidebarComponent } from '../sidebar/sidebar.component';
 @Component({
   selector: 'app-devolucion-vendedor',
   standalone: true,
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule,FormsModule,HeaderComponent,SidebarComponent],
   templateUrl: './devolucion-vendedor.component.html',
   styleUrl: './devolucion-vendedor.component.css'
 })
@@ -142,73 +143,64 @@ requestDecision(solicitud: Devolucion, decision: string, item: Item) {
   }
 }
 
-
-actualizarStock(item: Item, solicitud: Devolucion) { // Para actualizar stock
-  const cantidad_devuelta = solicitud.cantidad_devuelta;
-  const cantidadAActualizar = this.cantidadAActualizar;
-  console.log('Cantidad a actualizar',cantidadAActualizar)
-
-  this.solicitudService.validoCantidad(cantidad_devuelta, cantidadAActualizar).subscribe({
-    next: (res: any) => {
-      if (res.data === true) {
-        const stockNuevo = cantidadAActualizar + (solicitud.item.producto?.stock || 0);
-
-        this.productoActualizado = {
-          ...item.producto,
-          stock: stockNuevo
-        };
-
-        if (item.producto?.id) {
-          this.productoService.actualizarProducto(item.producto.id, this.productoActualizado).subscribe({
-            next: (response: any) => {
-              this.tipoMensajeStock = 'exito';
-              this.mensajeStock = 'Stock actualizado correctamente.';
-              this.stockActualizando = true;
-              this.mostrarModalStock = false;
-              this.mostrarProductoLlego = false;
-              this.solicitudSeleccionadaId = null;
-            },
-            error: (error: any) => {
-              if(error.status===400)   this.mensajeStock = error.error?.message || 'Error de validación.';
-              this.tipoMensajeStock = 'error';
-              this.mensajeStock = 'Error al actualizar el stock.';
-              this.mostrarModalStock = false;
-            }
-          });
-        }
-      } else {
-        this.tipoMensajeStock = 'error';
-        this.mensajeStock = 'Cantidad inválida para devolver.';
-        this.mostrarModalStock = false;
-      }
+actualizarStock(item: Item, solicitud: Devolucion) {
+  this.solicitudService.actualizarStockConValidaciones(item, solicitud, this.cantidadAActualizar).subscribe({
+    next: (mensaje: string) => {
+      // Si la actualización es exitosa
+      this.tipoMensajeStock = 'exito';
+      this.mensajeStock = mensaje;  // El mensaje de éxito que viene del servicio
+      this.stockActualizando = true;
+      this.mostrarModalStock = false;
+      this.mostrarProductoLlego = false;
+      this.solicitudSeleccionadaId = null;
     },
     error: (error: any) => {
+      // Si hay un error
       this.tipoMensajeStock = 'error';
-      if (error.status === 400) {
-        this.mensajeStock = error.error?.message || 'Error de validación.';
-      } else {
-        this.mensajeStock = 'Error inesperado en la validación.';
-      }
-      this.mostrarModalStock = false;
+      this.mensajeStock = error.message;  // Mostramos el mensaje que viene del servicio
+      setTimeout(() => {
+        this.mensajeStock = '';
+      }, 3000)
+      // Mostrar mensaje de error específico
+      this.mostrarModalStock = true;  // Mostrar el modal de error
+      
     }
   });
 }
 
 
-cerrarDevolucion(solicitud: Devolucion) {// Cierre 
+
+cerrarDevolucion(solicitud: Devolucion) { // Cierre
   this.mostrarCierre = false;
   this.mostrarProductoLlego = false;
 
-  this.solicitudService.cerrarDevolucion(solicitud, this.mensajeCierre)
-    .subscribe({
-      next: () => {
-        console.log(" Devolución cerrada correctamente.");
-      },
-      error: (err) => {
-        alert(err.message || "Ocurrió un error al cerrar la devolución.");
-        console.error(" Error:", err);
+  this.solicitudService.cerrarDevolucion(solicitud, this.mensajeCierre).subscribe({
+    next: () => {
+      console.log("Devolución cerrada correctamente.");
+      // Mostrar mensaje de éxito si todo fue bien
+      this.mostrarExito = true;
+      
+      this.mensajeExito = 'La devolución fue cerrada correctamente.';
+      setTimeout(() => {
+        this.mostrarExito = false;
+      }, 3000);
+    },
+    error: (err) => {
+      // Si hay un error, verifica el código de estado
+      if (err.status === 400 || err.status === 500) {
+        // Muestra un mensaje específico según el código de error
+        this.mensajeStock = err.message || 'Ocurrió un error al cerrar la devolución.';
+        console.error("Error al cerrar la devolución:", err);
+      } else {
+        // Si es otro tipo de error
+        this.mensajeStock = 'Error inesperado al cerrar la devolución.';
+        console.error("Error inesperado:", err);
       }
-    });
+
+      // Mostrar el modal de error
+      this.mostrarModalStock = true;
+    }
+  });
 }
 
 
