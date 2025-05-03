@@ -49,13 +49,24 @@ updatePersona(persona:Persona):Observable<ApiResponse<Persona>>{
     }
     return this.http.patch(`${this.apiUrl}/updatePassword`,payload)
   }
+
   updateDireccion(direccion:string,id:string):Observable<ApiResponse<Persona>>{
     const payload={
       direccion
     }
     return this.http.patch<ApiResponse<Persona>>(`${this.apiUrl}/${id}`,payload)
+}
 
+
+  resetPassword(token: string, passwordNueva: string): Observable<any> {
+    const payload = {
+      token,
+      passwordNueva,
+    };
+    return this.http.patch(`${this.apiUrl}/resetPassword`, payload);
+    
   }
+  
   createDireccion(calle:string,numero:number,localidad:string):Observable<ApiResponse<Direccion>>{
     const payload={
       calle,

@@ -19,7 +19,9 @@ export class RestablecerContrasenaComponent implements OnInit {
   mensajeExito=''
   mensajeError=''
   passwordForm = new FormGroup({
+
     nuevaPassword: new FormControl('', [Validators.required])
+
   });
 
   token: string = '';
@@ -51,38 +53,25 @@ export class RestablecerContrasenaComponent implements OnInit {
       return;
     }
 
-    const nuevaPassword = this.passwordForm.value.nuevaPassword ?? '';
-    const payload: any = jwtDecode(this.token);
-    const id = payload.id;
+    const passwordNueva = this.passwordForm.value.nuevaPassword ?? '';
 
-    this.personaService.getOne(id).subscribe({
-      next: (res) => {
-        const persona = res.data;
-        if (!persona) {
-          alert('No se encontró al usuario');
-          return;
-        }
-        persona.password = nuevaPassword;
 
-        this.personaService.updatePersona(persona).subscribe({
-          next: () => {
-            this.mensajeExito = 'Contraseña cambiada con exito';
-            this.contraseniaCambiada = true; // variable para mostrar el mensaje de exito
-            this.mensajeError = '';
-            setTimeout(() => (this.contraseniaCambiada = false), 4000);
-    
-            this.router.navigate(['/login']);
-          },
-          error: () =>{ 
-            this.mensajeError = 'Error al actualizar la contraseña.';
+    this.personaService.resetPassword(this.token, passwordNueva).subscribe({
+      next: (response: ApiResponse<Persona>) => {
+         this.mensajeExito = 'Contraseña cambiada con exito';
+        this.contraseniaCambiada = true;
+        console.log('Contraseña cambiada con exito', response.data);
+        this.router.navigate(['/login']);
+      },
+      error: (error: any) => {
+         this.mensajeError = 'Error al actualizar la contraseña.';
             setTimeout(() => (this.mensajeError = ''), 4000);
             this.contraseniaCambiada = false;
-          }
-        });
-      },
-      error: () => alert('No se encontró al usuario')
+        console.error('No se pudo cambiar la contraseña', error);
+      }
     });
   }
+
   
 abrirModalContrasenia(){
   this.modalContrasenia=true
@@ -94,5 +83,6 @@ confirmaContrasenia(){
 cancelarContrasenia(){
   this.modalContrasenia=false
 }
+
 }
 
