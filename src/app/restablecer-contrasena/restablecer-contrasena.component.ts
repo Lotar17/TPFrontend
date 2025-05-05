@@ -57,10 +57,9 @@ export class RestablecerContrasenaComponent implements OnInit {
 
 
     this.personaService.resetPassword(this.token, passwordNueva).subscribe({
-      next: (response: ApiResponse<Persona>) => {
-         this.mensajeExito = 'Contraseña cambiada con exito';
+      next: (response: Response) => {
+        this.mensajeExito = 'Contraseña cambiada con exito';
         this.contraseniaCambiada = true;
-        console.log('Contraseña cambiada con exito', response.data);
         this.router.navigate(['/login']);
       },
       error: (error: any) => {

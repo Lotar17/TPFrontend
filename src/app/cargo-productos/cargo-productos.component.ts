@@ -21,6 +21,7 @@ export class CargoProductosComponent {
   cantidadInvalida: boolean = false;
   cargaExitosa:boolean=false
   mensajeVisible!:string
+  selectedFile: File | null = null;
 errorStock:string|null=null
 errorPrecio:string|null=null
 precioInvalido = false;
@@ -33,7 +34,10 @@ public publicaForm = new FormGroup({
   precio: new FormControl('', [Validators.required, Validators.min(1)]),
   stock: new FormControl('', [Validators.required, Validators.min(1)]),
   detalle: new FormControl('', [Validators.required]),
+  imagen: new FormControl(null, [Validators.required]),
 });
+
+
   constructor(
     private crudService: CRUDService<Producto>,
     private router:Router,
@@ -42,7 +46,15 @@ public publicaForm = new FormGroup({
   ) {
     categoriaService.getAll('categorias');
   }
-  
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file; // ✅ Guardamos el archivo fuera del form
+    }
+  }
+
+
 ngOnInit(){
   this.autenticacionService.getUserInformation().subscribe({
     next:(response:any)=>{
@@ -55,7 +67,7 @@ ngOnInit(){
     }
 })}
 
-   onSubmit() {
+  onSubmit() {
   
 this.cargaExitosa=true
 this.spinnerVisible = true;
@@ -65,10 +77,22 @@ const producto: Producto = {
   stock: Number(this.publicaForm.value.stock),
   precio: Number(this.publicaForm.value.precio),
   categoriaId: this.publicaForm.value.categoria ?? '', 
-  personaId: this.userId, 
-  detalle:this.publicaForm.value.detalle ?? ''
+  personaId: this.userId ?? '' , 
+  detalle:this.publicaForm.value.detalle ?? '',
 };
-this.crudService.add('productos', producto);
+
+const formData = new FormData();
+  formData.append('descripcion', this.publicaForm.value.descripcion ?? '');
+  formData.append('stock', String(this.publicaForm.value.stock ?? 0));
+  formData.append('precio', String(this.publicaForm.value.precio ?? 0));
+  formData.append('categoriaId', this.publicaForm.value.categoria ?? '');
+  formData.append('personaId', this.userId ?? '');
+  formData.append('detalle', this.publicaForm.value.detalle ?? '');
+  if (this.selectedFile) {
+    formData.append('imagen', this.selectedFile);
+  }
+
+this.crudService.add('productos', formData);
 this.mostrarNotificacion('Producto cargado con exito!')
     
   }

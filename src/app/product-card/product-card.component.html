@@ -10,7 +10,7 @@
     </button>
 
     <!-- Product Image -->
-    <img src="https://images.unsplash.com/photo-1629367494173-c78a56567877?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=927&q=80"
+    <img [src]="'http://localhost:3000/uploads/' + producto.photoPath" 
       alt="card-image"
       class="w-[calc(100%-16px)] rounded m-2 h-48 object-cover transition duration-500 group-hover:scale-105 sm:h-72 md:h-80 lg:h-96" />
   </a>
