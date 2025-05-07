@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
-import { FormGroup,FormControl, ReactiveFormsModule } from '@angular/forms';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { FormGroup,FormControl, ReactiveFormsModule ,Validators} from '@angular/forms';
 import { RegisterService } from '../api/register.service.js';
-import { response } from 'express';
 import { Localidad } from '../models/localidad.entity.js';
 import { SeguimientoService } from '../api/seguimiento.service.js';
 import { AsyncPipe,CommonModule } from '@angular/common';
@@ -10,25 +9,31 @@ import { AsyncPipe,CommonModule } from '@angular/common';
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule,CommonModule],
+  imports: [ReactiveFormsModule,CommonModule,RouterLink],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
 export class RegisterComponent {
 
 localidades:Localidad[]=[]
+registroExitoso:boolean=false
 
 registerForm = new FormGroup({
-  name :new FormControl(),
-  surname: new FormControl(),
-  mail: new FormControl(),
-  password: new FormControl(),
-  phone: new FormControl(),
-  rol: new FormControl(),
-  calle:new FormControl(),
-  numero:new FormControl(),
-  localidad:new FormControl()
-});
+  name: new FormControl('', Validators.required),
+  surname: new FormControl('', Validators.required),
+  mail: new FormControl('', [Validators.required, Validators.email]),
+  password: new FormControl('', Validators.required),
+  phone: new FormControl('', [
+    Validators.required,
+    Validators.pattern(/^\d+$/) // Solo números
+  ]),
+  calle: new FormControl('', Validators.required),
+  numero: new FormControl('', [
+    Validators.required,
+    Validators.pattern(/^\d+$/) // Solo números
+  ]),
+  localidad: new FormControl('', Validators.required)
+})
 
 constructor(private registerService : RegisterService, private router:Router,
   private seguimientoService:SeguimientoService
@@ -53,9 +58,9 @@ async onSubmit(){
     password:this.registerForm.value.password ?? '',
     apellido:this.registerForm.value.surname ?? '',
     mail:this.registerForm.value.mail ?? '',
-    rol:this.registerForm.value.rol ?? '',
+  
     calle:this.registerForm.value.calle?? '',
-    numero:this.registerForm.value.numero?? '',
+    numero:Number(this.registerForm.value.numero?? ''),
     localidadId:this.registerForm.value.localidad?? '' // prestar atencion aca
 
   };
@@ -63,6 +68,7 @@ async onSubmit(){
     (await this.registerService.register(credentials)).subscribe((response)=>{
       if (response.result){
         console.log(response.message);
+        this.registroExitoso=true
         this.router.navigateByUrl('/login')
       }
     });

@@ -14,4 +14,6 @@ export type Producto = {
   categoriaId?: string;
   compras?: [];
   hist_precios?: PrecioHistorico[];
+  detalle?:string
+  photoPath?: string; 
 };

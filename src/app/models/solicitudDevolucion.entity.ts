@@ -17,7 +17,7 @@ cantidad_devuelta:number,
 fechaCierre?:string
 mensajeCierre?:string
 fechaEnvioCliente?:string
-
+actualizada?:boolean
 
 
 

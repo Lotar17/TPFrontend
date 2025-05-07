@@ -10,10 +10,11 @@ import { RouterLink } from '@angular/router';
 import { ProductosService } from '../api/producto.service';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { HeaderComponent } from "../header/header.component";
 @Component({
   selector: 'app-panel-vendedor',
   standalone: true,
-  imports: [CommonModule,RouterLink,FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, HeaderComponent],
   templateUrl: './panel-vendedor.component.html',
   styleUrl: './panel-vendedor.component.css'
 })
@@ -79,23 +80,32 @@ this.productoService.setProducto(producto)
 this.route.navigate(['/modificaProducto'])
 
 }
-borrarProducto(producto:Producto) {
-  if(producto.id)
-  this.productoService.deleteProducto(producto.id).subscribe({
-    next: () =>{ console.log(`Producto ${producto.id} eliminado y lista actualizada`)
-    if(this.productos)
-    this.productos = this.productos.filter(p => p.id !== producto.id);
-  },
-    error: (error) => console.error('Error al eliminar producto:', error),
-  });
+borrarProducto(producto: Producto) {
+  if (producto.id) {
+    this.productoService.deleteProducto(producto.id).subscribe({
+      next: () => {
+        console.log(`Producto ${producto.id} eliminado y lista actualizada`);
+if(this.productos)
+        
+        this.productos = this.productos.filter(p => p.id !== producto.id);
+        if(this.productos)
+        
+        this.productosFiltrados = this.productos.filter(p =>
+          p.descripcion?.toLowerCase().includes(this.filtroDescripcion.toLowerCase())
+        );
+      },
+      error: (error) => console.error('Error al eliminar producto:', error),
+    });
+  }
 }
 
 confirmarDelete() { // muestra el modal de confirmacion
   this.confirmadelete = true;// me activa el metodo realizar cambio
 }
 realizarDelete(producto:Producto) { // muestro cuando se acepta en el modal
+  this.borrarProducto(producto)
   this.cerrarModalConfirmacion(); // opcional, si querés cerrar antes
-  this.borrarProducto(producto);
+
   this.deleteConfirmado= true; 
 }
 cerrarModalConfirmacion() { // si la compra no se acepta en el modal

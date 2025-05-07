@@ -34,7 +34,7 @@ update(item:Item,cantidad_devuelta:number): Observable<ApiResponse<Item>> {
     cantidad_devuelta
 
   }
-    return this.http.put<ApiResponse<Item>>(`${this.apiUrl2}/${item.id}`, payload);
+    return this.http.patch<ApiResponse<Item>>(`${this.apiUrl2}/${item.id}`, payload);
   }
 
 removeItem(idItem:string): Observable<ApiResponse<Item>>{

@@ -56,16 +56,26 @@ export class CRUDService<T extends BaseModel> {
       );
   }
 
-  add(tabla: string, t: T) {
+  addconFormData(tabla: string, formData: FormData) {
+    return this.http.post<ApiResponse<any>>(`${this.url}/${tabla}/`, formData);
+  }
+
+  add(tabla: string, t: any) {
     console.log(t);
     return this.http
-      .post<ApiResponse<T>>(`${this.url}/${tabla}/`, t)
+      .post<ApiResponse<any>>(`${this.url}/${tabla}/`, t)
       .subscribe({
         next: (response) => {
-          t.id = response.data?.id;
-          this.subject.getValue().push(t);
-          const listaActualizada = this.subject.getValue();
-          this.subject.next(listaActualizada);
+          const nuevoElemento = response.data;
+          if (!nuevoElemento) {
+            console.log('La respuesta no contiene un "data" válido');
+            return;
+          }
+          const listaActual = this.subject.getValue();
+          listaActual.push(nuevoElemento); //actualizo la lista pero con lo del back
+          // Emití la lista actualizada
+          this.subject.next([...listaActual]); // dusoaparo el next
+  
           console.log(`Producto creado con éxito`);
         },
         error: (err) => {
@@ -73,6 +83,7 @@ export class CRUDService<T extends BaseModel> {
         },
       });
   }
+  
 
   update(tabla: string, t: T) {
     return this.http

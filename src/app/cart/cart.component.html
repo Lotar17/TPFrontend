@@ -1,18 +1,31 @@
-<div class="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
-  <div class="w-full max-w-3xl bg-white rounded-xl shadow-md p-6">
+<app-header></app-header>
+<div class="flex items-center space-x-2 text-sm text-gray-600 mb-6">
+  <a routerLink="/productos" class="hover:text-blue-600">📦 Ver Tienda</a>
+  <span class="text-gray-400">/</span>
+  <a routerLink="/micuenta" class="hover:text-blue-600">👤 Mi Cuenta</a>
+  
+</div>
+<!-- Fondo con gradiente general -->
+<div class="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-500 to-blue-200 p-6 flex items-center justify-center">
+  
+  <div class="flex flex-col items-center justify-center w-full max-w-5xl bg-[#f7fafe] rounded-xl shadow-xl p-6 mt-20">
+    
     <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">🛒 Carrito de Compras</h1>
+    
+    <app-sidebar *ngIf="idUser" [personaId]="idUser"></app-sidebar>
 
-    <div *ngIf="items.length > 0; else vacio">
-      <div *ngFor="let item of items" class="cart-item border-b py-4 px-2 flex justify-between items-center">
-        <div class="flex items-center space-x-4">
+    <div *ngIf="items.length > 0; else vacio" class="w-full">
+      <div *ngFor="let item of items" class="cart-item border-b py-4 px-2 flex flex-col sm:flex-row justify-between items-center">
+        <div class="flex items-center space-x-4 mb-4 sm:mb-0">
           <div>
             <h3 class="font-semibold text-gray-800 text-lg">{{ item.producto?.descripcion }}</h3>
             <p class="text-sm text-gray-600">Cantidad: {{ item.cantidad_producto }}</p>
             <p class="text-sm text-gray-600">Precio: ${{ item.precioUnitario }}</p>
           </div>
         </div>
-        <div class="flex items-center space-x-3">
-          <button (click)="incrementarCantidad(item.producto?.id, item)" class="btn-icon-yellow">+</button>
+
+        <div class="flex flex-col sm:flex-row items-center space-x-3">
+          <button (click)="incrementarCantidad(item.producto, item)" class="btn-icon-yellow">+</button>
           <button (click)="decrementarCantidad(item.producto?.id, item)" class="btn-icon-yellow">-</button>
           <button (click)="confirmarEliminacion(item)" class="btn-icon-red">Eliminar</button>
         </div>
@@ -28,38 +41,44 @@
       <p class="text-center text-gray-600 text-lg">Tu carrito está vacío.</p>
     </ng-template>
   </div>
+</div>
 
-  <!-- Modal: Confirmación de eliminación -->
-  <div *ngIf="modalConfirmacionEliminacion" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full animate-modalFade z-10">
-      <h3 class="text-xl font-bold text-gray-800 mb-4">¿Eliminar ítem?</h3>
-      <p class="text-gray-700 mb-6">¿Estás seguro que deseas eliminar <strong>{{ itemSeleccionado?.producto?.descripcion }}</strong> del carrito?</p>
-      <div class="flex justify-end space-x-3">
-        <button (click)="cancelarEliminacion()" class="btn-icon-yellow px-4 py-2">Cancelar</button>
-        <button (click)="eliminarItemConfirmado()" class="btn-icon-red px-4 py-2">Eliminar</button>
-      </div>
+<!-- Modal: Confirmación de eliminación -->
+<div *ngIf="modalConfirmacionEliminacion" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+  <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full animate-modalFade z-10">
+    <h3 class="text-xl font-bold text-gray-800 mb-4">¿Eliminar ítem?</h3>
+    <p class="text-gray-700 mb-6">¿Estás seguro que deseas eliminar <strong>{{ itemSeleccionado?.producto?.descripcion }}</strong> del carrito?</p>
+    <div class="flex justify-end space-x-3">
+      <button (click)="cancelarEliminacion()" class="btn-icon-yellow px-4 py-2">Cancelar</button>
+      <button (click)="eliminarItemConfirmado()" class="btn-icon-red px-4 py-2">Eliminar</button>
     </div>
   </div>
+</div>
 
-  <!-- Modal de Resumen de Compra -->
-  <div *ngIf="mostrarResumenCompra" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white rounded-xl shadow-xl p-6 max-w-md w-full animate-modalFade z-10">
-      <h3 class="text-xl font-bold text-gray-800 mb-4">🧾 Resumen de Compra</h3>
+<!-- Modal de Resumen de Compra -->
+<div *ngIf="mostrarResumenCompra" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+  <div class="bg-white rounded-xl shadow-xl p-6 max-w-md w-full animate-modalFade z-10">
+    <h3 class="text-xl font-bold text-gray-800 mb-4">🧾 Resumen de Compra</h3>
 
-      <div class="max-h-64 overflow-y-auto mb-4">
-        <div *ngFor="let item of items" class="mb-2 border-b pb-2">
-          <p class="font-semibold text-gray-700">{{ item.producto?.descripcion }}</p>
-          <p class="text-sm text-gray-600">Cantidad: {{ item.cantidad_producto }}</p>
-          <p class="text-sm text-gray-600">Precio: ${{ item.precioUnitario }}</p>
-        </div>
-      </div>
-
-      <p class="text-lg font-bold text-green-700 text-center mb-4">Total: ${{ subtotal | number:'1.2-2' }}</p>
-
-      <div class="flex justify-end space-x-3">
-        <button (click)="mostrarResumenCompra = false" class="btn-icon-yellow px-4 py-2">Cancelar</button>
-        <button (click)="confirmarCompra()" class="btn-icon-blue px-4 py-2">Confirmar</button>
+    <div class="max-h-64 overflow-y-auto mb-4">
+      <div *ngFor="let item of items" class="mb-2 border-b pb-2">
+        <p class="font-semibold text-gray-700">{{ item.producto?.descripcion }}</p>
+        <p class="text-sm text-gray-600">Cantidad: {{ item.cantidad_producto }}</p>
+        <p class="text-sm text-gray-600">Precio: ${{ item.precioUnitario }}</p>
       </div>
     </div>
+
+    <p class="text-lg font-bold text-green-700 text-center mb-4">Total: ${{ subtotal | number:'1.2-2' }}</p>
+
+    <div class="flex justify-end space-x-3">
+      <button (click)="mostrarResumenCompra = false" class="btn-icon-yellow px-4 py-2">Cancelar</button>
+      <button (click)="confirmarCompra()" class="btn-icon-blue px-4 py-2">Confirmar</button>
+    </div>
   </div>
+</div>
+
+<!-- Mensaje stock -->
+<div *ngIf="mensajeStock" class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mt-2 w-fit mx-auto">
+  <span class="block sm:inline">{{ mensajeStock }}</span>
+  <button (click)="mensajeStock = null" class="absolute top-0 right-1 text-red-700 hover:text-red-900">✕</button>
 </div>

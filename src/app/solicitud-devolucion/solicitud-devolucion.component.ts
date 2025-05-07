@@ -1,23 +1,19 @@
 import { Component } from '@angular/core';
 import { ItemService } from '../api/item.service';
 import { Item } from '../models/item.entity';
-import { AutenticacionService } from '../api/autenticacion.service';
-import { response } from 'express';
-import { PersonaService } from '../api/per.service';
 import { Persona } from '../models/persona.entity';
-import { error } from 'console';
 import { CommonModule } from '@angular/common';
 import { Producto } from '../models/producto.entity';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { SolicitudService } from '../api/solicitud.service';
-import { ProductosService } from '../api/producto.service';
+import { ChangeDetectorRef } from '@angular/core';
 import { CorreoService } from '../api/correo.service';
 import { Compra } from '../models/compra.entity';
-import { HistoricoPrecioService } from '../api/calculaprecio.service';
+import { Router, RouterLink } from '@angular/router';
 @Component({
   selector: 'app-solicitud-devolucion',
   standalone: true,
-  imports: [CommonModule,ReactiveFormsModule],
+  imports: [CommonModule,ReactiveFormsModule,RouterLink],
   templateUrl: './solicitud-devolucion.component.html',
   styleUrl: './solicitud-devolucion.component.css'
 })
@@ -40,14 +36,15 @@ valorCompra!:number
 compraActualizada!:number
 subotal!:number
 idProducto!:string
+validoStock:boolean=true
+mensajeStockInvalido=false
+spinner=false
   constructor(
 private itemService:ItemService,
-private autenticacionService:AutenticacionService,
-private personaService:PersonaService,
 private solicitudService:SolicitudService,
-private productoService:ProductosService,
-private historicoPrecioService:HistoricoPrecioService,
-private correoService:CorreoService
+private correoService:CorreoService,
+cdr: ChangeDetectorRef,
+private router:Router
 
   ){}
 
@@ -82,12 +79,25 @@ async onSubmit() {
   this.motivo = this.publicaForm.value.motivoDevolucion;
   this.cantidadDevuelta=this.publicaForm.value.cantidadDevuelta
 
+  if(this.item1.cantidad_producto<this.cantidadDevuelta || this.cantidadDevuelta<=0){
+    this.validoStock=false
+    
+  this.mensajeStockInvalido = true; // Mostramos el cartel
+
+  setTimeout(() => {
+    this.mensajeStockInvalido = false; // Lo ocultamos después de 3 segundos
+  }, 3000);
+return
+  }
+
   console.log('Motivo:', this.motivo);
   console.log('Item ID:', this.item1.id); 
   console.log('Cantidad devuelta',this.cantidadDevuelta)
+  this.spinner=true
 if(this.item1.id)
   this.solicitudService.createDevolutionRequest(this.item1.id, this.motivo,this.cantidadDevuelta).subscribe({
     next: (response: any) => {
+      this.spinner=false
       console.log('Solicitud creada con éxito', response.data);
       this.mostrarModalExito = true;
 const mailDestinatario= response.data.vendedor.mail
@@ -133,7 +143,11 @@ confirmarDevolucion() {
 
   // Validar antes de continuar
   if (this.publicaForm.valid) {
-    this.onSubmit(); // Aquí se ejecuta tu lógica de devolución
+    setTimeout(() => {
+      this.mostrarModalConfirmacion = false;
+      this.router.navigate(['/productos']);
+    }, 3000);
+    this.onSubmit(); 
   } else {
     this.publicaForm.markAllAsTouched(); // Esto fuerza mostrar errores si faltan campos
   }
@@ -142,7 +156,7 @@ confirmarDevolucion() {
 
 cerrarModalExito() {
   this.mostrarModalExito = false;
-  // Podés redirigir o limpiar el formulario si querés
+  
 }
 
 

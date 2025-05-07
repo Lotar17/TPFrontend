@@ -99,7 +99,8 @@ procesarCompra(compra: Compra, idPersona: string, mailDestino: string):Observabl
             return this.seguimientoService.createSeguimiento(idItem, idPersona).pipe(
               switchMap((seguimientoResponse: any) => {
                 const seguimiento = seguimientoResponse.data;
-                const localidadId = item.producto.persona.direccion.localidad.id;// Localidad del vendedor
+                const localidadId = item.producto.persona.direccion.localidad.id;
+                console.log('Localidad Vendedor',localidadId)// Localidad del vendedor
 
                 const asuntoCliente = `Compra con código de seguimiento nro: ${seguimiento.codigoSeguimiento}`;
                 const mensajeCliente = `Tu compra fue realizada con éxito. Ingresando el código de seguimiento en el panel de ver seguimientos podrás ver el recorrido de tu pedido

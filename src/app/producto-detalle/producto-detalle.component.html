@@ -1,57 +1,88 @@
-<div class="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-500 to-purple-600 p-6 flex items-center justify-center">
-  <div *ngIf="producto" class="w-full max-w-md bg-white shadow-2xl rounded-2xl p-8 transition duration-300 ease-in-out hover:shadow-xl">
-    <!-- Descripción del Producto -->
-    <div class="mb-6">
-      <h2 class="text-2xl font-bold text-gray-800 mb-3">📝 Descripción</h2>
-      <p class="text-gray-600 leading-relaxed">{{ producto.descripcion }}</p>
+<div class="min-h-screen bg-gradient-to-tr from-blue-900 via-sky-500 to-white p-6">
+<section class="bg-white px-4 py-8 antialiased dark:bg-gray-900 md:py-16">
+  <div *ngIf="producto" class="mx-auto grid max-w-screen-xl rounded-lg bg-gray-50 p-4 dark:bg-gray-800 md:p-8 lg:grid-cols-12 lg:gap-8 lg:p-16 xl:gap-16">
+
+    <!-- Imagen del producto -->
+    <div class="lg:col-span-4 flex justify-center items-center">
+      <img 
+      [src]="'http://localhost:3000/uploads/' + producto.photoPath"
+        alt="Imagen del producto" 
+        class="h-64 w-64 rounded-lg object-cover sm:h-80 sm:w-80 md:h-full md:w-full" 
+      />
     </div>
 
-    <!-- Stock disponible -->
-    <div class="mb-6">
-      <h3 class="text-lg font-semibold text-gray-700 mb-2">📦 Stock disponible</h3>
-      <p class="text-2xl font-bold text-gray-900">{{ producto.stock }}</p>
-    </div>
+    <!-- Información del producto -->
+    <div class="lg:col-span-8 mt-6 lg:mt-0">
+      <!-- Nombre -->
+      <h1 class="mb-4 text-3xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white md:text-4xl">
+        {{ producto.descripcion }}
+      </h1>
 
-    <!-- Precio -->
-    <div class="mb-6">
-      <h3 class="text-lg font-semibold text-gray-700 mb-2">💲 Precio</h3>
-      <p class="text-3xl font-bold text-green-600">$ {{ precio }}</p>
-    </div>
-    <div class="mb-6">
-      <h3 class="text-lg font-semibold text-gray-700 mb-2">Nombre del vendedor</h3>
-      <p class="text-3xl font-bold text-green-600">{{ producto.persona?.nombre }} {{producto.persona?.apellido}}</p>
-    </div>
+      <!-- Detalle -->
+      <h2 class="text-lg font-semibold text-gray-700 mb-2">📝 Detalle</h2>
+      <p class="text-base text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+        {{ producto.detalle }}
+      </p>
 
-    <div class="mb-6">
-      <h1 class="text-lg font-semibold text-gray-700 mb-2">Correo electronico Vendedor:</h1>
-      <p class="text-2xl font-bold text-green-200">$ {{ producto.persona?.mail }}</p>
-    </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+        <!-- Stock -->
+        <div>
+          <h3 class="text-sm font-semibold text-gray-700 mb-1">📦 Stock disponible</h3>
+          <p class="text-xl font-bold text-gray-900">{{ producto.stock }}</p>
+        </div>
 
-    <!-- Botones de Acción -->
-    <div class="space-y-4">
-      <button
-        (click)="agregarAlCarrito(producto.id)"
-        [disabled]="producto.stock === 0"
-        [ngClass]="{ 'opacity-50 cursor-not-allowed': producto.stock === 0 }"
-        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg shadow-md transition-all duration-300 hover:scale-105"
-      >
-        🛒 Agregar al carrito
-      </button>
+        <!-- Precio -->
+        <div>
+          <h3 class="text-sm font-semibold text-gray-700 mb-1">💲 Precio</h3>
+          <p class="text-2xl font-bold text-green-600">$ {{ precio }}</p>
+        </div>
 
-      <div class="text-center">
+        <!-- Vendedor -->
+        <div>
+          <h3 class="text-sm font-semibold text-gray-700 mb-1">👤 Vendedor</h3>
+          <p class="text-lg font-medium text-gray-900">{{ producto.persona?.nombre }} {{ producto.persona?.apellido }}</p>
+        </div>
+
+        <!-- Correo -->
+        <div>
+          <h3 class="text-sm font-semibold text-gray-700 mb-1">📧 Email</h3>
+          <p class="text-md font-medium text-green-500">{{ producto.persona?.mail }}</p>
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0 mb-4">
+        <button
+          (click)="agregarAlCarrito(producto)"
+          [disabled]="producto.stock === 0"
+          [ngClass]="{ 'opacity-50 cursor-not-allowed': producto.stock === 0 }"
+          class="flex-1 inline-flex items-center justify-center rounded-lg bg-indigo-600 px-5 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          🛒 Agregar al carrito
+        </button>
+
         <a
-          class="text-indigo-600 hover:text-indigo-800 font-semibold text-lg"
+          class="flex-1 inline-flex items-center justify-center rounded-lg bg-stone-800 px-5 py-3 text-base font-medium text-white hover:bg-stone-700 transition"
           [routerLink]="(producto.stock ?? 0) > 0 ? ['/comprasincart', producto.id] : null"
           [ngClass]="{ 'opacity-50 pointer-events-none': (producto.stock ?? 0) === 0 }"
         >
           Comprar ahora
+          <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
+          </svg>
         </a>
       </div>
-    </div>
 
-    <!-- Notificación -->
-    <div *ngIf="showNotification" class="mt-4 text-center text-sm text-gray-600">
-      {{ mensajeNotificacion }}
+      <!-- Notificación -->
+      <div *ngIf="showNotification" class="text-sm text-gray-600 dark:text-gray-400">
+        {{ mensajeNotificacion }}
+      </div>
+
+      <!-- Mensaje de stock -->
+      <div *ngIf="mensajeStock" class="mt-6 bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative w-fit">
+        <span class="block sm:inline">{{ mensajeStock }}</span>
+        <button (click)="mensajeStock = null" class="absolute top-0 right-1 text-red-700 hover:text-red-900">✕</button>
+      </div>
     </div>
   </div>
-</div>
+</section>

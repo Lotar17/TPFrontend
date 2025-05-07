@@ -1,37 +1,50 @@
-<div class="min-h-screen bg-gradient-to-tr from-gray-100 via-white to-gray-200">
-
-<div class="min-h-screen bg-gray-100 p-6">
+<div
+  class="min-h-screen bg-gradient-to-tr from-blue-900 via-lightblue-600 to-white-300 p-6 flex flex-col"
+>
   <div class="w-full max-w-7xl mx-auto">
     <!-- Header -->
     <app-header class="block mb-8"></app-header>
 
     <div class="flex flex-col md:flex-row gap-6">
       <!-- Sidebar -->
-      <app-sidebar [personaId]="idUser"></app-sidebar>
-
-      <!-- Contenido Principal -->
-      <div class="flex-1 bg-white shadow-md rounded-2xl p-6 border border-gray-200">
+      <app-sidebar *ngIf="idUser" [personaId]="idUser"></app-sidebar>
+      <div
+      class="flex-1 bg-[#66b3ff] bg-[url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%224%22 height=%224%22 viewBox=%220 0 4 4%22%3E%3Cpath fill=%22%23ffffff%22 fill-opacity=%220.5%22 d=%22M1 3h1v1H1V3zm2-2h1v1H3V1z%22/%3E%3C/svg%3E')] bg-repeat shadow-lg rounded-3xl p-6 sm:p-8 lg:p-10 border border-gray-100 transition-all duration-300"
+    >
+    
         <!-- Barra de búsqueda -->
         <app-search-bar
           (searchEvent)="updateSearchTerm($event)"
-          class="mb-6 w-full"
+          class="mb-8 w-full"
         ></app-search-bar>
 
-        <!-- Título o resumen opcional -->
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Productos disponibles</h2>
+        <!-- Título -->
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 tracking-tight">
+          Productos Disponibles
+        </h2>
 
         <!-- Lista de productos -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8"
+        >
           <app-product-card
             *ngFor="let producto of productos"
             [producto]="producto"
-            class="transition-transform duration-300 hover:scale-[1.02]"
+            class="transition-transform duration-300 hover:scale-[1.03] hover:shadow-md rounded-lg"
           ></app-product-card>
         </div>
 
         <!-- Si no hay productos -->
-        <div *ngIf="productos.length === 0" class="text-center text-gray-500 mt-10">
-          No se encontraron productos.
+        <div
+          *ngIf="productos.length === 0"
+          class="text-center mt-12 py-10 bg-gray-50 rounded-xl"
+        >
+          <p class="text-lg font-medium text-gray-600">
+            No se encontraron productos
+          </p>
+          <p class="text-sm text-gray-400 mt-2">
+            Prueba con otros términos de búsqueda o agrega nuevos productos.
+          </p>
         </div>
       </div>
     </div>

@@ -1,16 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ProductosService } from '../../api/producto.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Producto } from '../../models/producto.entity';
 import { FormsModule } from '@angular/forms';
 import { HistoricoPrecioService } from '../../api/calculaprecio.service';
+import { HeaderComponent } from '../../header/header.component';
 
 
 @Component({
   selector: 'app-modifica-producto',
   standalone: true,
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule,FormsModule,HeaderComponent,RouterLink],
   templateUrl: './modifica-producto.component.html',
   styleUrl: './modifica-producto.component.css'
 })
@@ -27,6 +28,8 @@ descripcionOriginal!:string
 stockOriginal!:number
 cambioConfirmado= false
 confirmaCambio=false
+errorStock:string|null=null
+errorPrecio:string|null=null
 
 
 
@@ -42,6 +45,8 @@ ngOnInit() {
 this.descripcionOriginal=this.producto.descripcion
 if(this.producto.stock)
 this.stockOriginal=this.producto.stock
+if(this.producto.precio)
+  this.precioOriginal=this.producto.precio
 
   }
 
@@ -53,10 +58,27 @@ guardarCambios(){
 this. guardaDescripcion()
 }
 if(this.producto.stock!==this.stockOriginal){
-  this.guardaStock()
+  if(this.producto.stock)
+  if(this.producto.stock<0){
+this.errorStock='No se puede ingresar una cantidad de stock menor a 0'
+return
+  }
+  else{
+    this.cambioConfirmado= true; 
+  this.guardaStock()}
 }
 if(this.producto.precio!== this.precioOriginal){
+  console.log('Precio Original',this.precioOriginal)
+  if(this.producto.precio)
+  if(this.producto.precio<0){
+this.errorPrecio='No puede ingresar un precio de producto negativo'
+  }
+  else{
+    this.cambioConfirmado=true
 this.guardaPrecio()
+
+}
+
 }
 
 }
@@ -71,6 +93,7 @@ if(this.producto.id)
 this.productoService.actualizarProducto(this.producto.id,productoActualizado).subscribe({
   next:(response:any)=>{
 console.log('Producto Actualizado con exito',response.data)
+this.descripcionOriginal=this.producto.descripcion ?? ''
   },
   error:(error:any)=>{
   
@@ -95,6 +118,7 @@ guardaStock(){
     this.productoService.actualizarProducto(this.producto.id,productoActualizado).subscribe({
       next:(response:any)=>{
     console.log('Producto Actualizado con exito',response.data)
+    this.stockOriginal=this.producto.stock ?? 0
       },
       error:(error:any)=>{
       
@@ -102,11 +126,13 @@ guardaStock(){
       }
 })}
 guardaPrecio(){
+  console.log(this.producto.id)
   if(this.producto.id && this.producto.precio)
   this.historicoPrecioService.createPrecio(this.producto.precio,this.producto.id).subscribe({
 
-    next:(response:any)=>{
+    next:(response)=>{
 console.log('Precio creado con exito',response.data)
+this.precioOriginal = this.producto.precio ?? 0
     },
     error:(error:any)=>{
     
@@ -120,7 +146,7 @@ console.log('Precio creado con exito',response.data)
     realizarCambio() { // muestro cuando se acepta en el modal
       this.cerrarModalConfirmacion(); // opcional, si querés cerrar antes
       this.guardarCambios();
-      this.cambioConfirmado= true; 
+     
     }
     cerrarModalConfirmacion() { // si la compra no se acepta en el modal
       this.confirmaCambio = false;

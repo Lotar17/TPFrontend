@@ -2,243 +2,282 @@ import { Component } from '@angular/core';
 import { Direccion } from '../models/direccion.entity';
 import { Localidad } from '../models/localidad.entity';
 import { ComprasService } from '../api/compra.service';
-import { ActivatedRoute, Route } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ProductosService } from '../api/producto.service';
 import { Producto } from '../models/producto.entity';
-import { FormGroup,FormControl,ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { CarritoService } from '../api/cart.service';
 import { Item } from '../models/item.entity';
 import { Compra } from '../models/compra.entity';
 import { CommonModule } from '@angular/common';
 import { AutenticacionService } from '../api/autenticacion.service';
-import { concatMap,switchMap,from,catchError,tap,of} from 'rxjs';
+import { concatMap, switchMap, from, catchError, tap, of } from 'rxjs';
 import { SeguimientoService } from '../api/seguimiento.service';
 import { PersonaService } from '../api/per.service';
 import { Persona } from '../models/persona.entity';
-import { CorreoService } from '../api/correo.service';
-import { map,forkJoin } from 'rxjs';
+import { Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { HistoricoPrecioService } from '../api/calculaprecio.service';
+import { HeaderComponent } from '../header/header.component';
 @Component({
   selector: 'app-direct-buys',
   standalone: true,
-  imports: [ReactiveFormsModule,CommonModule],
+  imports: [ReactiveFormsModule, CommonModule,RouterLink,HeaderComponent],
   templateUrl: './direct-buys.component.html',
-  styleUrl: './direct-buys.component.css'
+  styleUrls: ['./direct-buys.component.css']
 })
 export class DirectBuysComponent {
-  productoId!:string
-producto!: Producto
-idPersona!:string
-direccion_entrega!:string
-fecha_hora_compra!:string
-idProducto!:string
-cantidad_producto!:number
-items: Item[] = []
-compra!:Compra
-item!:Item
-compraExitosa:boolean= false;
-mensajeVisible:string=''
-idUser!:string
-cliente!:Persona
-direcciones: Direccion[] = [];
-mostrarNuevaDireccion: boolean = false;
-localidades:Localidad[]=[]
-compradorDestinatario!:string
-muestraDetalle= false
-muestraCompra: Compra|null= null
-confirmaCompra=false
-stockInvalido=false
-
-
-  constructor(
-    private compraService: ComprasService,
-   
-    private route:ActivatedRoute,
-    private autenticacionService:AutenticacionService,
-    private productoService:ProductosService,
-    private carritoService:CarritoService,
-    private seguimientoService:SeguimientoService,
-    private personaService:PersonaService,
-    private correoService:CorreoService
-  ) {}
-
+  productoId!: string;
+  producto!: Producto;
+  idPersona!: string;
+  idUser!: string;
+  cliente!: Persona;
+  direcciones: Direccion[] = [];
+  localidades: Localidad[] = [];
+  compradorDestinatario!: string;
+  items: Item[] = [];
+  compra!: Compra;
+  muestraDetalle = false;
+  muestraCompra: Compra | null = null;
+  confirmaCompra = false;
+  formInvalido: boolean = false;
+  mensajeError: string | null = null;
+  cantidadInvalida: boolean = false;
+  mensajeVisible: string = '';
+  mostrarNuevaDireccion: boolean = false;
+  precio!:number
+spinner=false
   publicaForm = new FormGroup({
     direccion: new FormControl(),
     cantidad_producto: new FormControl(),
-    calle: new FormControl(),
-    numero: new FormControl(),
-    localidad: new FormControl()
+    calle: new FormControl('', [Validators.required]),
+    numero: new FormControl('', [Validators.required, Validators.pattern('^[0-9]*$')]),
+    localidad: new FormControl('', Validators.required)
   });
+
+  constructor(
+    private compraService: ComprasService,
+    private route: ActivatedRoute,
+    private autenticacionService: AutenticacionService,
+    private productoService: ProductosService,
+    private carritoService: CarritoService,
+    private seguimientoService: SeguimientoService,
+    private personaService: PersonaService,
+    private router: Router,
+    private historicoPrecioService:HistoricoPrecioService
+  ) { }
+
   ngOnInit(): void {
-    this.loadLocalidades()
-    const id = this.route.snapshot.paramMap.get('id'); 
-    this.autenticacionService.getUserInformation().subscribe({
-      next:(response:any)=>{
-      this.idUser=response.data.id
-      
-if(this.idUser){
-  this.personaService.getOne(this.idUser).subscribe({
-    next:(response:any)=>{
-this.cliente=response.data
-if(this.cliente)
-  this.compradorDestinatario=this.cliente.mail
-
-if (this.cliente.direccion) {
-  this.direcciones.push(this.cliente.direccion);
-}
-if(this.cliente.compras)
-  this.cliente.compras.forEach(compra => {
-    if (compra.direccion) {
-      this.direcciones.push(compra.direccion);
-    }
-  });
-this. direcciones = this. direcciones.filter((dir, i, self) =>
-  i === self.findIndex(d => d.calle === dir.calle && d.numero === d.numero)
-);
-
-
-
-    },
-    error:(error:any)=>{
-    
-      console.error("No se encontro el usuario",error)
-    }
-    
-
-  })
-}
-      },
-      error:(error:any)=>{
-      
-        console.error("No se encontro el usuario",error)
-      }})
-    
+    this.loadLocalidades();
+    const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.getOne(id);
-     
-      
     }
+    this.loadUserData();
   }
 
-
-  getOne(id: string): void { 
-    this.productoService.getOne(id).subscribe(
-      (producto: Producto) => { // Espera un Producto
-        this.producto = producto; // Asigna el producto recuperado
-      },
-      (error) => {
-       
-        console.error('Error fetching product:', error);
-      }
-    );
-    
-  }
- async  onSubmit() {
-    console.log(" Iniciando proceso de compra...");
-  
-   
-    this.direccion_entrega = this.publicaForm.value.direccion || '';
-  
-    this.cantidad_producto = this.publicaForm.value.cantidad_producto;
-    this.compraExitosa = true;
-
-    if (!this.producto) {
-      console.error(" Error: El producto no se ha cargado correctamente.");
-      return;
-    }
-    if(this.producto.stock)
-    if (this.cantidad_producto <= 0 || this.cantidad_producto > this.producto.stock) {
-      console.error(" Error: La cantidad debe ser mayor a 0 y menor o igual al stock disponible.");
-     
-      return;
-    }
-  
-    console.log(" Producto cargado correctamente:", this.producto);
-    console.log(" Creando item en el carrito...");
-  if(this.producto.id)
-    
-    this.carritoService.createItem(this.producto.id, this.idUser, this.cantidad_producto).subscribe({
+  loadUserData(): void {
+    this.autenticacionService.getUserInformation().subscribe({
       next: (response: any) => {
-        if (!response || !response.data) {
-          console.error("Error: La respuesta del servidor no contiene datos del item.");
-          return;
+        this.idUser = response.data.id;
+        if (this.idUser) {
+          this.personaService.getOne(this.idUser).subscribe({
+            next: (response: any) => {
+              this.cliente = response.data;
+              this.compradorDestinatario = this.cliente.mail;
+              if (this.cliente.direccion) {
+                this.direcciones.push(this.cliente.direccion);
+              }
+              if (this.cliente.compras) {
+                this.cliente.compras.forEach(compra => {
+                  if (compra.direccion) {
+                    this.direcciones.push(compra.direccion);
+                  }
+                });
+              }
+              this.direcciones = this.direcciones.filter((dir, i, self) =>
+                i === self.findIndex(d => d.calle === dir.calle && d.numero === dir.numero)
+              );
+            },
+            error: (error: any) => {
+              console.error("No se encontró el usuario", error);
+            }
+          });
         }
-  
-        console.log(" Item creado con éxito:", response.data);
-  
-     console.log("Hasta aca anda")
-        this.items[0]=response.data
-  
-        console.log(" Items actuales:", this.items);
-        if (this.mostrarNuevaDireccion) {
-          // Se crea con los campos individuales
-          this.compra = {
-            personaId: this.idUser, 
-            items: this.items,
-            calle: this.publicaForm.value.calle || '',
-            numero: this.publicaForm.value.numero || 0,
-            localidadId: this.publicaForm.value.localidad || '',
-          
-          };}
-        
-        else
-        this.compra = {
-          personaId: this.idUser,
-          direccionId: this.direccion_entrega,
-          items: this.items
-        };
-  
-        console.log(" Enviando compra al servidor:", this.compra);
-  
-        this.compraService.procesarCompra(this.compra, this.idUser, this.compradorDestinatario)
-        .subscribe({
-          next: () => {
-            console.log("Compra procesada correctamente");
-          },
-          error: (err) => {
-            console.error("Error al procesar la compra:", err);
-          }
-        });
+      },
+      error: (error: any) => {
+        console.error("No se encontró el usuario", error);
+      }
+    });
+  }
 
-        
+  getOne(id: string): void {
+    this.productoService.getOne(id).subscribe({
+      next: (producto: Producto) => {
+        this.producto = producto;
+        if(this.producto.id){
+          this.historicoPrecioService.getOne(this.producto.id).subscribe({
+            next:(response:any)=>{
+this.precio=response
+            },
+            error:(error:any)=>{
+            
+              console.error("No se obtuvo el precio",error)
+            }
+            
+          })
+        }
       },
       error: (error) => {
-        console.error(" Error al agregar item al carrito:", error);
+        console.error('Error al obtener el producto:', error);
+      }
+    });
+  }
+
+  loadLocalidades(): void {
+    this.seguimientoService.getLocalidades().subscribe({
+      next: (response: any) => {
+        this.localidades = response.data;
+      },
+      error: (error: any) => {
+        console.error('Error al obtener localidades', error);
+      }
+    });
+  }
+
+  mostrarError(mensaje: string): void {
+    this.mensajeError = mensaje;
+  }
+
+  cerrarError(): void { // Modal para cerrar el error
+    this.mensajeError = null;
+  }
+
+  confirmarCompra(): void { // Modal para confirmar la compra
+    if (!this.cantidadInvalida) {
+      this.confirmaCompra = true;
+    }
+  }
+
+  confirmarYEnviar(): void { // Aca se ejecuta la compra
+    if (this.formInvalido) { // valido todos los campos de el form
+      this.mensajeError = 'Por favor, completa todos los campos.';
+      return;
+    }
+    this.onSubmit();
+  }
+
+  validarCampos(): boolean {
+    if (this.mostrarNuevaDireccion) {
+      return this.publicaForm.valid && !this.cantidadInvalida;
+    }
+    return (this.publicaForm.get('direccion')?.valid ?? false) && !this.cantidadInvalida;
+
+  }
+
+  onSubmit(): void {
+    const cantidad = this.publicaForm.value.cantidad_producto;
+  
+    // Verifica que el producto exista y la cantidad sea válida
+    if (!this.producto || cantidad <= 0 || (this.producto.stock && cantidad > this.producto.stock)) {
+      console.error("Error en los datos del producto o cantidad.");
+      this.mostrarError('La cantidad es inválida o el producto no está disponible o la cantidad no fue ingresada.');
+      return;
+    }
+  
+    // Asegúrate de que se haya seleccionado una dirección o se haya ingresado una nueva
+    const direccionSeleccionada = this.publicaForm.value.direccion;
+    if (!direccionSeleccionada && !this.mostrarNuevaDireccion) {
+      this.publicaForm.get('direccion')?.markAsTouched(); 
+      
+      this.mostrarError('Debes seleccionar o ingresar una dirección.');
+      return;
+    }
+  
+    // Si se elige una nueva dirección, verifica que todos los campos estén completos
+    if (this.mostrarNuevaDireccion) {
+      if (!this.publicaForm.value.calle || !this.publicaForm.value.numero || !this.publicaForm.value.localidad) {
+        console.error("Error: faltan campos en la nueva dirección.");
+        this.mostrarError('Por favor, ingresa todos los campos de la nueva dirección.');
+        return;
+      }
+    }
+  
+    
+    this.carritoService.createItem(this.producto.id!, this.idUser, cantidad).subscribe({
+      next: (response: any) => {
+        this.items = [response.data]; 
+  
+        
+        if (this.mostrarNuevaDireccion) {
+          this.compra = {
+            personaId: this.idUser,
+            items: this.items,
+            calle: this.publicaForm.value.calle!,
+            numero: Number(this.publicaForm.value.numero!),
+            localidadId: this.publicaForm.value.localidad!,
+          };
+        } else {
+         
+          this.compra = {
+            personaId: this.idUser,
+            direccionId: direccionSeleccionada,
+            items: this.items
+          };
+        }
+  this.spinner=true
+     this.confirmaCompra=false 
+        this.compraService.procesarCompra(this.compra, this.idUser, this.compradorDestinatario)
+          .subscribe({
+            next: () => {
+              this.spinner=false
+             
+              this.muestraCompra = this.compra;
+             
+              this.muestraDetalle = true;
+            },
+            error: (err) => {
+              console.error("Error al procesar la compra:", err);
+            }
+          });
+      },
+      error: (error) => {
+        this.spinner=false
+        console.error("Error al crear item en el carrito:", error);
       }
     });
   }
   
-
-  cantidadInvalida: boolean = false;
-
-  validarCantidad() {
-    const cantidad = this.publicaForm.value.cantidad_producto;
-    if(this.producto.stock)
-    this.cantidadInvalida = cantidad <= 0 || cantidad > this.producto.stock;
+  cerrarModalConfirmacion(): void {
+    this.confirmaCompra = false;
   }
-  
-  loadLocalidades(){
-    this.seguimientoService.getLocalidades().subscribe({
-    next:(response:any)=>{
-    this.localidades=response.data
-    },error:(error:any)=>{
-      console.error('No se encontraron localidades',error)
-    }})}
 
-    confirmarCompra() { // muestra el modal de confirmacion
-      this.confirmaCompra = true;
-    }
-    confirmarYEnviar() { // muestro cuando se acepta en el modal
-      this.cerrarModalConfirmacion(); // opcional, si querés cerrar antes
-      this.onSubmit();
-      this.muestraDetalle= true; 
-    }
-    cerrarModalConfirmacion() { // si la compra no se acepta en el modal
-      this.confirmaCompra = false;
-    }
+  cerrarModalDetalle(): void {
+    this.muestraDetalle = false;
+    this.router.navigate(['/productos']);
+  }
 
-    cerrarModalDetalle() {
-      this.muestraDetalle = false;
-      
+  onCancel(): void { // si cancelo la compra nueva reseteo todos los campos a nulos
+    this.mostrarNuevaDireccion = false;
+    this.publicaForm.get('calle')?.reset();
+    this.publicaForm.get('numero')?.reset();
+    this.publicaForm.get('localidad')?.reset();
+  }
+
+  validarCantidad(): void {
+    const cantidad = this.publicaForm.value.cantidad_producto;
+    if (this.producto.stock) {
+      this.cantidadInvalida = cantidad <= 0 || cantidad > this.producto.stock;
+      if (this.cantidadInvalida) {
+        if (cantidad <= 0) {
+          this.mostrarError('La cantidad debe ser mayor a cero.');
+        } else {
+          this.mostrarError(`La cantidad no puede superar el stock disponible (${this.producto.stock}).`);
+        }
+      } else {
+        this.cerrarError();
+      }
     }
+  }
 }
 
