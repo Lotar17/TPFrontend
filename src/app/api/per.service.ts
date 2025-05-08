@@ -63,6 +63,7 @@ updatePersona(persona:Persona):Observable<ApiResponse<Persona>>{
       token,
       passwordNueva,
     };
+    console.log('Datos enviados',payload)
     return this.http.patch(`${this.apiUrl}/resetPassword`, payload);
     
   }
