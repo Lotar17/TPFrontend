@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
-import { LoginService } from '../api/login.service.js';
+import { LoginService } from '../api/login.service';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 import { response } from 'express';
 import { Router, RouterLink } from '@angular/router';
 
-import { AuthService } from '../api/Auth.service.js';
-import { AutenticacionService } from '../api/autenticacion.service.js';
+import { AuthService } from '../api/Auth.service';
+import { AutenticacionService } from '../api/autenticacion.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
