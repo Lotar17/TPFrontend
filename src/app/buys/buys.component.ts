@@ -152,6 +152,18 @@ spinner=false
       return;
     }
     
+    
+const itemSinStock = this.items.find(
+  item => item.producto && item.cantidad_producto > (item.producto.stock ?? 0)
+);
+
+if (itemSinStock && itemSinStock.producto) {
+  this.mostrarError(`El producto "${itemSinStock.producto.descripcion ?? ''} " no tiene suficiente stock disponible.`);
+  return;
+}
+
+ 
+
 
     if (this.mostrarNuevaDireccion) {
       if (!this.publicaForm.value.calle || !this.publicaForm.value.numero || !this.publicaForm.value.localidad) {
