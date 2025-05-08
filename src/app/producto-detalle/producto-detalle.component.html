@@ -5,7 +5,7 @@
     <!-- Imagen del producto -->
     <div class="lg:col-span-4 flex justify-center items-center">
       <img 
-        src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fHx8&auto=format&fit=crop&w=1471&q=80" 
+      [src]="'http://localhost:3000/uploads/' + producto.photoPath"
         alt="Imagen del producto" 
         class="h-64 w-64 rounded-lg object-cover sm:h-80 sm:w-80 md:h-full md:w-full" 
       />

@@ -15,4 +15,5 @@ export type Producto = {
   compras?: [];
   hist_precios?: PrecioHistorico[];
   detalle?:string
+  photoPath?: string; 
 };
