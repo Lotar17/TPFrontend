@@ -58,7 +58,7 @@ export class RestablecerContrasenaComponent implements OnInit {
 
     this.personaService.resetPassword(this.token, passwordNueva).subscribe({
       next: (response: Response) => {
-        this.mensajeExito = 'Contraseña cambiada con exito';
+
         this.contraseniaCambiada = true;
         this.router.navigate(['/login']);
       },
@@ -84,4 +84,3 @@ cancelarContrasenia(){
 }
 
 }
-
