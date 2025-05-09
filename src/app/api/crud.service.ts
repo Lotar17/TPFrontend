@@ -1,8 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { ApiResponse } from '../models/ApiResponse.js';
 import { BaseModel } from '../models/baseModel.entity.js';
+import { response } from 'express';
 
 @Injectable({
   providedIn: 'root',
@@ -62,28 +63,32 @@ export class CRUDService<T extends BaseModel> {
 
   add(tabla: string, t: any) {
     console.log(t);
-    return this.http
-      .post<ApiResponse<any>>(`${this.url}/${tabla}/`, t)
-      .subscribe({
-        next: (response) => {
-          const nuevoElemento = response.data;
-          if (!nuevoElemento) {
-            console.log('La respuesta no contiene un "data" válido');
-            return;
-          }
-          const listaActual = this.subject.getValue();
-          listaActual.push(nuevoElemento); //actualizo la lista pero con lo del back
-          // Emití la lista actualizada
-          this.subject.next([...listaActual]); // dusoaparo el next
-  
-          console.log(`Producto creado con éxito`);
-        },
-        error: (err) => {
-          console.error('Error al crear la entidad:', err.message);
-        },
-      });
+    let resultado = undefined;
+    this.http.post<ApiResponse<any>>(`${this.url}/${tabla}/`, t).subscribe({
+      next: (response) => {
+        const nuevoElemento = response.data;
+        if (!nuevoElemento) {
+          console.log('La respuesta no contiene un "data" válido');
+          return;
+        }
+        const listaActual = this.subject.getValue();
+        listaActual.push(nuevoElemento); //actualizo la lista pero con lo del back
+        // Emití la lista actualizada
+        this.subject.next([...listaActual]); // dusoaparo el next
+
+        console.log(`Creado con éxito`);
+        resultado = 'Creado con exito';
+      },
+      error: (err) => {
+        // console.error('Error al crear la entidad:', err);
+        if (err instanceof HttpErrorResponse) {
+          console.error(err.error.message);
+          resultado = err.error.message;
+        }
+      },
+    });
+    return resultado;
   }
-  
 
   update(tabla: string, t: T) {
     return this.http

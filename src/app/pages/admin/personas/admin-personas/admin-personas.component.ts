@@ -108,6 +108,7 @@ export class AdminPersonasComponent {
       delete persona.password;
       this.crudService.update('personas', persona);
     }
+
     this.openAddDialog = !this.openAddDialog;
   }
 }
