@@ -1,7 +1,12 @@
 import { Component, inject, Output } from '@angular/core';
 import { PersonasService } from '../../../../api/personas.service.js';
 import { Observable } from 'rxjs';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Persona } from '../../../../models/persona.entity.js';
 import { AsyncPipe } from '@angular/common';
 import { ApiResponse } from '../../../../models/ApiResponse.js';
@@ -37,18 +42,78 @@ export class AdminPersonasComponent {
   isUpdating = false;
   idEdited: string | undefined = undefined;
   personaToDelete: Persona | undefined = undefined;
+  formularioInvalido: string | undefined;
 
   addForm = new FormGroup({
-    nombre: new FormControl('', { nonNullable: true }),
-    apellido: new FormControl('', { nonNullable: true }),
-    email: new FormControl('', { nonNullable: true }),
-    telefono: new FormControl(''),
-    contrasena: new FormControl('', { nonNullable: true }),
+    nombre: new FormControl('', [Validators.required, Validators.minLength(1)]),
+    apellido: new FormControl('', [
+      Validators.required,
+      Validators.minLength(1),
+    ]),
+    email: new FormControl('', [Validators.required, Validators.email]),
+    telefono: new FormControl('', [
+      Validators.required,
+      Validators.minLength(10),
+    ]),
+    contrasena: new FormControl('', [Validators.required]),
     rol: new FormControl('Usuario', { nonNullable: true }),
     localidad: new FormControl(),
-    calle: new FormControl('', { nonNullable: true }),
+    calle: new FormControl('', [Validators.required]),
     numero: new FormControl(),
   });
+
+  get nombre() {
+    return this.addForm.get('nombre');
+  }
+  get apellido() {
+    return this.addForm.get('apellido');
+  }
+  get email() {
+    return this.addForm.get('email');
+  }
+  get telefono() {
+    return this.addForm.get('telefono');
+  }
+  get contrasena() {
+    return this.addForm.get('contrasena');
+  }
+  get localidad() {
+    return this.addForm.get('localidad');
+  }
+  get calle() {
+    return this.addForm.get('calle');
+  }
+  get numero() {
+    return this.addForm.get('numero');
+  }
+
+  isSubmitFormValid() {
+    if (
+      this.nombre?.valid &&
+      this.apellido?.valid &&
+      this.telefono?.valid &&
+      this.calle?.valid &&
+      this.email?.valid &&
+      this.localidad?.valid &&
+      this.numero?.valid &&
+      this.contrasena?.valid &&
+      this.isUpdating === false
+    ) {
+      return true;
+    } else if (
+      this.nombre?.valid &&
+      this.apellido?.valid &&
+      this.telefono?.valid &&
+      this.calle?.valid &&
+      this.email?.valid &&
+      this.localidad?.valid &&
+      this.numero?.valid &&
+      this.isUpdating === true
+    ) {
+      return true;
+    }
+    return false;
+  }
 
   constructor() {
     this.crudService.getAll('personas');
@@ -92,22 +157,28 @@ export class AdminPersonasComponent {
     };
     const persona: Persona = {
       id: this.idEdited ?? '',
-      nombre: this.addForm.value.nombre ?? '',
-      apellido: this.addForm.value.apellido ?? '',
-      mail: this.addForm.value.email ?? '',
-      telefono: this.addForm.value.telefono ?? '',
-      password: this.addForm.value.contrasena ?? '',
-      rol: this.addForm.value.rol ?? '',
-      calle: this.addForm.value.calle,
+      nombre: this.addForm.value.nombre!,
+      apellido: this.addForm.value.apellido!,
+      mail: this.addForm.value.email!,
+      telefono: this.addForm.value.telefono!,
+      password: this.addForm.value.contrasena!,
+      rol: this.addForm.value.rol!,
+      calle: this.addForm.value.calle!,
       numero: this.addForm.value.numero,
       localidadId: this.addForm.value.localidad,
     };
-    if (this.isUpdating === false) {
-      this.crudService.add('personas', persona);
+    console.log(persona);
+    if (this.isSubmitFormValid()) {
+      if (this.isUpdating === false) {
+        this.crudService.add('personas', persona);
+      } else {
+        delete persona.password;
+        this.crudService.update('personas', persona);
+      }
+      this.openAddDialog = !this.openAddDialog;
     } else {
-      delete persona.password;
-      this.crudService.update('personas', persona);
+      this.formularioInvalido =
+        'El formulario de envío contiene errores, revise sus datos';
     }
-    this.openAddDialog = !this.openAddDialog;
   }
 }

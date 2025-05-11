@@ -2,7 +2,12 @@
   rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
 />
-<app-persona-add (click)="OpenAddDialog()"></app-persona-add>
+<div class="flex justify-end">
+  <app-persona-add
+    (click)="OpenAddDialog()"
+    class="inline-block"
+  ></app-persona-add>
+</div>
 <ul role="list" class="divide-y divide-gray-100 p-3">
   @for (localidad of localidades$ |async; track localidad.id) {
 
