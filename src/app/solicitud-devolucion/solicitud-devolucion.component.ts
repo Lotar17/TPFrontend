@@ -100,6 +100,10 @@ if(this.item1.id)
       this.spinner=false
       console.log('Solicitud creada con éxito', response.data);
       this.mostrarModalExito = true;
+       setTimeout(() => {
+      this.mostrarModalConfirmacion = false;
+      this.router.navigate(['/productos']);
+    }, 3000);
 const mailDestinatario= response.data.vendedor.mail
 const asunto= "Devolución Recibida"
 const mensaje= `Usted ${response.data.vendedor.nombre} ${response.data.vendedor.apellido} recibio una solicitud de devolucion por parte de la siguiente persona:
@@ -127,6 +131,7 @@ console.log('Correo enviado con exito a',mailDestinatario)
   
   })
 }
+
 mostrarModalConfirmacion = false;
 mostrarModalExito = false;
 
@@ -143,10 +148,7 @@ confirmarDevolucion() {
 
   // Validar antes de continuar
   if (this.publicaForm.valid) {
-    setTimeout(() => {
-      this.mostrarModalConfirmacion = false;
-      this.router.navigate(['/productos']);
-    }, 3000);
+   
     this.onSubmit(); 
   } else {
     this.publicaForm.markAllAsTouched(); // Esto fuerza mostrar errores si faltan campos

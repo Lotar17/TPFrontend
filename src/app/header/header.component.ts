@@ -29,4 +29,11 @@ export class HeaderComponent implements OnInit {
     this.route.navigateByUrl(path);
   }
 
+
+menuOpen: boolean = false;
+
+  toggleMenu(): void {
+    this.menuOpen = !this.menuOpen;
+  }
+  
 }

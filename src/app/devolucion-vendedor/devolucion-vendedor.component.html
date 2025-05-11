@@ -1,156 +1,146 @@
 <app-header></app-header>
-<div class="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-600 via-lightblue-500 to-white-500 p-6">
-<div class="min-h-screen bg-gray-100 p-6 flex items-center justify-center">
-  <div class="w-full max-w-7xl bg-white shadow-2xl rounded-2xl p-8">
-    <app-sidebar *ngIf="idVendedor" [personaId]="idVendedor"></app-sidebar>
-    <h1 class="text-3xl font-bold text-gray-800 text-center mb-10">📦 Solicitudes</h1>
+<div class="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-600 via-lightblue-500 to-white-500 p-4 sm:p-6">
+  <div class="min-h-screen w-full bg-gray-100 p-4 sm:p-6 flex items-center justify-center">
+    <div class="w-full max-w-7xl bg-white shadow-2xl rounded-2xl p-4 sm:p-6 lg:p-8">
+      <app-sidebar *ngIf="idVendedor" [personaId]="idVendedor"></app-sidebar>
 
-    <!-- Filtros -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-      <input
-        type="text"
-        placeholder="🔍 Filtrar por cliente..."
-        [(ngModel)]="filtroCliente"
-        (input)="filtrarSolicitudes()"
-        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
-      />
-      <input
-        type="text"
-        placeholder="🔍 Filtrar por producto..."
-        [(ngModel)]="filtroProducto"
-        (input)="filtrarSolicitudes()"
-        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
-      />
-    </div>
+      <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 text-center mb-6 sm:mb-10">📦 Solicitudes</h1>
 
-    <!-- Tabla de Solicitudes -->
-    <div *ngIf="solicitudes && solicitudes.length > 0; else noSolicitudes">
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-             
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Codigo de Confirmacion>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Compra</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad Devuelta</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fechas</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
-            </tr>
-          </thead>
-
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr *ngFor="let solicitud of solicitudes" class="hover:bg-gray-50">
-              <td class="px-4 py-4 text-sm text-gray-700 font-semibold">{{ solicitud.comprador?.nombre }} {{solicitud.comprador?.apellido}}</td>
-              <td class="px-4 py-4 text-sm text-gray-700">{{ solicitud.codigoConfirmacion }}</td>
-              <td class="px-4 py-4 text-sm text-gray-700">{{ solicitud.item.producto?.descripcion }}</td>
-              <td class="px-4 py-4 text-sm text-gray-700">{{ solicitud.item.cantidad_producto }}</td>
-              <td class="px-4 py-4 text-sm text-gray-700">{{ solicitud.item.compra?.total_compra }}</td>
-              <td class="px-4 py-4 text-sm text-gray-700">{{ solicitud.cantidad_devuelta }}</td>
-              <td class="px-4 py-4 text-sm text-gray-700">
-                <div>
-                  Fecha de Solicitud {{ solicitud.fechaSolicitud | date }}
-                  <br>
-                  Fecha de Confirmacion {{ solicitud.fechaConfirmacion | date }}
-                  <br>
-                  Fecha de envio del cliente {{ solicitud.fechaEnvioCliente | date }}
-                </div>
-              </td>
-              <td class="px-4 py-4 text-sm">
-                <span
-                  class="px-2 py-1 rounded-full text-xs font-medium"
-                  [ngClass]="{
-                    'bg-yellow-100 text-yellow-800': solicitud.estado === 'pendiente',
-                    'bg-green-100 text-green-800': solicitud.estado === 'aprobada',
-                    'bg-red-100 text-red-800': solicitud.estado === 'rechazada'
-                  }"
-                >
-                  {{ solicitud.estado | titlecase }}
-                </span>
-              </td>
-              <td class="px-4 py-4 text-sm space-y-2">
-                <div *ngIf="solicitud.id && solicitud.estado === 'pendiente'" class="flex flex-col space-y-1">
-                  <button
-                    (click)="abrirConfirmacion(solicitud, 'Aprobada')"
-                    class="bg-green-600 hover:bg-green-700 text-white font-medium py-1 px-2 rounded transition-all duration-300 hover:scale-105"
-                  >
-                    ✅ Aceptar
-                  </button>
-                  <button
-                    (click)="abrirConfirmacion(solicitud, 'Rechazada')"
-                    class="bg-red-600 hover:bg-red-700 text-white font-medium py-1 px-2 rounded transition-all duration-300 hover:scale-105"
-                  >
-                    ❌ Rechazar
-                  </button>
-                </div>
-
-                <div *ngIf="solicitud.fechaEnvioCliente && !solicitud.fechaCierre" class="mt-2 text-center">
-                  <button
-                    (click)="mostrarProductoLlego = !mostrarProductoLlego; solicitudSeleccionadaId = solicitud.id || ''; mostrarCierre = false; mensajeCierre = ''"
-                    class="text-indigo-600 hover:text-indigo-800 font-medium text-xs"
-                  >
-                    {{ mostrarProductoLlego && solicitudSeleccionadaId === solicitud.id ? 'Ocultar opciones' : '¿Llegó el producto?' }}
-                  </button>
-                </div>
-
-                <div *ngIf="mostrarProductoLlego && solicitudSeleccionadaId === solicitud.id" class="mt-2">
-                  <button
-                    *ngIf="!stockActualizando"
-                    (click)="abrirModalStock(solicitud)"
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-1.5 px-3 rounded transition duration-300 mb-2"
-                  >
-                    📦 Actualizar Stock
-                  </button>
-                  <button
-                    (click)="mostrarCierre = !mostrarCierre; mensajeCierre = ''"
-                    class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-1.5 px-3 rounded transition duration-300"
-                  >
-                    🔒 Realizar Cierre
-                  </button>
-
-                 <!-- Área de texto para mensaje de cierre -->
-<textarea
-[(ngModel)]="mensajeCierre"
-class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500"
-placeholder="Escribe el mensaje de cierre..."
-rows="2"
-></textarea>
-
-<!-- Mensaje de error si no se ingresa un mensaje -->
-<div *ngIf="mensajeCierre === ''" class="text-red-500 text-sm mt-2">
-El mensaje de cierre es obligatorio.
-</div>
-
-<!-- Botón de cierre que se deshabilita si el mensaje está vacío -->
-<button
-(click)="abrirConfirmacionCierre(solicitud)"
-class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-1.5 px-3 rounded mt-2 transition duration-300"
-[disabled]="mensajeCierre === ''"
->
-✅ Cierre
-</button>
-
-                </div>
-
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <!-- Filtros -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <input
+          type="text"
+          placeholder="🔍 Filtrar por cliente..."
+          [(ngModel)]="filtroCliente"
+          (input)="filtrarSolicitudes()"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        />
+        <input
+          type="text"
+          placeholder="🔍 Filtrar por producto..."
+          [(ngModel)]="filtroProducto"
+          (input)="filtrarSolicitudes()"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        />
       </div>
-    </div>
 
-    <!-- Mensaje cuando no hay solicitudes -->
-    <ng-template #noSolicitudes>
-      <p class="text-center text-gray-600 font-medium text-lg py-10">📭 No hay solicitudes disponibles.</p>
-    </ng-template>
+      <!-- Tabla de Solicitudes -->
+      <div *ngIf="solicitudes && solicitudes.length > 0; else noSolicitudes">
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-xs sm:text-sm md:text-base divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-2 sm:px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+                <th class="px-2 sm:px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Código de Confirmación</th>
+                <th class="px-2 sm:px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Producto</th>
+             
+          
+                <th class="px-2 sm:px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Cantidad Devuelta</th>
+                <th class="px-2 sm:px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Fechas</th>
+                <th class="px-2 sm:px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                <th class="px-2 sm:px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+              </tr>
+            </thead>
+
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr *ngFor="let solicitud of solicitudes" class="hover:bg-gray-50">
+                <td class="px-2 sm:px-4 py-4 text-gray-700 font-semibold">{{ solicitud.comprador?.nombre }} {{solicitud.comprador?.apellido}}</td>
+                <td class="px-2 sm:px-4 py-4 text-gray-700">{{ solicitud.codigoConfirmacion }}</td>
+                <td class="px-2 sm:px-4 py-4 text-gray-700">{{ solicitud.item.producto?.descripcion }}</td>
+    
+               
+                <td class="px-2 sm:px-4 py-4 text-gray-700">{{ solicitud.cantidad_devuelta }}</td>
+                <td class="px-2 sm:px-4 py-4 text-gray-700 text-xs sm:text-sm">
+                  <div>
+                    <div>Solicitud: {{ solicitud.fechaSolicitud | date }}</div>
+                    <div>Confirmación: {{ solicitud.fechaConfirmacion | date }}</div>
+                    <div>Envío cliente: {{ solicitud.fechaEnvioCliente | date }}</div>
+                  </div>
+                </td>
+                <td class="px-2 sm:px-4 py-4">
+                  <span
+                    class="px-2 py-1 rounded-full text-xs font-medium"
+                    [ngClass]="{
+                      'bg-yellow-100 text-yellow-800': solicitud.estado === 'pendiente',
+                      'bg-green-100 text-green-800': solicitud.estado === 'aprobada',
+                      'bg-red-100 text-red-800': solicitud.estado === 'rechazada'
+                    }"
+                  >
+                    {{ solicitud.estado | titlecase }}
+                  </span>
+                </td>
+                <td class="px-2 sm:px-4 py-4 space-y-2 text-xs sm:text-sm">
+                  <div *ngIf="solicitud.id && solicitud.estado === 'pendiente'" class="flex flex-col space-y-1">
+                    <button
+                      (click)="abrirConfirmacion(solicitud, 'Aprobada')"
+                      class="bg-green-600 hover:bg-green-700 text-white font-medium py-1 px-2 rounded transition-all duration-300 hover:scale-105"
+                    >
+                      ✅ Aceptar
+                    </button>
+                    <button
+                      (click)="abrirConfirmacion(solicitud, 'Rechazada')"
+                      class="bg-red-600 hover:bg-red-700 text-white font-medium py-1 px-2 rounded transition-all duration-300 hover:scale-105"
+                    >
+                      ❌ Rechazar
+                    </button>
+                  </div>
+
+                  <div *ngIf="solicitud.fechaEnvioCliente && !solicitud.fechaCierre" class="mt-2 text-center">
+                    <button
+                      (click)="mostrarProductoLlego = !mostrarProductoLlego; solicitudSeleccionadaId = solicitud.id || ''; mostrarCierre = false; mensajeCierre = ''"
+                      class="text-indigo-600 hover:text-indigo-800 font-medium text-xs"
+                    >
+                      {{ mostrarProductoLlego && solicitudSeleccionadaId === solicitud.id ? 'Ocultar opciones' : '¿Llegó el producto?' }}
+                    </button>
+                  </div>
+
+                  <div *ngIf="mostrarProductoLlego && solicitudSeleccionadaId === solicitud.id" class="mt-2">
+                    <button
+                      *ngIf="!stockActualizando"
+                      (click)="abrirModalStock(solicitud)"
+                      class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-1.5 px-3 rounded transition duration-300 mb-2"
+                    >
+                      📦 Actualizar Stock
+                    </button>
+                    <button
+                      (click)="mostrarCierre = !mostrarCierre; mensajeCierre = ''"
+                      class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-1.5 px-3 rounded transition duration-300"
+                    >
+                      🔒 Realizar Cierre
+                    </button>
+
+                    <textarea
+                      [(ngModel)]="mensajeCierre"
+                      class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 mt-2"
+                      placeholder="Escribe el mensaje de cierre..."
+                      rows="2"
+                    ></textarea>
+
+                    <div *ngIf="mensajeCierre === ''" class="text-red-500 text-sm mt-1">
+                      El mensaje de cierre es obligatorio.
+                    </div>
+
+                    <button
+                      (click)="abrirConfirmacionCierre(solicitud)"
+                      class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-1.5 px-3 rounded mt-2 transition duration-300"
+                      [disabled]="mensajeCierre === ''"
+                    >
+                      ✅ Cierre
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <ng-template #noSolicitudes>
+        <p class="text-center text-gray-600 font-medium text-base sm:text-lg py-10">📭 No hay solicitudes disponibles.</p>
+      </ng-template>
+    </div>
   </div>
 </div>
-
-<!-- Dejo los modales fuera de la tabla, como los tenías -->
-
 <!-- Modal de Confirmación Acción -->
 <div *ngIf="mostrarConfirmacion" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
   <div class="bg-white p-6 rounded-xl shadow-xl w-80 text-center">
