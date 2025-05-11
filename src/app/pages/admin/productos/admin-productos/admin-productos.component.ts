@@ -27,9 +27,6 @@ export class AdminProductosComponent {
   productos$ = this.crudService.$;
   categorias$ = this.categoriaService.$;
   openDialog = false;
-  openAddDialog = false;
-  isUpdating = false;
-  idEdited: string | undefined = undefined;
   productoToDelete: Producto | undefined;
 
   constructor(
@@ -40,60 +37,13 @@ export class AdminProductosComponent {
     this.categoriaService.getAll('categorias');
   }
 
-  addForm = new FormGroup({
-    descripcion: new FormControl('', { nonNullable: true }),
-    stock: new FormControl(0, { nonNullable: true }),
-    categoriaId: new FormControl('', { nonNullable: true }),
-    personaMail: new FormControl(),
-    precio: new FormControl(0, { nonNullable: true }),
-  });
-
   OpenDialog(producto: Producto) {
     this.openDialog = !this.openDialog;
     this.productoToDelete = producto;
   }
 
-  OpenAddDialog(producto?: Producto) {
-    this.isUpdating = false;
-    this.idEdited = undefined;
-    this.addForm.reset();
-    if (producto) {
-      this.isUpdating = true;
-      this.idEdited = producto.id;
-      this.addForm.controls.descripcion.setValue(producto.descripcion ?? '');
-      this.addForm.controls.stock.setValue(producto.stock ?? 0);
-      this.addForm.controls.personaMail.setValue(producto.persona?.mail);
-      this.addForm.controls.categoriaId.setValue(producto.categoria?.id ?? '');
-      this.addForm.controls.precio.setValue(
-        producto.hist_precios?.at(producto.hist_precios!.length - 1)?.valor!
-      );
-    }
-    this.openAddDialog = true;
-  }
-
   delete(producto: Producto) {
     this.crudService.deleteOne('productos', producto).subscribe();
     this.openDialog = !this.openDialog;
-  }
-
-  submitForm() {
-    const categoria: Categoria = {
-      id: this.addForm.value.categoriaId ?? '',
-      descripcion: '',
-    };
-    const producto: Producto = {
-      id: this.idEdited ?? '',
-      descripcion: this.addForm.value.descripcion ?? '',
-      stock: this.addForm.value.stock ?? 0,
-      categoriaId: this.addForm.value.categoriaId ?? '',
-      personaMail: this.addForm.value.personaMail ?? '',
-      precio: this.addForm.value.precio ?? 0,
-    };
-    if (this.isUpdating === false) {
-      this.crudService.add('productos', producto);
-    } else {
-      this.crudService.update('productos', producto);
-    }
-    this.openAddDialog = !this.openAddDialog;
   }
 }
