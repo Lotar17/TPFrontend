@@ -18,6 +18,14 @@
       <div *ngFor="let item of items" class="cart-item border-b py-4 px-2 flex flex-col sm:flex-row justify-between items-center">
         <div class="flex items-center space-x-4 mb-4 sm:mb-0">
           <div>
+               <!-- Imagen del producto -->
+    <div class="lg:col-span-4 flex justify-center items-center">
+      <img 
+      [src]="'http://localhost:3000/uploads/' + item.producto?.photoPath"
+        alt="Imagen del producto" 
+        class="h-64 w-64 rounded-lg object-cover sm:h-80 sm:w-80 md:h-full md:w-full" 
+      />
+    </div>
             <h3 class="font-semibold text-gray-800 text-lg">{{ item.producto?.descripcion }}</h3>
             <p class="text-sm text-gray-600">Cantidad: {{ item.cantidad_producto }}</p>
             <p class="text-sm text-gray-600">Precio: ${{ item.precioUnitario }}</p>

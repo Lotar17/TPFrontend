@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { ApiResponse } from '../models/ApiResponse';
 import { Persona } from '../models/persona.entity';
 import { Direccion } from '../models/direccion.entity';
+import { Localidad } from '../models/localidad.entity';
 
 
 @Injectable({
@@ -78,35 +79,41 @@ updatePersona(persona:Persona):Observable<ApiResponse<Persona>>{
 return this.http.post<ApiResponse<Direccion>>('http://localhost:3000/api/direccion',payload)
   }
   
-  actualizaDireccion(calle:string,numero:number,localidad:string,usuario:Persona){
-this.createDireccion(calle,numero,localidad).subscribe({
-  next:(response:any)=>{
-console.log('Direccion creada con exito',response.data)
-usuario.direccion=response.data
-const direccion=response.data.id
-console.log('Usuario Id',usuario.id)
-if(usuario.id)
-  
-this.updateDireccion(direccion,usuario.id).subscribe({
-  next:(response:any)=>{
-console.log('Direccion Actualizada con exito',response.data)
-  },
-  error:(error:any)=>{
-
+actualizaDireccion(calle: string, numero: number, localidad: string, usuario: Persona,localidades:Localidad[]) {
+  this.createDireccion(calle, numero, localidad).subscribe({
+    next: (response: any) => {
+      console.log('Dirección creada con éxito', response.data);
 
   
-    console.error("No se encontro el usuario",error)
-  }
-})
-  },
-  error:(error:any)=>{
-  
-    console.error("No se encontro el usuario",error)
-  }
-})
+      usuario.direccion = response.data;
+if(usuario.direccion)
+    
+      usuario.direccion.localidad = localidades.find(
+        (loc) => loc.id === response.data.localidad
+      );
+
+      const direccionId = response.data.id;
+
+      console.log('Usuario Id', usuario.id);
+
+      if (usuario.id) {
+        this.updateDireccion(direccionId, usuario.id).subscribe({
+          next: (response: any) => {
+            console.log('Dirección actualizada con éxito', response.data);
+          },
+          error: (error: any) => {
+            console.error("No se pudo actualizar la dirección del usuario", error);
+          }
+        });
+      }
+    },
+    error: (error: any) => {
+      console.error("Error al crear la nueva dirección", error);
+    }
+  });
+}
 
 
-  }
   getPersonaByEmail(email: string) {
     const url = `http://localhost:3000/api/personas/email/${email}`;
     return this.http.get<ApiResponse<Persona>>(url);

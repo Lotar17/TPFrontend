@@ -47,7 +47,7 @@ mensajeStock: string | null = null;
         console.log('Usuario encontrado:', response); // Verifica la respuesta
         if (response && response.data && response.data.id) {
           this.idUser = response.data.id;
-          console.log('idUser:', this.idUser); // Asegúrate de que el idUser esté correctamente asignado
+          console.log('idUser:', this.idUser); 
   
           // Si el idUser es válido, obtenemos el carrito
           this.carritoService.getCarrito(this.idUser);
@@ -98,7 +98,7 @@ mensajeStock: string | null = null;
   
     
     this.carritoService.removeItem(itemId);
-    this.cd.detectChanges(); // 🔄 Forzamos que Angular detecte los cambios
+    this.cd.detectChanges(); //  Forzamos que Angular detecte los cambios
   }
   confirmarCompra() {
     this.realizarCompra(this.items); 

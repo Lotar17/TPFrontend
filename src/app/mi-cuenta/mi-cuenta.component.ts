@@ -76,7 +76,7 @@ if(this.usuario){
   editUsuario = { ...this.usuario };
  
 
-  updateDatosUsuario(editado: Persona) {
+  updateDatosUsuario(editado: Persona) { // datos
     this.personaService.updatePersona(editado).subscribe({
       next: (response: any) => {
         console.log('Datos del usuario actualizado con éxito', response.data);
@@ -99,13 +99,12 @@ if(this.usuario){
         }
         console.error('No se actualizó el usuario', error);
   
-        // 🔁 Revertís la edición si falló
         this.editUsuario = { ...this.usuario };
       }
     });
   }
   
-  updatePassword(mailUser:string,passwordActual:string,passwordNueva:string){
+  updatePassword(mailUser:string,passwordActual:string,passwordNueva:string){ //contra
 this.personaService.updatePassword(mailUser,passwordActual,passwordNueva).subscribe({
   next:(response:any)=>{
 console.log('Contraseña cambiada con exito',response.data)
@@ -137,13 +136,13 @@ this.closeModal();
     }})}
 
 
-  openModalEditarDatos() {
+  openModalEditarDatos() { //datos
     this.editUsuario = { ...this.usuario };
     
     this.showModalEditarDatos = true;
   }
 
-  openModalPassword() {
+  openModalPassword() {// password
     this.nuevaPassword = '';  
     this.passwordActual = '';  
     this.showModalPassword = true;
@@ -152,11 +151,11 @@ this.closeModal();
   }
 
 
-  guardarDatos() {
+  guardarDatos() { // datos
     this.updateDatosUsuario(this.editUsuario); }
   
   
-  guardarPassword() {
+  guardarPassword() { //password
 
     if (!this.passwordActual || !this.nuevaPassword) {
       this.errorMessage = 'Ambos campos son obligatorios';
@@ -189,17 +188,20 @@ cancelarCambioDireccion() {
 cancelarConfirmacion() {
   this.showModalConfirmacion = false;
 }
-guardarNuevaDireccion() {
+guardarNuevaDireccion() { // direccion 
   if (!this.nuevaCalle || !this.nuevoNumero || !this.nuevaLocalidad) {
     alert('Todos los campos de la dirección son obligatorios');
     return;
   }
 
+
+console.log(this.nuevaLocalidad)
   this.personaService.actualizaDireccion(
     this.nuevaCalle,
     this.nuevoNumero!,
     this.nuevaLocalidad,
-    this.usuario 
+    this.usuario ,
+    this.localidades
   )
    
       
@@ -211,8 +213,8 @@ guardarNuevaDireccion() {
       this.errorMessage = 'Error al actualizar dirección';
       this.showModalConfirmacion = false;
     }
-    datosValidos(): boolean {
-      const soloLetras = /^[A-Za-zÁÉÍÓÚÑáéíóúñ\s]+$/;   // Acepta letras y espacios (podés quitar \s si querés sin espacios)
+    datosValidos(): boolean { // datos
+      const soloLetras = /^[A-Za-zÁÉÍÓÚÑáéíóúñ\s]+$/;   // Acepta letras y espacios 
       const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Validación básica de email
       const soloNumeros = /^\d+$/;
     
@@ -222,7 +224,7 @@ guardarNuevaDireccion() {
              soloNumeros.test(this.editUsuario.telefono);
     }
     
-validarDireccion(): boolean {
+validarDireccion(): boolean { // direccion
   return (
     !!this.nuevaCalle &&                    
     !!this.nuevoNumero &&                     
