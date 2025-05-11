@@ -20,13 +20,15 @@
         </p>
       </div>
     </div>
-    <div class="hidden shrink-0 sm:flex sm:flex-row sm:items-center gap-5">
-      <p>{{ compra.fecha_hora_compra | date : "short" }}</p>
-      <p>
+    <div class="flex flex-col gap-2">
+      <p class="text-lg font-semibold leading-6 text-gray-900">
         {{
           compra.total_compra
             | currency : "ARS" : "symbol-narrow" : "1.0-2" : "es-AR"
         }}
+      </p>
+      <p class="mt-1 truncate text-xs leading-5 text-gray-500">
+        {{ compra.fecha_hora_compra | date : "short" }}
       </p>
     </div>
   </li>

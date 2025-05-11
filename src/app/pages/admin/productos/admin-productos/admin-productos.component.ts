@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CRUDService } from '../../../../api/crud.service.js';
 import { Producto } from '../../../../models/producto.entity.js';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, CurrencyPipe } from '@angular/common';
 import { DUIDialog, DUIButton } from 'david-ui-angular';
 import { ReactiveFormsModule } from '@angular/forms';
 import { PersonaAddComponent } from '../../personas/persona-add/persona-add.component.js';
@@ -19,6 +19,7 @@ import { CategoriaService } from '../../../../api/categoria.service.js';
     DUIButton,
     PersonaAddComponent,
     ReactiveFormsModule,
+    CurrencyPipe,
   ],
   templateUrl: './admin-productos.component.html',
   styleUrl: './admin-productos.component.css',
