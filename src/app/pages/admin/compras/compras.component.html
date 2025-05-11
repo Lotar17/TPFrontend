@@ -1,0 +1,39 @@
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+/>
+<ul role="list" class="divide-y divide-gray-100 p-3">
+  @for (compra of compras$ |async; track compra.id) {
+
+  <li class="flex justify-between gap-x-6 py-5">
+    <div class="flex min-w-0 gap-x-4">
+      <span class="material-symbols-outlined pt-5"> inventory_2 </span>
+      <div class="min-w-0 flex-auto">
+        @for (item of compra.items; track item.id) {
+        <p class="text-sm font-semibold leading-6 text-gray-900">
+          {{ item.producto?.descripcion }}: {{ item.cantidad_producto }} ->
+          {{ item.producto?.persona?.mail }}
+        </p>
+        }
+        <p class="mt-1 truncate text-xs leading-5 text-gray-500">
+          Comprador: {{ compra.persona?.mail }}
+        </p>
+      </div>
+    </div>
+    <div class="hidden shrink-0 sm:flex sm:flex-row sm:items-center gap-5">
+      <p>{{ compra.fecha_hora_compra | date : "short" }}</p>
+      <p>
+        {{
+          compra.total_compra
+            | currency : "ARS" : "symbol-narrow" : "1.0-2" : "es-AR"
+        }}
+      </p>
+    </div>
+  </li>
+
+  }@empty {
+  <p class="p-2 text-center align-middle">
+    No hay compras cargadas en el sistema
+  </p>
+  }
+</ul>
