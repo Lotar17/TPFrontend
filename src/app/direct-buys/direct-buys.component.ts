@@ -178,14 +178,13 @@ this.precio=response
   onSubmit(): void {
     const cantidad = this.publicaForm.value.cantidad_producto;
   
-    // Verifica que el producto exista y la cantidad sea válida
+   
     if (!this.producto || cantidad <= 0 || (this.producto.stock && cantidad > this.producto.stock)) {
       console.error("Error en los datos del producto o cantidad.");
       this.mostrarError('La cantidad es inválida o el producto no está disponible o la cantidad no fue ingresada.');
       return;
     }
   
-    // Asegúrate de que se haya seleccionado una dirección o se haya ingresado una nueva
     const direccionSeleccionada = this.publicaForm.value.direccion;
     if (!direccionSeleccionada && !this.mostrarNuevaDireccion) {
       this.publicaForm.get('direccion')?.markAsTouched(); 
@@ -193,8 +192,7 @@ this.precio=response
       this.mostrarError('Debes seleccionar o ingresar una dirección.');
       return;
     }
-  
-    // Si se elige una nueva dirección, verifica que todos los campos estén completos
+
     if (this.mostrarNuevaDireccion) {
       if (!this.publicaForm.value.calle || !this.publicaForm.value.numero || !this.publicaForm.value.localidad) {
         console.error("Error: faltan campos en la nueva dirección.");

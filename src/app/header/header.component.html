@@ -1,6 +1,6 @@
 <header class="font-sans font-semibold">
-  <div class="flex justify-between">
-    <a class="ml-3" routerLink="/">
+  <div class="flex flex-col md:flex-row justify-between items-center">
+    <a class="ml-3 w-32 md:w-auto" routerLink="/">
       <svg
         version="1.0"
         xmlns="http://www.w3.org/2000/svg"
@@ -9,7 +9,7 @@
         viewBox="0 0 697.000000 449.000000"
         preserveAspectRatio="xMidYMid meet"
         stroke="none"
-        class="stroke-none"
+        class="stroke-none w-full h-auto"
       >
         <!-- Fondo blanco -->
         <rect width="100%" height="100%" fill="#265DA5" stroke="none" />
@@ -95,7 +95,9 @@ l37 18 29 -34 c38 -46 36 -66 -9 -88 -58 -29 -91 -34 -150 -22 -135 28 -211
         </g>
       </svg>
     </a>
-    <ul class="flex gap-3 mt-5 mr-1">
+    
+    <!-- Menú para pantallas grandes (md en adelante) -->
+    <ul class="hidden md:flex gap-3 mt-0 md:mt-5 mr-1">
       @if (sesionPersona$ | async; as sesionPersona) { @if
       (sesionPersona.data?.rol === 'Administrador') {
       <li>
@@ -206,6 +208,130 @@ l37 18 29 -34 c38 -46 36 -66 -9 -88 -58 -29 -91 -34 -150 -22 -135 28 -211
       </li>
       }
     </ul>
+    
+    <!-- Botón de menú hamburguesa para móviles -->
+    <button class="md:hidden p-2 mr-3 mt-2" (click)="toggleMenu()">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
   </div>
+  
+  <!-- Menú móvil desplegable -->
+  <div class="md:hidden" [class.hidden]="!menuOpen">
+    <ul class="flex flex-col gap-2 p-3">
+      @if (sesionPersona$ | async; as sesionPersona) { @if
+      (sesionPersona.data?.rol === 'Administrador') {
+      <li>
+        <a
+          class="block select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
+          routerLink="/admin"
+          >Panel de administrador</a
+        >
+      </li>
+      <li>
+        <a
+          class="block select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
+          routerLink="/productos"
+          >Tienda</a
+        >
+      </li>
+      <li>
+        <a
+          class="block select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
+          >{{ sesionPersona.data?.nombre }}</a
+        >
+      </li>
+      } @else if (sesionPersona.data?.rol === 'Usuario') {
+      <li>
+        <a
+          class="block select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
+          routerLink="/productos"
+          >Tienda</a
+        >
+      </li>
+      <li>
+        <a
+          class="block select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
+          >{{ sesionPersona.data?.nombre }}</a
+        >
+      </li>
+      }@else if (sesionPersona.data?.rol === 'Empleado') {
+      <li>
+        <a
+          class="block select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
+          routerLink="/panelSeguimientoEmpleado"
+          >Panel Empleado</a
+        >
+      </li>
+      <li>
+        <a
+          class="block select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
+          >{{ sesionPersona.data?.nombre }}</a
+        >
+      </li>
+      } @else {
+      <li>
+        <a
+          class="block select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
+          routerLink="/login"
+        >
+          Iniciar Sesion
+        </a>
+      </li>
+      <li>
+        <a
+          class="block select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
+          routerLink="/register"
+        >
+          Registrarse
+        </a>
+      </li>
+
+      <li>
+        <a
+          class="block select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
+          routerLink="/productos"
+          >Tienda</a
+        >
+      </li>
+      } } @else {
+      <li>
+        <a
+          class="block select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
+          routerLink="/login"
+        >
+          Iniciar Sesion
+        </a>
+      </li>
+      <li>
+        <a
+          class="block select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
+          routerLink="/register"
+        >
+          Registrarse
+        </a>
+      </li>
+      <li>
+        <a
+          class="block hover:bg-gaucho-buy-inicio transition duration-300 rounded-xl p-2"
+          routerLink="micuenta"
+        >
+          Ver mi cuenta
+        </a>
+      </li>
+      
+
+      <li>
+        <a
+          class="block select-none rounded-xl p-2 font-medium hover:border-white hover:bg-gaucho-buy-fin hover:text-white transition duration-500"
+          routerLink="/productos"
+          >Tienda</a
+        >
+      </li>
+      }
+    </ul>
+  </div>
+  
   <hr class="colo" />
 </header>

@@ -2,13 +2,13 @@
   rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&icon_names=search"
 />
-<div class="search-bar flex flex-row gap-12">
-  <div class="flex">
+<div class="search-bar flex flex-col sm:flex-col md:flex-row lg:flex-row gap-4 sm:gap-6 md:gap-12 lg:gap-12 items-center w-full px-4">
+  <div class="flex w-full sm:w-full md:w-auto">
     <input
       type="text"
       [(ngModel)]="searchTerm"
       placeholder="Buscar productos..."
-      class="p-2 w-80 border-l border-t border-b border-gray-300 rounded-l-xl"
+      class="p-2 w-full sm:w-full md:w-80 border-l border-t border-b border-gray-300 rounded-l-xl"
     />
 
     <button
