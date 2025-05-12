@@ -32,8 +32,11 @@ import { MisventasComponent } from './misventas/misventas.component.js';
 import { OlvidaPasswordComponent } from './olvida-password/olvida-password.component.js';
 import { RestablecerContrasenaComponent } from './restablecer-contrasena/restablecer-contrasena.component.js';
 import { ComprasComponent } from './pages/admin/compras/compras.component.js';
+import { PageNotFoundComponent } from './pages/not-found/page-not-found/page-not-found.component.js';
 
 export const routes: Routes = [
+  { path: '', redirectTo: '', pathMatch: 'full' },
+
   {
     path: 'login',
     component: LoginComponent,
@@ -162,4 +165,5 @@ export const routes: Routes = [
     ],
     component: AdminComponent,
   },
+  { path: '**', component: PageNotFoundComponent },
 ];

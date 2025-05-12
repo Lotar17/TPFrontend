@@ -1,13 +1,17 @@
-<div class="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-600 via-lightblue-500 to-white-500 p-6">
+<div
+  class="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-600 via-lightblue-500 to-white-500 p-6"
+>
   <div class="w-full max-w-md bg-white shadow-2xl rounded-2xl p-8">
     <div class="text-center mb-8">
       <h2 class="text-3xl font-bold text-gray-800">Bienvenido a Gaucho Buy</h2>
-      <p class="text-gray-500 mt-2">Por favor incia sesion</p>
+      <p class="text-gray-500 mt-2">Por favor inicia sesión</p>
     </div>
 
     <form [formGroup]="loginForm" (submit)="onSubmit()" class="space-y-6">
       <div>
-        <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+        <label for="email" class="block text-sm font-medium text-gray-700"
+          >Dirección de correo electrónico</label
+        >
         <input
           type="email"
           name="email"
@@ -19,7 +23,9 @@
       </div>
 
       <div>
-        <label for="Password" class="block text-sm font-medium text-gray-700">Contraseña</label>
+        <label for="Password" class="block text-sm font-medium text-gray-700"
+          >Contraseña</label
+        >
         <input
           type="password"
           formControlName="password"
@@ -29,41 +35,42 @@
           class="mt-1 w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition duration-200"
         />
         @if (loginSuccesful === false) {
-          <p class="mt-2 text-sm text-red-600">Email o contraseña incorrecta</p>
+        <p class="mt-2 text-sm text-red-600">Email o contraseña incorrecta</p>
         }
       </div>
 
       <div class="flex items-center justify-between">
-        <div class="flex items-center">
-          <input
-            id="remember-me"
-            type="checkbox"
-            class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-          />
-          <label for="remember-me" class="ml-2 block text-sm text-gray-600">Remember me</label>
-        </div>
-        <a class="text-sm text-indigo-600 hover:text-indigo-800 font-medium" routerLink="/olvidapassword">Forgot Password?</a>
+        <div class="flex items-center"></div>
+        <a
+          class="text-sm text-indigo-600 hover:text-indigo-800 font-medium"
+          routerLink="/olvidapassword"
+          >¿Olvidaste tu contraseña?</a
+        >
       </div>
-
 
       <button
         type="submit"
         class="w-full py-3 px-4 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-200"
       >
-        Inicia sesion
+        Iniciar sesión
       </button>
     </form>
 
     <p class="mt-6 text-center text-sm text-gray-600">
-      No tienes una cuenta?
-      <a  class="text-indigo-600 hover:text-indigo-800 font-medium"
-      routerLink="/register"
-      >Registrate</a>
+      ¿No tienes una cuenta?
+      <a
+        class="text-indigo-600 hover:text-indigo-800 font-medium"
+        routerLink="/register"
+        >Registrate</a
+      >
     </p>
   </div>
   <div *ngIf="inicioExitoso">
-  <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
-    <span class="font-medium">Sesion iniciada con exito!</span> 
+    <div
+      class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400"
+      role="alert"
+    >
+      <span class="font-medium">Sesion iniciada con éxito!</span>
+    </div>
   </div>
-</div>
 </div>
