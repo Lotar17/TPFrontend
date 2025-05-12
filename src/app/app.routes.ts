@@ -31,6 +31,7 @@ import { MiCuentaComponent } from './mi-cuenta/mi-cuenta.component.js';
 import { MisventasComponent } from './misventas/misventas.component.js';
 import { OlvidaPasswordComponent } from './olvida-password/olvida-password.component.js';
 import { RestablecerContrasenaComponent } from './restablecer-contrasena/restablecer-contrasena.component.js';
+import { ComprasComponent } from './pages/admin/compras/compras.component.js';
 
 export const routes: Routes = [
   {
@@ -157,6 +158,7 @@ export const routes: Routes = [
       { path: 'categorias', component: AdminCategoriasComponent },
       { path: 'formas-de-pago', component: AdminFormasDePagoComponent },
       { path: 'localidades', component: LocalidadesComponent },
+      { path: 'compras-admin', component: ComprasComponent },
     ],
     component: AdminComponent,
   },
